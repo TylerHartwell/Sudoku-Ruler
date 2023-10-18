@@ -1,0 +1,78 @@
+*,
+::before,
+::after {
+  /*  */
+  border: 1px solid red;
+  /*  */
+}
+
+:root {
+  --square-size: 50px;
+  /*  */
+  border: none;
+  /*  */
+}
+body {
+  border: none;
+  background-color: antiquewhite;
+}
+
+.container {
+  margin: 20px auto;
+  padding: 5px;
+  border-color: blue;
+  width: 95vw;
+  height: max-content;
+  min-height: 200px;
+  display: grid;
+  gap: 5px;
+  grid-template-areas:
+    "title title title"
+    "rules grid grid"
+    "control numberpad numberpad";
+  grid-template-rows: min-content minmax(auto, auto) min-content;
+  grid-template-columns: auto min-content min-content;
+}
+
+.title {
+  grid-area: title;
+  text-align: center;
+}
+
+.grid {
+  grid-area: grid;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto auto;
+  border: 3px solid green;
+}
+.threebythree {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto auto;
+  border: 3px solid green;
+}
+.square {
+  width: 6vw;
+  height: 6vw;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+}
+
+.rules {
+  grid-area: rules;
+  text-align: center;
+}
+
+.numberpad {
+  grid-area: numberpad;
+  display: flex;
+  justify-content: space-around;
+  font-size: 32px;
+}
+
+.control {
+  grid-area: control;
+  text-align: center;
+}
