@@ -17,11 +17,11 @@ function generateSquares(box) {
     square.dataset.rowN = ((b - 1) / 3) * 3 + (s - 1) / 3 + 1
     square.dataset.colN = ((s - 1) / 3) * 3 + (b - 1) / 3 + 1
     square.dataset.boxN = b
-    square.dataset.value = s
 
     const squareNumber = document.createElement("div")
-    squareNumber.classList.add("square-number")
-    squareNumber.innerText = `${square.dataset.value}`
+    squareNumber.classList.add(...["square-number"])
+    squareNumber.innerText = ""
+    squareNumber.contentEditable = true
     square.appendChild(squareNumber)
 
     box.appendChild(square)
@@ -32,7 +32,9 @@ function generateSquares(box) {
 function generateCandidates(square) {
   for (let c = 0; c < 9; c++) {
     const candidate = document.createElement("div")
-    candidate.classList.add("candidate")
+    candidate.classList.add(...["candidate", "hidden"])
+    candidate.style.gridArea = `c${c + 1}`
+    candidate.dataset.number = `${c + 1}`
     candidate.innerText = `${c + 1}`
     square.appendChild(candidate)
   }

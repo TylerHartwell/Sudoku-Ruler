@@ -29,13 +29,18 @@ body {
   grid-template-areas:
     "title title title"
     "rules grid grid"
-    "control numberpad numberpad";
+    "controls numberpad numberpad";
   grid-template-rows: min-content minmax(auto, auto) min-content;
   grid-template-columns: auto min-content min-content;
 }
 
 .title {
   grid-area: title;
+  text-align: center;
+}
+
+.rules {
+  grid-area: rules;
   text-align: center;
 }
 
@@ -47,23 +52,23 @@ body {
   border: 3px solid green;
 }
 
-.rules {
-  grid-area: rules;
-  text-align: center;
+.controls {
+  grid-area: controls;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .numberpad {
   grid-area: numberpad;
   display: flex;
   justify-content: space-around;
+  align-items: center;
   font-size: 32px;
 }
 
-.control {
-  grid-area: control;
-  text-align: center;
-}
-
+/* grid children */
 .threebythree {
   display: grid;
   place-items: center;
@@ -78,18 +83,44 @@ body {
   display: grid;
   place-items: center;
   font-size: 32px;
-  grid-template-columns: auto auto auto;
-  grid-template-rows: auto auto auto;
+  /* grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto auto; */
+  grid-template-areas:
+    "c1 c2 c3"
+    "c4 c5 c6"
+    "c7 c8 c9";
   position: relative;
 }
 
 .square-number {
   font-size: 1em;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 .candidate {
   font-size: 0.5em;
   text-align: center;
 }
+
+/* .control children */
+.controls-title {
+  text-align: center;
+}
+
+.control-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+/* style toggles */
+.hidden {
+  display: none;
+}
+
+/* cleargrid */
