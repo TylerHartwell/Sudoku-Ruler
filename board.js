@@ -9,19 +9,24 @@ export function generateBoxes(grid) {
 }
 
 function generateSquares(box) {
+  const b = parseInt(box.dataset.boxID)
   for (let s = 1; s <= 9; s++) {
-    const b = box.dataset.boxID
     const square = document.createElement("div")
+    const rowN = Math.round(
+      Math.floor((b - 1) / 3) * 3 + Math.floor((s - 1) / 3) + 1
+    )
+    const colN = Math.round(((b - 1) % 3) * 3 + ((s - 1) % 3) + 1)
 
     square.classList.add("square")
-    square.dataset.rowN = ((b - 1) / 3) * 3 + (s - 1) / 3 + 1
-    square.dataset.colN = ((s - 1) / 3) * 3 + (b - 1) / 3 + 1
+    square.dataset.rowN = rowN
+    square.dataset.colN = colN
     square.dataset.boxN = b
+    square.dataset.place = (rowN - 1) * 9 + colN
 
     const squareNumber = document.createElement("div")
     squareNumber.classList.add(...["square-number"])
     squareNumber.innerText = ""
-    squareNumber.contentEditable = true
+
     square.appendChild(squareNumber)
 
     box.appendChild(square)
