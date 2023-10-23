@@ -26,6 +26,7 @@ function generateSquares(box) {
     const squareNumber = document.createElement("div")
     squareNumber.classList.add(...["square-number"])
     squareNumber.innerText = ""
+    squareNumber.contentEditable = true
 
     square.appendChild(squareNumber)
 
