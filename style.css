@@ -82,7 +82,10 @@ body {
   height: 6vw;
   display: grid;
   place-items: center;
+  justify-content: space-evenly;
   font-size: 32px;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
   grid-template-areas:
     "c1 c2 c3"
     "c4 c5 c6"
@@ -103,6 +106,8 @@ body {
 .candidate {
   font-size: 0.5em;
   text-align: center;
+  width: 90%;
+  height: 90%;
 }
 
 /* .control children */
@@ -119,4 +124,12 @@ body {
 /* style toggles */
 .hidden {
   display: none;
+}
+
+.set {
+  background-color: lightgray;
+}
+
+.wrong {
+  background-color: red;
 }
