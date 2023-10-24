@@ -1,8 +1,10 @@
 import { generateBoxes } from "./board.js"
 const grid = document.querySelector(".grid")
 
+let allCandidates
 let isSet = false
-generateBoxes(grid)
+let candidatesOn = false
+clearGrid()
 document.body.addEventListener("click", e => {
   if (e.target.classList.contains("toggle-candidates-btn")) {
     toggleCandidates()
@@ -26,6 +28,7 @@ document.body.addEventListener("keydown", e => {
     const currentPlace = Number(e.target.parentElement.dataset.place)
     if (/[1-9]/.test(e.key) && !e.repeat) {
       e.target.innerText = e.key
+      removeSeenCandidates(e.target.parentElement)
       movePlaceBy(1)
     }
     if (e.key === "ArrowLeft") {
@@ -51,14 +54,48 @@ function enterNumber(e) {
   e.target.focus()
 }
 
-function toggleCandidates() {
-  Array.from(document.querySelectorAll(".candidate")).forEach(candidate => {
-    if (candidate.parentElement) candidate.classList.toggle("hidden")
+function removeSeenCandidates(squareEl) {
+  const squareNumber = squareEl.querySelector(".square-number").innerText
+  allCandidates.forEach(candidate => {
+    if (
+      candidate.parentElement.dataset.place === squareEl.dataset.place ||
+      (candidate.dataset.number === squareNumber &&
+        (candidate.parentElement.dataset.rowN === squareEl.dataset.rowN ||
+          candidate.parentElement.dataset.colN === squareEl.dataset.colN ||
+          candidate.parentElement.dataset.boxN === squareEl.dataset.boxN))
+    ) {
+      candidate.classList.add("hidden")
+      candidate.innerText = ""
+    }
   })
+}
+
+function toggleCandidates() {
+  candidatesOn ? hideCandidates() : showCandidates()
+}
+
+function showCandidates() {
+  allCandidates.forEach(candidate => {
+    if (candidate.innerText != "") {
+      candidate.classList.remove("hidden")
+    }
+  })
+  candidatesOn = true
+}
+
+function hideCandidates() {
+  allCandidates.forEach(candidate => {
+    if (candidate.innerText != "") {
+      candidate.classList.add("hidden")
+    }
+  })
+  candidatesOn = false
 }
 
 function clearGrid() {
   isSet = false
+  candidatesOn = false
   grid.innerHTML = ""
   generateBoxes(grid)
+  allCandidates = Array.from(document.querySelectorAll(".candidate"))
 }

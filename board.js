@@ -36,12 +36,12 @@ function generateSquares(box) {
 }
 
 function generateCandidates(square) {
-  for (let c = 0; c < 9; c++) {
+  for (let c = 1; c <= 9; c++) {
     const candidate = document.createElement("div")
     candidate.classList.add(...["candidate", "hidden"])
-    candidate.style.gridArea = `c${c + 1}`
-    candidate.dataset.number = `${c + 1}`
-    candidate.innerText = `${c + 1}`
+    candidate.style.gridArea = `c${c}`
+    candidate.dataset.number = `${c}`
+    candidate.innerText = `${c}`
     square.appendChild(candidate)
   }
 }
