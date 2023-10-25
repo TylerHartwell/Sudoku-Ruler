@@ -35,21 +35,32 @@ document.body.addEventListener("keydown", e => {
 
   if (e.target.contentEditable === "true") {
     if (/[1-9]/.test(e.key) && !e.repeat) {
-      if (!checkValidPlacement(e.key, e.target.parentElement)) {
+      if (!checkLocallyValidPlacement(e.key, e.target.parentElement)) {
         e.target.classList.add("wrong")
         e.target.innerText = e.key
         return
       }
 
+      if (e.target.innerText) {
+        const recandidate = e.target.innerText
+        changeSeenCandidates(e.target, recandidate, true)
+      }
+
       e.target.innerText = e.key
-      removeSeenCandidates(e.target.parentElement)
+      changeSeenCandidates(e.target, e.key, false)
+
       if (!isSet) movePlaceBy(currentPlace, 1)
       return
     }
 
     if (e.key === "0" || e.key === "Backspace" || e.key === "Delete") {
-      e.target.innerText = ""
-      removeSeenCandidates(e.target.parentElement)
+      if (e.target.innerText) {
+        console.log(e.target.innerText)
+        const recandidate = e.target.innerText
+        e.target.innerText = ""
+        changeSeenCandidates(e.target, recandidate, true)
+      }
+
       if (!isSet) movePlaceBy(currentPlace, 1)
       return
     }
@@ -73,6 +84,72 @@ document.body.addEventListener("keydown", e => {
   }
 })
 
+function changeSeenCandidates(squareNumEl, candidateNumber, inclusion) {
+  console.log("changeSeenCandidates")
+  const squareEl = squareNumEl.parentElement
+  allCandidates.forEach(candidate => {
+    if (
+      candidate.parentElement.dataset.place === squareEl.dataset.place ||
+      (candidate.dataset.number === candidateNumber &&
+        (candidate.parentElement.dataset.rowN === squareEl.dataset.rowN ||
+          candidate.parentElement.dataset.colN === squareEl.dataset.colN ||
+          candidate.parentElement.dataset.boxN === squareEl.dataset.boxN))
+    ) {
+      if (inclusion) {
+        candidate.innerText = candidate.dataset.number
+      } else {
+        candidate.innerText = ""
+      }
+    }
+  })
+
+  refreshCandidates()
+}
+
+function refreshCandidates() {
+  console.log("refreshCandidates")
+  if (candidatesOn) {
+    showCandidates()
+  }
+}
+
+function toggleCandidates() {
+  console.log("toggleCandidates")
+  clearAnyWrong()
+  candidatesOn ? hideCandidates() : showCandidates()
+}
+
+//check all candidates of the removed digit that are in the same row or column as removed digit
+// function checkCandidate(){
+
+//   checkLocallyValidPlacement(removedNumber, )
+// }
+
+function showCandidates() {
+  console.log("showCandidates")
+  allCandidates.forEach(candidate => {
+    if (
+      candidate.innerText != "" &&
+      candidate.parentElement.querySelector(".square-number").textContent === ""
+    ) {
+      candidate.classList.remove("hidden")
+    } else {
+      candidate.classList.add("hidden")
+    }
+  })
+  candidatesOn = true
+}
+
+function hideCandidates() {
+  console.log("hideCandidates")
+  allCandidates.forEach(candidate => {
+    if (candidate.innerText != "") {
+      candidate.classList.add("hidden")
+    }
+  })
+  candidatesOn = false
+}
+
 function movePlaceBy(currentPlace, numPlaces) {
   const nextPlace = (currentPlace + numPlaces + 81) % 81 || 81
   const selector = `.square[data-place="${nextPlace.toString()}"] .square-number`
@@ -88,7 +165,7 @@ function clearAnyWrong() {
   }
 }
 
-function checkValidPlacement(keyString, squareEl) {
+function checkLocallyValidPlacement(keyString, squareEl) {
   const rowSquares = Array.from(
     document.querySelectorAll(
       `.square[data-row-n='${squareEl.dataset.rowN}'] .square-number`
@@ -141,50 +218,8 @@ function setGrid() {
 }
 
 function focusTarget(target) {
-  // if (!isSet || target.contentEditable) {
   clearAnyWrong()
   target.focus()
-  // }
-}
-
-function removeSeenCandidates(squareEl) {
-  const squareNumber = squareEl.querySelector(".square-number").innerText
-  allCandidates.forEach(candidate => {
-    if (
-      candidate.parentElement.dataset.place === squareEl.dataset.place ||
-      (candidate.dataset.number === squareNumber &&
-        (candidate.parentElement.dataset.rowN === squareEl.dataset.rowN ||
-          candidate.parentElement.dataset.colN === squareEl.dataset.colN ||
-          candidate.parentElement.dataset.boxN === squareEl.dataset.boxN))
-    ) {
-      candidate.classList.add("hidden")
-      candidate.innerText = ""
-    } else {
-      candidate.innerText = candidate.dataset.number
-    }
-  })
-}
-
-function toggleCandidates() {
-  candidatesOn ? hideCandidates() : showCandidates()
-}
-
-function showCandidates() {
-  allCandidates.forEach(candidate => {
-    if (candidate.innerText != "") {
-      candidate.classList.remove("hidden")
-    }
-  })
-  candidatesOn = true
-}
-
-function hideCandidates() {
-  allCandidates.forEach(candidate => {
-    if (candidate.innerText != "") {
-      candidate.classList.add("hidden")
-    }
-  })
-  candidatesOn = false
 }
 
 function clearGrid() {
