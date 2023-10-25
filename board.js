@@ -27,6 +27,7 @@ function generateSquares(box) {
     squareNumber.classList.add(...["square-number"])
     squareNumber.innerText = ""
     squareNumber.contentEditable = true
+    squareNumber.tabIndex = -1
 
     square.appendChild(squareNumber)
 

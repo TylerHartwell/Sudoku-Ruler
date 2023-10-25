@@ -1,18 +1,19 @@
 import { generateBoxes } from "./board.js"
+
 const grid = document.querySelector(".grid")
 
-let allCandidates
 let isSet = false
 let candidatesOn = false
+let allCandidates
 clearGrid()
+
 document.body.addEventListener("click", e => {
+  clearAnyWrong()
   if (e.target.classList.contains("toggle-candidates-btn")) {
     toggleCandidates()
   }
   if (e.target.classList.contains("square-number")) {
-    if (!isSet || e.target.contentEditable) {
-      enterNumber(e)
-    }
+    focusTarget(e.target)
   }
   if (e.target.classList.contains("clear-grid-btn")) {
     if (confirm("clear all?")) {
@@ -27,9 +28,12 @@ document.body.addEventListener("click", e => {
 document.body.addEventListener("keydown", e => {
   e.preventDefault()
 
-  clearWrong()
-  if (e.target.classList.contains("square-number")) {
-    const currentPlace = Number(e.target.parentElement.dataset.place)
+  clearAnyWrong()
+  if (!e.target.classList.contains("square-number")) return
+
+  const currentPlace = Number(e.target.parentElement.dataset.place)
+
+  if (e.target.contentEditable === "true") {
     if (/[1-9]/.test(e.key) && !e.repeat) {
       if (!checkValidPlacement(e.key, e.target.parentElement)) {
         e.target.classList.add("wrong")
@@ -39,32 +43,44 @@ document.body.addEventListener("keydown", e => {
 
       e.target.innerText = e.key
       removeSeenCandidates(e.target.parentElement)
-      if (!isSet) movePlaceBy(1)
-    } else if (e.key === "0" || e.key === "Backspace" || e.key === "Delete") {
-      e.target.innerText = ""
-      removeSeenCandidates(e.target.parentElement)
-      if (!isSet) movePlaceBy(1)
-    } else if (e.key === "ArrowLeft") {
-      movePlaceBy(-1)
-    } else if (e.key === "ArrowUp") {
-      movePlaceBy(-9)
-    } else if (e.key === "ArrowDown") {
-      movePlaceBy(9)
-    } else {
-      movePlaceBy(1)
+      if (!isSet) movePlaceBy(currentPlace, 1)
+      return
     }
 
-    function movePlaceBy(numPlaces) {
-      clearWrong()
-      const nextPlace = (currentPlace + numPlaces + 81) % 81 || 81
-      const selector = `.square[data-place="${nextPlace.toString()}"] .square-number`
-      const nextEl = grid.querySelector(selector)
-      nextEl.focus()
+    if (e.key === "0" || e.key === "Backspace" || e.key === "Delete") {
+      e.target.innerText = ""
+      removeSeenCandidates(e.target.parentElement)
+      if (!isSet) movePlaceBy(currentPlace, 1)
+      return
     }
+  }
+
+  if (e.key === "ArrowLeft") {
+    movePlaceBy(currentPlace, -1)
+    return
+  }
+  if (e.key === "ArrowUp") {
+    movePlaceBy(currentPlace, -9)
+    return
+  }
+  if (e.key === "ArrowDown") {
+    movePlaceBy(currentPlace, 9)
+    return
+  }
+  if (e.key === "ArrowRight" || e.key === " ") {
+    movePlaceBy(currentPlace, 1)
+    return
   }
 })
 
-function clearWrong() {
+function movePlaceBy(currentPlace, numPlaces) {
+  const nextPlace = (currentPlace + numPlaces + 81) % 81 || 81
+  const selector = `.square[data-place="${nextPlace.toString()}"] .square-number`
+  const nextEl = grid.querySelector(selector)
+  focusTarget(nextEl)
+}
+
+function clearAnyWrong() {
   const el = document.querySelector(".wrong")
   if (el) {
     el.classList.remove("wrong")
@@ -124,9 +140,11 @@ function setGrid() {
   isSet = true
 }
 
-function enterNumber(e) {
-  clearWrong()
-  e.target.focus()
+function focusTarget(target) {
+  // if (!isSet || target.contentEditable) {
+  clearAnyWrong()
+  target.focus()
+  // }
 }
 
 function removeSeenCandidates(squareEl) {
@@ -141,6 +159,8 @@ function removeSeenCandidates(squareEl) {
     ) {
       candidate.classList.add("hidden")
       candidate.innerText = ""
+    } else {
+      candidate.innerText = candidate.dataset.number
     }
   })
 }
