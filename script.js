@@ -34,31 +34,34 @@ document.body.addEventListener("keydown", e => {
   const currentPlace = Number(e.target.parentElement.dataset.place)
 
   if (e.target.contentEditable === "true") {
+    const previousValue = e.target.textContent
     if (/[1-9]/.test(e.key) && !e.repeat) {
-      if (!checkLocallyValidPlacement(e.key, e.target.parentElement)) {
-        e.target.classList.add("wrong")
-        e.target.innerText = e.key
+      if (previousValue == e.key) {
         return
       }
 
-      if (e.target.innerText) {
-        const recandidate = e.target.innerText
-        changeSeenCandidates(e.target, recandidate, true)
+      e.target.textContent = e.key
+
+      if (!checkLocallyValidPlacement(e.key, e.target.parentElement, false)) {
+        e.target.classList.add("wrong")
+        return
       }
 
-      e.target.innerText = e.key
-      changeSeenCandidates(e.target, e.key, false)
+      if (previousValue) {
+        checkCandidates(previousValue, e.target.parentElement)
+      }
+      checkCandidates(e.key, e.target.parentElement)
+      refreshCandidates()
 
       if (!isSet) movePlaceBy(currentPlace, 1)
       return
     }
 
     if (e.key === "0" || e.key === "Backspace" || e.key === "Delete") {
-      if (e.target.innerText) {
-        console.log(e.target.innerText)
-        const recandidate = e.target.innerText
-        e.target.innerText = ""
-        changeSeenCandidates(e.target, recandidate, true)
+      if (previousValue) {
+        e.target.textContent = ""
+        checkCandidates(previousValue, e.target.parentElement)
+        refreshCandidates()
       }
 
       if (!isSet) movePlaceBy(currentPlace, 1)
@@ -84,68 +87,83 @@ document.body.addEventListener("keydown", e => {
   }
 })
 
-function changeSeenCandidates(squareNumEl, candidateNumber, inclusion) {
-  console.log("changeSeenCandidates")
-  const squareEl = squareNumEl.parentElement
-  allCandidates.forEach(candidate => {
-    if (
-      candidate.parentElement.dataset.place === squareEl.dataset.place ||
-      (candidate.dataset.number === candidateNumber &&
-        (candidate.parentElement.dataset.rowN === squareEl.dataset.rowN ||
-          candidate.parentElement.dataset.colN === squareEl.dataset.colN ||
-          candidate.parentElement.dataset.boxN === squareEl.dataset.boxN))
-    ) {
-      if (inclusion) {
-        candidate.innerText = candidate.dataset.number
-      } else {
-        candidate.innerText = ""
-      }
-    }
-  })
-
-  refreshCandidates()
-}
-
 function refreshCandidates() {
-  console.log("refreshCandidates")
   if (candidatesOn) {
     showCandidates()
+  } else {
+    hideCandidates()
   }
 }
 
 function toggleCandidates() {
-  console.log("toggleCandidates")
   clearAnyWrong()
   candidatesOn ? hideCandidates() : showCandidates()
 }
 
-//check all candidates of the removed digit that are in the same row or column as removed digit
-// function checkCandidate(){
+function getSquaresSeenBy(squareEl) {
+  const rowSquares = Array.from(
+    document.querySelectorAll(`.square[data-row-n='${squareEl.dataset.rowN}']`)
+  )
+  const colSquares = Array.from(
+    document.querySelectorAll(`.square[data-col-n='${squareEl.dataset.colN}']`)
+  )
+  const boxSquares = Array.from(
+    document.querySelectorAll(`.square[data-box-n='${squareEl.dataset.boxN}']`)
+  )
 
-//   checkLocallyValidPlacement(removedNumber, )
-// }
+  const squaresSeenBy = Array.from(
+    new Set([...rowSquares, ...colSquares, ...boxSquares])
+  )
+  return squaresSeenBy
+}
+
+function checkCandidates(number, squareEl) {
+  const squaresToCheck = getSquaresSeenBy(squareEl)
+
+  squaresToCheck.forEach(square => {
+    if (square.dataset.place === squareEl.dataset.place) {
+      Array.from(square.querySelectorAll(".candidate")).forEach(candidate => {
+        setTextOfCandidate(candidate)
+      })
+    } else {
+      const matchingCandidate = square.querySelector(
+        `.candidate[data-number="${number}"]`
+      )
+      setTextOfCandidate(matchingCandidate)
+    }
+  })
+}
+
+function setTextOfCandidate(candidate) {
+  if (
+    checkLocallyValidPlacement(
+      candidate.dataset.number,
+      candidate.parentElement
+    )
+  ) {
+    candidate.textContent = candidate.dataset.number
+  } else {
+    candidate.textContent = ""
+  }
+}
 
 function showCandidates() {
-  console.log("showCandidates")
   allCandidates.forEach(candidate => {
     if (
-      candidate.innerText != "" &&
-      candidate.parentElement.querySelector(".square-number").textContent === ""
+      candidate.textContent == "" ||
+      candidate.parentElement.querySelector(".square-number").textContent
     ) {
-      candidate.classList.remove("hidden")
-    } else {
       candidate.classList.add("hidden")
+    } else {
+      candidate.classList.remove("hidden")
     }
   })
   candidatesOn = true
 }
 
 function hideCandidates() {
-  console.log("hideCandidates")
   allCandidates.forEach(candidate => {
-    if (candidate.innerText != "") {
-      candidate.classList.add("hidden")
-    }
+    candidate.classList.add("hidden")
   })
   candidatesOn = false
 }
@@ -165,37 +183,26 @@ function clearAnyWrong() {
   }
 }
 
-function checkLocallyValidPlacement(keyString, squareEl) {
-  const rowSquares = Array.from(
-    document.querySelectorAll(
-      `.square[data-row-n='${squareEl.dataset.rowN}'] .square-number`
-    )
-  )
-  const colSquares = Array.from(
-    document.querySelectorAll(
-      `.square[data-col-n='${squareEl.dataset.colN}'] .square-number`
-    )
-  )
-  const boxSquares = Array.from(
-    document.querySelectorAll(
-      `.square[data-box-n='${squareEl.dataset.boxN}'] .square-number`
-    )
-  )
-  if (
-    isAlreadyIn(keyString, rowSquares, squareEl) ||
-    isAlreadyIn(keyString, colSquares, squareEl) ||
-    isAlreadyIn(keyString, boxSquares, squareEl)
-  ) {
+function checkLocallyValidPlacement(keyString, squareEl, includeSelf = true) {
+  const localSquares = getSquaresSeenBy(squareEl)
+
+  if (isAlreadyIn(keyString, localSquares, squareEl, includeSelf)) {
     return false
   }
 
   return true
 }
 
-function isAlreadyIn(keyString, squaresGroup, squareEl) {
+function isAlreadyIn(keyString, squaresGroup, squareEl, includeSelf) {
+  let squareNumbersGroup = squaresGroup.map(square => {
+    return square.querySelector(".square-number")
+  })
   let isIn = false
-  for (const square of squaresGroup) {
-    if (square.textContent == keyString && square.parentElement != squareEl) {
+  for (const squareNumberEl of squareNumbersGroup) {
+    if (!includeSelf && squareNumberEl.parentElement == squareEl) {
+      continue
+    }
+    if (squareNumberEl.textContent == keyString) {
       isIn = true
       return isIn
     }
