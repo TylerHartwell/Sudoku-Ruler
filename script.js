@@ -20,11 +20,14 @@ document.body.addEventListener("click", e => {
       clearGrid()
     }
   }
-  if (e.target.classList.contains("input-grid-string")) {
+  if (e.target.classList.contains("input-grid-string-btn")) {
     inputGridString()
   }
   if (e.target.classList.contains("set-grid-btn")) {
     setGrid()
+  }
+  if (e.target.classList.contains("pad-number")) {
+    toggleElHighlightOf(e.target)
   }
 })
 
@@ -34,8 +37,7 @@ document.body.addEventListener("keydown", e => {
 
     if (e.target.contentEditable === "true") {
       const previousValue = e.target.textContent
-      // && !e.repeat   in below conditional
-      if (/[1-9]/.test(e.key)) {
+      if (/[1-9]/.test(e.key) && !e.repeat) {
         if (previousValue == e.key) {
           return
         }
@@ -94,16 +96,37 @@ document.body.addEventListener("keydown", e => {
   }
 })
 
+function toggleElHighlightOf(target) {
+  const isHighlighted = target.classList.contains("highlight")
+  const number = target.textContent
+  const candidates = Array.from(
+    document.querySelectorAll(`.candidate[data-number="${number}"]`)
+  )
+  const els = [target, ...candidates]
+
+  els.forEach(el => {
+    if (isHighlighted) {
+      el.classList.remove("highlight")
+    } else {
+      el.classList.add("highlight")
+    }
+  })
+}
+
 function inputCharacter(character) {
   if (/[1-9]/.test(character)) {
     document.activeElement.textContent = character
+    checkCandidates(character, document.activeElement.parentElement)
+    refreshCandidates()
   }
 }
 
 function inputGridString() {
-  const gridString = document.querySelector(".grid-string").value
+  const gridStringInput = document.querySelector(".grid-string")
+  const gridString = gridStringInput.value
   if (gridString.length != 81) {
     console.log("not 81")
+    gridStringInput.value = ""
     return
   }
 
@@ -116,10 +139,9 @@ function inputGridString() {
       focusTarget(squareNumberFocus)
 
       inputCharacter(character)
-      checkCandidates(character, squareNumberFocus.parentElement)
-      refreshCandidates()
-    }, 50 * (index + 1))
+    }, 10 * (index + 1))
   })
+  gridStringInput.value = ""
 }
 
 function refreshCandidates() {

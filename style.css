@@ -133,3 +133,7 @@ body {
 .wrong {
   background-color: red;
 }
+
+.highlight {
+  background-color: yellow;
+}
