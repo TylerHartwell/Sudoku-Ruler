@@ -20,72 +20,116 @@ document.body.addEventListener("click", e => {
       clearGrid()
     }
   }
+  if (e.target.classList.contains("input-grid-string")) {
+    const gridString = document.querySelector(".grid-string").value
+    inputGridString(gridString)
+  }
   if (e.target.classList.contains("set-grid-btn")) {
     setGrid()
   }
 })
 
 document.body.addEventListener("keydown", e => {
-  e.preventDefault()
+  if (e.target.classList.contains("square-number")) {
+    e.preventDefault()
+    console.log("gottem")
 
-  clearAnyWrong()
-  if (!e.target.classList.contains("square-number")) return
+    clearAnyWrong()
 
-  const currentPlace = Number(e.target.parentElement.dataset.place)
+    const currentPlace = Number(e.target.parentElement.dataset.place)
 
-  if (e.target.contentEditable === "true") {
-    const previousValue = e.target.textContent
-    if (/[1-9]/.test(e.key) && !e.repeat) {
-      if (previousValue == e.key) {
-        return
-      }
+    if (e.target.contentEditable === "true") {
+      const previousValue = e.target.textContent
+      // && !e.repeat   in below consitional
+      if (/[1-9]/.test(e.key)) {
+        if (previousValue == e.key) {
+          return
+        }
 
-      e.target.textContent = e.key
+        e.target.textContent = e.key
 
-      if (!checkLocallyValidPlacement(e.key, e.target.parentElement, false)) {
-        e.target.classList.add("wrong")
-        return
-      }
+        if (!checkLocallyValidPlacement(e.key, e.target.parentElement, false)) {
+          e.target.classList.add("wrong")
+          return
+        }
 
-      if (previousValue) {
-        checkCandidates(previousValue, e.target.parentElement)
-      }
-      checkCandidates(e.key, e.target.parentElement)
-      refreshCandidates()
-
-      if (!isSet) movePlaceBy(currentPlace, 1)
-      return
-    }
-
-    if (e.key === "0" || e.key === "Backspace" || e.key === "Delete") {
-      if (previousValue) {
-        e.target.textContent = ""
-        checkCandidates(previousValue, e.target.parentElement)
+        if (previousValue) {
+          checkCandidates(previousValue, e.target.parentElement)
+        }
+        checkCandidates(e.key, e.target.parentElement)
         refreshCandidates()
+
+        if (!isSet) movePlaceBy(currentPlace, 1)
+        return
       }
 
-      if (!isSet) movePlaceBy(currentPlace, 1)
+      if (e.key === "0" || e.key === "Backspace" || e.key === "Delete") {
+        if (previousValue) {
+          e.target.textContent = ""
+          checkCandidates(previousValue, e.target.parentElement)
+          refreshCandidates()
+        }
+
+        if (!isSet) movePlaceBy(currentPlace, 1)
+        return
+      }
+    }
+
+    if (e.key === "ArrowLeft") {
+      movePlaceBy(currentPlace, -1)
       return
     }
-  }
-
-  if (e.key === "ArrowLeft") {
-    movePlaceBy(currentPlace, -1)
-    return
-  }
-  if (e.key === "ArrowUp") {
-    movePlaceBy(currentPlace, -9)
-    return
-  }
-  if (e.key === "ArrowDown") {
-    movePlaceBy(currentPlace, 9)
-    return
-  }
-  if (e.key === "ArrowRight" || e.key === " ") {
-    movePlaceBy(currentPlace, 1)
-    return
+    if (e.key === "ArrowUp") {
+      movePlaceBy(currentPlace, -9)
+      return
+    }
+    if (e.key === "ArrowDown") {
+      movePlaceBy(currentPlace, 9)
+      return
+    }
+    if (e.key === "ArrowRight" || e.key === " ") {
+      movePlaceBy(currentPlace, 1)
+      return
+    }
   }
 })
+
+function inputGridString(gridString) {
+  if (gridString.length != 81) {
+    console.log("not 81")
+    return
+  }
+  let place = 1
+  let squareNumberFocus = document.querySelector(
+    `.square[data-place='${place}'] .square-number`
+  )
+  squareNumberFocus.focus()
+  gridString.split("").forEach(character => {
+    setTimeout(() => {
+      squareNumberFocus = document.querySelector(
+        `.square[data-place='${place}'] .square-number`
+      )
+      focusTarget(squareNumberFocus)
+      if (!/[1-9]/.test(character)) {
+        squareNumberFocus.focus()
+        squareNumberFocus.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            key: `0`
+          })
+        )
+      } else {
+        character = character.toString()
+        squareNumberFocus.focus()
+        squareNumberFocus.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            key: `'${character}'`
+          })
+        )
+      }
+      place++
+    }, 200)
+  })
+}
 
 function refreshCandidates() {
   if (candidatesOn) {
