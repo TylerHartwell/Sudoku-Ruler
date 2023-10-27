@@ -21,8 +21,7 @@ document.body.addEventListener("click", e => {
     }
   }
   if (e.target.classList.contains("input-grid-string")) {
-    const gridString = document.querySelector(".grid-string").value
-    inputGridString(gridString)
+    inputGridString()
   }
   if (e.target.classList.contains("set-grid-btn")) {
     setGrid()
@@ -32,102 +31,94 @@ document.body.addEventListener("click", e => {
 document.body.addEventListener("keydown", e => {
   if (e.target.classList.contains("square-number")) {
     e.preventDefault()
-    console.log("gottem")
-
-    clearAnyWrong()
-
-    const currentPlace = Number(e.target.parentElement.dataset.place)
 
     if (e.target.contentEditable === "true") {
       const previousValue = e.target.textContent
-      // && !e.repeat   in below consitional
+      // && !e.repeat   in below conditional
       if (/[1-9]/.test(e.key)) {
         if (previousValue == e.key) {
           return
         }
 
-        e.target.textContent = e.key
+        inputCharacter(e.key)
 
+        if (previousValue) {
+          checkCandidates(previousValue, e.target.parentElement)
+        }
         if (!checkLocallyValidPlacement(e.key, e.target.parentElement, false)) {
           e.target.classList.add("wrong")
           return
         }
 
-        if (previousValue) {
-          checkCandidates(previousValue, e.target.parentElement)
-        }
         checkCandidates(e.key, e.target.parentElement)
         refreshCandidates()
 
-        if (!isSet) movePlaceBy(currentPlace, 1)
+        if (!isSet) movePlaceBy(1)
         return
       }
 
-      if (e.key === "0" || e.key === "Backspace" || e.key === "Delete") {
+      if (
+        e.key === "0" ||
+        e.key === "Backspace" ||
+        e.key === "Delete" ||
+        e.key === "."
+      ) {
         if (previousValue) {
           e.target.textContent = ""
           checkCandidates(previousValue, e.target.parentElement)
           refreshCandidates()
         }
 
-        if (!isSet) movePlaceBy(currentPlace, 1)
+        if (!isSet) movePlaceBy(1)
         return
       }
     }
 
-    if (e.key === "ArrowLeft") {
-      movePlaceBy(currentPlace, -1)
+    if (e.key === "ArrowUp" || e.key === "w") {
+      movePlaceBy(-9)
       return
     }
-    if (e.key === "ArrowUp") {
-      movePlaceBy(currentPlace, -9)
+    if (e.key === "ArrowLeft" || e.key === "a") {
+      movePlaceBy(-1)
       return
     }
-    if (e.key === "ArrowDown") {
-      movePlaceBy(currentPlace, 9)
+
+    if (e.key === "ArrowDown" || e.key === "s") {
+      movePlaceBy(9)
       return
     }
-    if (e.key === "ArrowRight" || e.key === " ") {
-      movePlaceBy(currentPlace, 1)
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === " ") {
+      movePlaceBy(1)
       return
     }
   }
 })
 
-function inputGridString(gridString) {
+function inputCharacter(character) {
+  if (/[1-9]/.test(character)) {
+    document.activeElement.textContent = character
+  }
+}
+
+function inputGridString() {
+  const gridString = document.querySelector(".grid-string").value
   if (gridString.length != 81) {
     console.log("not 81")
     return
   }
-  let place = 1
-  let squareNumberFocus = document.querySelector(
-    `.square[data-place='${place}'] .square-number`
-  )
-  squareNumberFocus.focus()
-  gridString.split("").forEach(character => {
+
+  gridString.split("").forEach((character, index) => {
     setTimeout(() => {
-      squareNumberFocus = document.querySelector(
-        `.square[data-place='${place}'] .square-number`
+      const squareNumberFocus = document.querySelector(
+        `.square[data-place='${(index + 1).toString()}'] .square-number`
       )
+
       focusTarget(squareNumberFocus)
-      if (!/[1-9]/.test(character)) {
-        squareNumberFocus.focus()
-        squareNumberFocus.dispatchEvent(
-          new KeyboardEvent("keydown", {
-            key: `0`
-          })
-        )
-      } else {
-        character = character.toString()
-        squareNumberFocus.focus()
-        squareNumberFocus.dispatchEvent(
-          new KeyboardEvent("keydown", {
-            key: `'${character}'`
-          })
-        )
-      }
-      place++
-    }, 200)
+
+      inputCharacter(character)
+      checkCandidates(character, squareNumberFocus.parentElement)
+      refreshCandidates()
+    }, 50 * (index + 1))
   })
 }
 
@@ -212,7 +203,9 @@ function hideCandidates() {
   candidatesOn = false
 }
 
-function movePlaceBy(currentPlace, numPlaces) {
+function movePlaceBy(numPlaces) {
+  const currentFocusedEl = document.activeElement
+  const currentPlace = Number(currentFocusedEl.parentElement.dataset.place)
   const nextPlace = (currentPlace + numPlaces + 81) % 81 || 81
   const selector = `.square[data-place="${nextPlace.toString()}"] .square-number`
   const nextEl = grid.querySelector(selector)
@@ -224,6 +217,7 @@ function clearAnyWrong() {
   if (el) {
     el.classList.remove("wrong")
     el.textContent = ""
+    refreshCandidates()
   }
 }
 
