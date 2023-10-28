@@ -27,7 +27,7 @@ document.body.addEventListener("click", e => {
     setGrid()
   }
   if (e.target.classList.contains("pad-number")) {
-    toggleElHighlightOf(e.target)
+    toggleHighlight(e.target)
   }
 })
 
@@ -96,21 +96,43 @@ document.body.addEventListener("keydown", e => {
   }
 })
 
-function toggleElHighlightOf(target) {
-  const isHighlighted = target.classList.contains("highlight")
-  const number = target.textContent
+function refreshAllHighlights() {
+  Array.from(document.querySelectorAll("pad-number")).forEach(padNumber => {
+    refreshHighlightsOf(padNumber)
+  })
+}
+
+function refreshHighlightsOf(padNumber) {
+  const isHighlighted = padNumber.classList.contains("highlight")
+  const number = padNumber.textContent
+  const squareNumbers = Array.from(
+    document.querySelectorAll(".square-number")
+  ).filter(el => {
+    return el.textContent === number
+  })
+  console.log(squareNumbers)
   const candidates = Array.from(
     document.querySelectorAll(`.candidate[data-number="${number}"]`)
   )
-  const els = [target, ...candidates]
+  const els = [...candidates, ...squareNumbers]
 
   els.forEach(el => {
-    if (isHighlighted) {
-      el.classList.remove("highlight")
-    } else {
-      el.classList.add("highlight")
-    }
+    isHighlighted ? highlightEl(el) : unhighlightEl(el)
   })
+}
+
+function toggleHighlight(target) {
+  target.classList.contains("highlight")
+    ? unhighlightEl(target)
+    : highlightEl(target)
+  refreshHighlightsOf(target)
+}
+
+function highlightEl(el) {
+  el.classList.add("highlight")
+}
+function unhighlightEl(el) {
+  el.classList.remove("highlight")
 }
 
 function inputCharacter(character) {
