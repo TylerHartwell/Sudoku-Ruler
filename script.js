@@ -34,6 +34,7 @@ document.body.addEventListener("click", e => {
 document.body.addEventListener("keydown", e => {
   if (e.target.classList.contains("square-number")) {
     e.preventDefault()
+    clearAnyWrong()
 
     if (e.target.contentEditable === "true") {
       const previousValue = e.target.textContent
@@ -41,19 +42,27 @@ document.body.addEventListener("keydown", e => {
         if (previousValue == e.key) {
           return
         }
-
-        inputCharacter(e.key)
+        unhighlightEl(e.target)
+        document.activeElement.textContent = e.key
 
         if (previousValue) {
           checkCandidates(previousValue, e.target.parentElement)
+          refreshCandidates()
         }
         if (!checkLocallyValidPlacement(e.key, e.target.parentElement, false)) {
           e.target.classList.add("wrong")
           return
         }
+        if (
+          document.querySelector(`.pad${e.key}`).classList.contains("highlight")
+        ) {
+          highlightEl(e.target)
+        }
 
         checkCandidates(e.key, e.target.parentElement)
         refreshCandidates()
+
+        refreshAllHighlights()
 
         if (!isSet) movePlaceBy(1)
         return
@@ -69,6 +78,7 @@ document.body.addEventListener("keydown", e => {
           e.target.textContent = ""
           checkCandidates(previousValue, e.target.parentElement)
           refreshCandidates()
+          unhighlightEl(e.target)
         }
 
         if (!isSet) movePlaceBy(1)
@@ -110,7 +120,6 @@ function refreshHighlightsOf(padNumber) {
   ).filter(el => {
     return el.textContent === number
   })
-  console.log(squareNumbers)
   const candidates = Array.from(
     document.querySelectorAll(`.candidate[data-number="${number}"]`)
   )
