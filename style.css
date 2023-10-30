@@ -45,6 +45,7 @@ body {
 }
 
 .grid {
+  user-select: none;
   grid-area: grid;
   display: grid;
   grid-template-columns: auto auto auto;
@@ -136,4 +137,8 @@ body {
 
 .highlight {
   background-color: yellow;
+}
+
+.no-pointer {
+  pointer-events: none;
 }

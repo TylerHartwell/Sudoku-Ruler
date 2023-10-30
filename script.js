@@ -5,10 +5,18 @@ const grid = document.querySelector(".grid")
 let isSet = false
 let candidatesOn = false
 let allCandidates
+let allSquareNumbers
 clearGrid()
 
 document.body.addEventListener("click", e => {
   clearAnyWrong()
+  if (e.shiftKey) {
+    if (e.target.classList.contains("candidate")) {
+      e.target.textContent = ""
+      refreshCandidates()
+    }
+  }
+
   if (e.target.classList.contains("toggle-candidates-btn")) {
     toggleCandidates()
   }
@@ -31,7 +39,22 @@ document.body.addEventListener("click", e => {
   }
 })
 
+document.body.addEventListener("keyup", e => {
+  if (e.key === "Shift") {
+    allSquareNumbers.forEach(el => {
+      el.classList.remove("no-pointer")
+    })
+  }
+})
+
 document.body.addEventListener("keydown", e => {
+  if (e.shiftKey && !e.repeat) {
+    allSquareNumbers.forEach(el => {
+      el.classList.add("no-pointer")
+    })
+    return
+  }
+
   if (e.target.classList.contains("square-number")) {
     e.preventDefault()
     clearAnyWrong()
@@ -326,4 +349,5 @@ function clearGrid() {
   grid.innerHTML = ""
   generateBoxes(grid)
   allCandidates = Array.from(document.querySelectorAll(".candidate"))
+  allSquareNumbers = Array.from(document.querySelectorAll(".square-number"))
 }
