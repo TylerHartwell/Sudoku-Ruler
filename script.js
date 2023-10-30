@@ -6,6 +6,7 @@ let isSet = false
 let candidatesOn = false
 let allCandidates
 let allSquareNumbers
+let allPadNumbers
 clearGrid()
 
 document.body.addEventListener("click", e => {
@@ -65,7 +66,7 @@ document.body.addEventListener("keydown", e => {
         if (previousValue == e.key) {
           return
         }
-        unhighlightEl(e.target)
+        unhighlightEls([e.target])
         document.activeElement.textContent = e.key
 
         if (previousValue) {
@@ -79,7 +80,7 @@ document.body.addEventListener("keydown", e => {
         if (
           document.querySelector(`.pad${e.key}`).classList.contains("highlight")
         ) {
-          highlightEl(e.target)
+          highlightEls([e.target])
         }
 
         checkCandidates(e.key, e.target.parentElement)
@@ -101,7 +102,7 @@ document.body.addEventListener("keydown", e => {
           e.target.textContent = ""
           checkCandidates(previousValue, e.target.parentElement)
           refreshCandidates()
-          unhighlightEl(e.target)
+          unhighlightEls([e.target])
         }
 
         if (!isSet) movePlaceBy(1)
@@ -130,7 +131,7 @@ document.body.addEventListener("keydown", e => {
 })
 
 function refreshAllHighlights() {
-  Array.from(document.querySelectorAll("pad-number")).forEach(padNumber => {
+  allPadNumbers.forEach(padNumber => {
     refreshHighlightsOf(padNumber)
   })
 }
@@ -138,33 +139,37 @@ function refreshAllHighlights() {
 function refreshHighlightsOf(padNumber) {
   const isHighlighted = padNumber.classList.contains("highlight")
   const number = padNumber.textContent
-  const squareNumbers = Array.from(
-    document.querySelectorAll(".square-number")
-  ).filter(el => {
+  const squareNumbers = allSquareNumbers.filter(el => {
     return el.textContent === number
   })
-  const candidates = Array.from(
-    document.querySelectorAll(`.candidate[data-number="${number}"]`)
-  )
+  const candidates = allCandidates.filter(el => el.dataset.number === number)
   const els = [...candidates, ...squareNumbers]
 
   els.forEach(el => {
-    isHighlighted ? highlightEl(el) : unhighlightEl(el)
+    isHighlighted ? highlightEls([el]) : unhighlightEls([el])
   })
 }
 
 function toggleHighlight(target) {
-  target.classList.contains("highlight")
-    ? unhighlightEl(target)
-    : highlightEl(target)
-  refreshHighlightsOf(target)
+  if (!target.classList.contains("highlight")) {
+    unhighlightEls(allPadNumbers)
+    highlightEls([target])
+  } else {
+    unhighlightEls([target])
+  }
+
+  refreshAllHighlights()
 }
 
-function highlightEl(el) {
-  el.classList.add("highlight")
+function highlightEls(elArr) {
+  elArr.forEach(el => {
+    el.classList.add("highlight")
+  })
 }
-function unhighlightEl(el) {
-  el.classList.remove("highlight")
+function unhighlightEls(elArr) {
+  elArr.forEach(el => {
+    el.classList.remove("highlight")
+  })
 }
 
 function inputCharacter(character) {
@@ -327,14 +332,12 @@ function isAlreadyIn(keyString, squaresGroup, squareEl, includeSelf) {
 
 function setGrid() {
   if (isSet) return
-  Array.from(document.querySelectorAll(".square-number")).forEach(
-    squareNumber => {
-      if (squareNumber.textContent != "") {
-        squareNumber.contentEditable = false
-        squareNumber.classList.add("set")
-      }
+  allSquareNumbers.forEach(squareNumber => {
+    if (squareNumber.textContent != "") {
+      squareNumber.contentEditable = false
+      squareNumber.classList.add("set")
     }
-  )
+  })
   isSet = true
 }
 
@@ -350,4 +353,6 @@ function clearGrid() {
   generateBoxes(grid)
   allCandidates = Array.from(document.querySelectorAll(".candidate"))
   allSquareNumbers = Array.from(document.querySelectorAll(".square-number"))
+  allPadNumbers = Array.from(document.querySelectorAll(".pad-number"))
+  unhighlightEls(allPadNumbers)
 }
