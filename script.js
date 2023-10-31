@@ -1,4 +1,5 @@
 import { generateBoxes } from "./board.js"
+import { generateRuleItems, rulesArr } from "./rules.js"
 
 const grid = document.querySelector(".grid")
 
@@ -7,7 +8,33 @@ let candidatesOn = false
 let allCandidates
 let allSquareNumbers
 let allPadNumbers
+let allUnitsSquares = []
 clearGrid()
+
+export const focusTarget = target => {
+  clearAnyWrong()
+  target.focus()
+}
+
+export const inputCharacter = character => {
+  if (/[1-9]/.test(character)) {
+    document.activeElement.textContent = character
+    checkCandidates(character, document.activeElement.parentElement)
+    refreshCandidates()
+    refreshAllHighlights()
+  }
+}
+
+function tryNextSolve(ruleItem) {
+  console.log("try next solve")
+  rulesArr[
+    [...ruleItem.parentElement.children].indexOf(
+      ruleItem,
+      focusTarget,
+      inputCharacter
+    )
+  ](allUnitsSquares)
+}
 
 document.body.addEventListener("click", e => {
   clearAnyWrong()
@@ -16,6 +43,10 @@ document.body.addEventListener("click", e => {
       e.target.textContent = ""
       refreshCandidates()
     }
+  }
+
+  if (e.target.classList.contains("try-next-btn")) {
+    tryNextSolve(e.target.parentElement)
   }
 
   if (e.target.classList.contains("toggle-candidates-btn")) {
@@ -172,14 +203,6 @@ function unhighlightEls(elArr) {
   })
 }
 
-function inputCharacter(character) {
-  if (/[1-9]/.test(character)) {
-    document.activeElement.textContent = character
-    checkCandidates(character, document.activeElement.parentElement)
-    refreshCandidates()
-  }
-}
-
 function inputGridString() {
   const gridStringInput = document.querySelector(".grid-string")
   const gridString = gridStringInput.value
@@ -198,6 +221,7 @@ function inputGridString() {
       focusTarget(squareNumberFocus)
 
       inputCharacter(character)
+      if (index + 1 == 81) setGrid()
     }, 10 * (index + 1))
   })
   gridStringInput.value = ""
@@ -254,7 +278,8 @@ function setTextOfCandidate(candidate) {
   if (
     checkLocallyValidPlacement(
       candidate.dataset.number,
-      candidate.parentElement
+      candidate.parentElement,
+      false
     )
   ) {
     candidate.textContent = candidate.dataset.number
@@ -265,10 +290,11 @@ function setTextOfCandidate(candidate) {
 
 function showCandidates() {
   allCandidates.forEach(candidate => {
-    if (
-      candidate.textContent == "" ||
-      candidate.parentElement.querySelector(".square-number").textContent
-    ) {
+    if (candidate.parentElement.querySelector(".square-number").textContent) {
+      candidate.textContent = ""
+    }
+
+    if (candidate.textContent == "") {
       candidate.classList.add("hidden")
     } else {
       candidate.classList.remove("hidden")
@@ -341,18 +367,30 @@ function setGrid() {
   isSet = true
 }
 
-function focusTarget(target) {
-  clearAnyWrong()
-  target.focus()
-}
-
 function clearGrid() {
   isSet = false
   candidatesOn = false
   grid.innerHTML = ""
   generateBoxes(grid)
+  generateRuleItems()
   allCandidates = Array.from(document.querySelectorAll(".candidate"))
   allSquareNumbers = Array.from(document.querySelectorAll(".square-number"))
   allPadNumbers = Array.from(document.querySelectorAll(".pad-number"))
+  getAllUnitsSquares()
+
   unhighlightEls(allPadNumbers)
+}
+
+function getAllUnitsSquares() {
+  for (let i = 1; i <= 9; i++) {
+    allUnitsSquares.push(
+      Array.from(document.querySelectorAll(`.square[data-row-n="${i}"]`))
+    )
+    allUnitsSquares.push(
+      Array.from(document.querySelectorAll(`.square[data-col-n="${i}"]`))
+    )
+    allUnitsSquares.push(
+      Array.from(document.querySelectorAll(`.square[data-box-n="${i}"]`))
+    )
+  }
 }

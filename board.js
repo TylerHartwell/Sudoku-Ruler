@@ -25,7 +25,7 @@ function generateSquares(box) {
 
     const squareNumber = document.createElement("div")
     squareNumber.classList.add(...["square-number"])
-    squareNumber.innerText = ""
+    squareNumber.textContent = ""
     squareNumber.contentEditable = true
     squareNumber.tabIndex = -1
 
@@ -42,7 +42,7 @@ function generateCandidates(square) {
     candidate.classList.add(...["candidate", "hidden"])
     candidate.style.gridArea = `c${c}`
     candidate.dataset.number = `${c}`
-    candidate.innerText = `${c}`
+    candidate.textContent = `${c}`
     square.appendChild(candidate)
   }
 }
