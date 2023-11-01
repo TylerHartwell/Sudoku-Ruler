@@ -1,5 +1,3 @@
-import { focusTarget, inputCharacter } from "./script.js"
-
 export function generateRuleItems() {
   const listEl = document.querySelector(".rules-list")
   rulesArr.forEach((rule, index) => {
@@ -29,9 +27,9 @@ export function generateRuleItems() {
 
 const nakedSingle = (allUnitsSquares, focusTarget, inputCharacter) => {
   console.log("try naked single")
-  console.log(typeof focusTarget)
+  let unitCount = 0
   for (const unit of allUnitsSquares) {
-    console.log(unit)
+    unitCount++
     let instanceCount = 0
     let solutionSquareNumber = null
     for (let i = 1; i <= 9; i++) {
@@ -51,7 +49,7 @@ const nakedSingle = (allUnitsSquares, focusTarget, inputCharacter) => {
       }
       instanceCount = 0
     }
-    if (unit === allUnitsSquares[-1]) {
+    if (unitCount == allUnitsSquares.length) {
       console.log("nothing")
     }
   }

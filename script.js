@@ -11,12 +11,12 @@ let allPadNumbers
 let allUnitsSquares = []
 clearGrid()
 
-export const focusTarget = target => {
+const focusTarget = target => {
   clearAnyWrong()
   target.focus()
 }
 
-export const inputCharacter = character => {
+const inputCharacter = character => {
   if (/[1-9]/.test(character)) {
     document.activeElement.textContent = character
     checkCandidates(character, document.activeElement.parentElement)
@@ -27,13 +27,11 @@ export const inputCharacter = character => {
 
 function tryNextSolve(ruleItem) {
   console.log("try next solve")
-  rulesArr[
-    [...ruleItem.parentElement.children].indexOf(
-      ruleItem,
-      focusTarget,
-      inputCharacter
-    )
-  ](allUnitsSquares)
+  rulesArr[[...ruleItem.parentElement.children].indexOf(ruleItem)](
+    allUnitsSquares,
+    focusTarget,
+    inputCharacter
+  )
 }
 
 document.body.addEventListener("click", e => {
