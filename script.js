@@ -1,39 +1,13 @@
-import { boardData } from "./board.js"
-import { generateRuleItems, rulesArr } from "./rules.js"
+import { boardData, createBoardHTML } from "./board.js"
+import { createRulesHTML, rulesArr } from "./rules.js"
 
-boardData.createBoardHTML()
+createBoardHTML()
+createRulesHTML()
 
-let allCandidates
-let allSquareNumbers
-let allPadNumbers
-let allUnitsSquares = []
-allCandidates = Array.from(document.querySelectorAll(".candidate"))
-allSquareNumbers = Array.from(document.querySelectorAll(".entry"))
-allPadNumbers = Array.from(document.querySelectorAll(".pad-number"))
-// clearBoard()
-
-const focusTarget = target => {
-  clearAnyWrong()
-  target.focus()
-}
-
-const inputCharacter = character => {
-  if (/[1-9]/.test(character)) {
-    document.activeElement.textContent = character
-    checkCandidates(character, document.activeElement.parentElement)
-    refreshCandidates()
-    refreshAllHighlights()
-  }
-}
-
-function tryNextSolve(ruleItem) {
-  console.log("try next solve")
-  rulesArr[[...ruleItem.parentElement.children].indexOf(ruleItem)](
-    allUnitsSquares,
-    focusTarget,
-    inputCharacter
-  )
-}
+let allEntryEls = Array.from(document.querySelectorAll(".entry"))
+let allCandidateEls = Array.from(document.querySelectorAll(".candidate"))
+let allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
+let allUnitSquaresEls = getAllUnitSquaresEls()
 
 document.body.addEventListener("click", e => {
   clearAnyWrong()
@@ -72,7 +46,7 @@ document.body.addEventListener("click", e => {
 
 document.body.addEventListener("keyup", e => {
   if (e.key === "Shift") {
-    allSquareNumbers.forEach(el => {
+    allEntryEls.forEach(el => {
       el.classList.remove("no-pointer")
     })
   }
@@ -80,7 +54,7 @@ document.body.addEventListener("keyup", e => {
 
 document.body.addEventListener("keydown", e => {
   if (e.shiftKey && !e.repeat) {
-    allSquareNumbers.forEach(el => {
+    allEntryEls.forEach(el => {
       el.classList.add("no-pointer")
     })
     return
@@ -160,8 +134,31 @@ document.body.addEventListener("keydown", e => {
   }
 })
 
+const focusTarget = target => {
+  clearAnyWrong()
+  target.focus()
+}
+
+const inputCharacter = character => {
+  if (/[1-9]/.test(character)) {
+    document.activeElement.textContent = character
+    checkCandidates(character, document.activeElement.parentElement)
+    refreshCandidates()
+    refreshAllHighlights()
+  }
+}
+
+function tryNextSolve(ruleItem) {
+  console.log("try next solve")
+  rulesArr[[...ruleItem.parentElement.children].indexOf(ruleItem)](
+    allUnitSquaresEls,
+    focusTarget,
+    inputCharacter
+  )
+}
+
 function refreshAllHighlights() {
-  allPadNumbers.forEach(padNumber => {
+  allPadNumEls.forEach(padNumber => {
     refreshHighlightsOf(padNumber)
   })
 }
@@ -169,10 +166,10 @@ function refreshAllHighlights() {
 function refreshHighlightsOf(padNumber) {
   const isHighlighted = padNumber.classList.contains("highlight")
   const number = padNumber.textContent
-  const squareNumbers = allSquareNumbers.filter(el => {
+  const squareNumbers = allEntryEls.filter(el => {
     return el.textContent === number
   })
-  const candidates = allCandidates.filter(el => el.dataset.number === number)
+  const candidates = allCandidateEls.filter(el => el.dataset.number === number)
   const els = [...candidates, ...squareNumbers]
 
   els.forEach(el => {
@@ -182,7 +179,7 @@ function refreshHighlightsOf(padNumber) {
 
 function toggleHighlight(target) {
   if (!target.classList.contains("highlight")) {
-    unhighlightEls(allPadNumbers)
+    unhighlightEls(allPadNumEls)
     highlightEls([target])
   } else {
     unhighlightEls([target])
@@ -214,7 +211,7 @@ function inputGridString() {
   gridString.split("").forEach((character, index) => {
     setTimeout(() => {
       const squareNumberFocus = document.querySelector(
-        `.square[data-place='${(index + 1).toString()}'] .entry`
+        `.square[data-square-id='${(index + 1).toString()}'] .entry`
       )
 
       focusTarget(squareNumberFocus)
@@ -227,16 +224,29 @@ function inputGridString() {
 }
 
 function refreshCandidates() {
-  if (boardData.candidatesOn) {
-    showCandidates()
-  } else {
-    hideCandidates()
-  }
+  allCandidateEls.forEach(candidateEl => {
+    const boxN = candidateEl.dataset.boxN
+    const squareN = candidateEl.dataset.squareN
+    const number = candidateEl.dataset.number
+    const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
+    const candidateSquare = candidateBox.boxSquares.find(
+      square => square.squareId == squareN
+    )
+    const candidateObj = candidateSquare.squareCandidates.find(
+      candidate => candidate.number == number
+    )
+    if (!candidateObj.eliminated && boardData.candidatesOn) {
+      candidateEl.classList.remove("hidden")
+    } else {
+      candidateEl.classList.add("hidden")
+    }
+  })
 }
 
 function toggleCandidates() {
   clearAnyWrong()
-  boardData.candidatesOn ? hideCandidates() : showCandidates()
+  boardData.candidatesOn = !boardData.candidatesOn
+  refreshCandidates()
 }
 
 function getSquaresSeenBy(squareEl) {
@@ -266,7 +276,7 @@ function checkCandidates(number, squareEl) {
       })
     } else {
       const matchingCandidate = square.querySelector(
-        `.candidate[data-number="${number}"]`
+        `.candidate[data-entry="${number}"]`
       )
       setTextOfCandidate(matchingCandidate)
     }
@@ -285,28 +295,6 @@ function setTextOfCandidate(candidate) {
   } else {
     candidate.textContent = ""
   }
-}
-
-function showCandidates() {
-  allCandidates.forEach(candidate => {
-    if (candidate.parentElement.querySelector(".entry").textContent) {
-      candidate.textContent = ""
-    }
-
-    if (candidate.textContent == "") {
-      candidate.classList.add("hidden")
-    } else {
-      candidate.classList.remove("hidden")
-    }
-  })
-  boardData.candidatesOn = true
-}
-
-function hideCandidates() {
-  allCandidates.forEach(candidate => {
-    candidate.classList.add("hidden")
-  })
-  boardData.candidatesOn = false
 }
 
 function movePlaceBy(numPlaces) {
@@ -357,7 +345,7 @@ function isAlreadyIn(keyString, squaresGroup, squareEl, includeSelf) {
 
 function setGrid() {
   if (boardData.isSet) return
-  allSquareNumbers.forEach(squareNumber => {
+  allEntryEls.forEach(squareNumber => {
     if (squareNumber.textContent != "") {
       squareNumber.contentEditable = false
       squareNumber.classList.add("set")
@@ -370,26 +358,21 @@ function clearBoard() {
   boardData.isSet = false
   boardData.candidatesOn = false
   // grid.innerHTML = ""
-  // generateBoxes(grid)
-  generateRuleItems()
-  allCandidates = Array.from(document.querySelectorAll(".candidate"))
-  allSquareNumbers = Array.from(document.querySelectorAll(".entry"))
-  allPadNumbers = Array.from(document.querySelectorAll(".pad-number"))
-  getAllUnitsSquares()
-
-  unhighlightEls(allPadNumbers)
+  unhighlightEls(allPadNumEls)
 }
 
-function getAllUnitsSquares() {
+function getAllUnitSquaresEls() {
+  let allUnitSquares = []
   for (let i = 1; i <= 9; i++) {
-    allUnitsSquares.push(
+    allUnitSquares.push(
       Array.from(document.querySelectorAll(`.square[data-row-n="${i}"]`))
     )
-    allUnitsSquares.push(
+    allUnitSquares.push(
       Array.from(document.querySelectorAll(`.square[data-col-n="${i}"]`))
     )
-    allUnitsSquares.push(
+    allUnitSquares.push(
       Array.from(document.querySelectorAll(`.square[data-box-n="${i}"]`))
     )
   }
+  return allUnitSquares
 }

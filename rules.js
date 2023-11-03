@@ -1,5 +1,6 @@
-export function generateRuleItems() {
+export function createRulesHTML() {
   const listEl = document.querySelector(".rules-list")
+  listEl.innerHTML = ""
   rulesArr.forEach((rule, index) => {
     const tryNextBtn = document.createElement("button")
     tryNextBtn.classList.add("try-next-btn")
