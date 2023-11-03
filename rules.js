@@ -45,12 +45,13 @@ const nakedSingle = (allUnitsSquares, focusTarget, inputCharacter) => {
         focusTarget(solutionSquareNumber)
 
         inputCharacter(i.toString())
-        return
+        return true
       }
       instanceCount = 0
     }
     if (unitCount == allUnitsSquares.length) {
       console.log("nothing")
+      return false
     }
   }
 }

@@ -44,7 +44,7 @@ body {
   text-align: center;
 }
 
-.grid {
+.board {
   user-select: none;
   grid-area: grid;
   display: grid;
@@ -70,7 +70,7 @@ body {
 }
 
 /* grid children */
-.threebythree {
+.box {
   display: grid;
   place-items: center;
   grid-template-columns: auto auto auto;
@@ -94,7 +94,7 @@ body {
   position: relative;
 }
 
-.square-number {
+.entry {
   font-size: 1em;
   display: flex;
   justify-content: center;
