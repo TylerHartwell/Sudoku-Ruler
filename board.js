@@ -6,9 +6,11 @@ export const boardData = {
   allCandidates: []
 }
 
-initializeBoardData()
+resetBoardData()
 
-function initializeBoardData() {
+export function resetBoardData() {
+  boardData.isSet = false
+  boardData.candidatesOn = false
   boardData.allBoxes = createBoxes()
   boardData.allEntries = getAllEntries()
   boardData.allCandidates = getAllCandidates()
@@ -16,7 +18,7 @@ function initializeBoardData() {
 
 export function createBoardHTML() {
   const boardEl = document.querySelector(".board")
-
+  boardEl.innerHTML = ""
   boardData.allBoxes.forEach(box => {
     const boxEl = document.createElement("div")
     boxEl.classList.add("box")
@@ -84,7 +86,7 @@ function createSquares(b) {
       entry: {
         squareN: squareId,
         solution: "0",
-        shownValue: "0",
+        shownValue: "",
         isHighlighted: false,
         isLocked: false
       },

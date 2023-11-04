@@ -1,4 +1,4 @@
-import { boardData, createBoardHTML } from "./board.js"
+import { boardData, createBoardHTML, resetBoardData } from "./board.js"
 import { createRulesHTML, rulesArr } from "./rules.js"
 
 createBoardHTML()
@@ -14,7 +14,7 @@ document.body.addEventListener("click", e => {
   if (e.shiftKey) {
     if (e.target.classList.contains("candidate")) {
       e.target.textContent = ""
-      refreshCandidates()
+      refreshAllCandidatesDisplay()
     }
   }
 
@@ -75,7 +75,7 @@ document.body.addEventListener("keydown", e => {
 
         if (previousValue) {
           checkCandidates(previousValue, e.target.parentElement)
-          refreshCandidates()
+          refreshAllCandidatesDisplay()
         }
         if (!checkLocallyValidPlacement(e.key, e.target.parentElement, false)) {
           e.target.classList.add("wrong")
@@ -88,7 +88,8 @@ document.body.addEventListener("keydown", e => {
         }
 
         checkCandidates(e.key, e.target.parentElement)
-        refreshCandidates()
+        eliminateCandidatesOf(e.target)
+        refreshAllCandidatesDisplay()
 
         refreshAllHighlights()
 
@@ -105,7 +106,7 @@ document.body.addEventListener("keydown", e => {
         if (previousValue) {
           e.target.textContent = ""
           checkCandidates(previousValue, e.target.parentElement)
-          refreshCandidates()
+          refreshAllCandidatesDisplay()
           unhighlightEls([e.target])
         }
 
@@ -143,7 +144,7 @@ const inputCharacter = character => {
   if (/[1-9]/.test(character)) {
     document.activeElement.textContent = character
     checkCandidates(character, document.activeElement.parentElement)
-    refreshCandidates()
+    refreshAllCandidatesDisplay()
     refreshAllHighlights()
   }
 }
@@ -223,32 +224,6 @@ function inputGridString() {
   gridStringInput.value = ""
 }
 
-function refreshCandidates() {
-  allCandidateEls.forEach(candidateEl => {
-    const boxN = candidateEl.dataset.boxN
-    const squareN = candidateEl.dataset.squareN
-    const number = candidateEl.dataset.number
-    const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
-    const candidateSquare = candidateBox.boxSquares.find(
-      square => square.squareId == squareN
-    )
-    const candidateObj = candidateSquare.squareCandidates.find(
-      candidate => candidate.number == number
-    )
-    if (!candidateObj.eliminated && boardData.candidatesOn) {
-      candidateEl.classList.remove("hidden")
-    } else {
-      candidateEl.classList.add("hidden")
-    }
-  })
-}
-
-function toggleCandidates() {
-  clearAnyWrong()
-  boardData.candidatesOn = !boardData.candidatesOn
-  refreshCandidates()
-}
-
 function getSquaresSeenBy(squareEl) {
   const rowSquares = Array.from(
     document.querySelectorAll(`.square[data-row-n='${squareEl.dataset.rowN}']`)
@@ -271,30 +246,16 @@ function checkCandidates(number, squareEl) {
 
   squaresToCheck.forEach(square => {
     if (square.dataset.place === squareEl.dataset.place) {
-      Array.from(square.querySelectorAll(".candidate")).forEach(candidate => {
-        setTextOfCandidate(candidate)
+      Array.from(square.querySelectorAll(".candidate")).forEach(candidateEl => {
+        updateCandidateElimination(candidateEl)
       })
     } else {
-      const matchingCandidate = square.querySelector(
+      const matchingCandidateEl = square.querySelector(
         `.candidate[data-entry="${number}"]`
       )
-      setTextOfCandidate(matchingCandidate)
+      updateCandidateElimination(matchingCandidateEl)
     }
   })
-}
-
-function setTextOfCandidate(candidate) {
-  if (
-    checkLocallyValidPlacement(
-      candidate.dataset.number,
-      candidate.parentElement,
-      false
-    )
-  ) {
-    candidate.textContent = candidate.dataset.number
-  } else {
-    candidate.textContent = ""
-  }
 }
 
 function movePlaceBy(numPlaces) {
@@ -311,7 +272,7 @@ function clearAnyWrong() {
   if (el) {
     el.classList.remove("wrong")
     el.textContent = ""
-    refreshCandidates()
+    refreshAllCandidatesDisplay()
   }
 }
 
@@ -355,24 +316,94 @@ function setGrid() {
 }
 
 function clearBoard() {
-  boardData.isSet = false
-  boardData.candidatesOn = false
-  // grid.innerHTML = ""
+  resetBoardData()
+
   unhighlightEls(allPadNumEls)
 }
 
+///////////////////////
+
+function eliminateCandidatesOf(entryEl) {
+  const squareCandidatesObjs = getSquareCandidatesOf(entryEl)
+  squareCandidatesObjs.forEach(squareCandidateObj => {
+    squareCandidateObj.eliminated = true
+  })
+}
+
+function getSquareCandidatesOf(entryEl) {
+  const boxN = entryEl.dataset.boxN
+  const squareN = entryEl.dataset.squareN
+
+  const entryBox = boardData.allBoxes.find(box => box.boxId == boxN)
+  const entrySquare = entryBox.boxSquares.find(
+    square => square.squareId == squareN
+  )
+
+  const squareCandidatesObjs = entrySquare.squareCandidates
+
+  return squareCandidatesObjs
+}
+
+function updateCandidateElimination(candidateEl) {
+  if (
+    !checkLocallyValidPlacement(
+      candidateEl.dataset.number,
+      candidateEl.parentElement,
+      false
+    )
+  ) {
+    getCandidateObj(candidateEl).eliminated = true
+  }
+}
+
 function getAllUnitSquaresEls() {
-  let allUnitSquares = []
+  let allUnitSquaresEls = []
   for (let i = 1; i <= 9; i++) {
-    allUnitSquares.push(
+    allUnitSquaresEls.push(
       Array.from(document.querySelectorAll(`.square[data-row-n="${i}"]`))
     )
-    allUnitSquares.push(
+    allUnitSquaresEls.push(
       Array.from(document.querySelectorAll(`.square[data-col-n="${i}"]`))
     )
-    allUnitSquares.push(
+    allUnitSquaresEls.push(
       Array.from(document.querySelectorAll(`.square[data-box-n="${i}"]`))
     )
   }
-  return allUnitSquares
+  return allUnitSquaresEls
+}
+
+function getCandidateObj(candidateEl) {
+  const boxN = candidateEl.dataset.boxN
+  const squareN = candidateEl.dataset.squareN
+  const number = candidateEl.dataset.number
+  const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
+  const candidateSquare = candidateBox.boxSquares.find(
+    square => square.squareId == squareN
+  )
+  const candidateObj = candidateSquare.squareCandidates.find(
+    candidate => candidate.number == number
+  )
+  return candidateObj
+}
+
+function refreshCandidateDisplay(candidateEl) {
+  const candidateObj = getCandidateObj(candidateEl)
+
+  candidateEl.classList.toggle(
+    "hidden",
+    candidateObj.eliminated || !boardData.candidatesOn
+  )
+  candidateEl.classList.toggle("highlight", candidateObj.isHighlighted)
+}
+
+function refreshAllCandidatesDisplay() {
+  allCandidateEls.forEach(candidateEl => {
+    refreshCandidateDisplay(candidateEl)
+  })
+}
+
+function toggleCandidates() {
+  clearAnyWrong()
+  boardData.candidatesOn = !boardData.candidatesOn
+  refreshAllCandidatesDisplay()
 }
