@@ -74,6 +74,7 @@ document.body.addEventListener("keydown", e => {
         }
         unhighlightEls([e.target])
         entry.shownValue = e.key
+        refreshEntryEl(e.target)
 
         if (previousValue) {
           checkCandidates(previousValue, e.target.parentElement)
@@ -107,6 +108,7 @@ document.body.addEventListener("keydown", e => {
       ) {
         if (previousValue) {
           entry.shownValue = ""
+          refreshEntryEl(e.target)
           checkCandidates(previousValue, e.target.parentElement)
           refreshAllCandidatesDisplay()
           unhighlightEls([e.target])
@@ -227,7 +229,7 @@ function checkCandidates(number, squareEl) {
   const squaresToCheck = getSquareElPeersOf(squareEl)
 
   squaresToCheck.forEach(square => {
-    if (square.dataset.place === squareEl.dataset.place) {
+    if (square.dataset.squareId === squareEl.dataset.squareId) {
       Array.from(square.querySelectorAll(".candidate")).forEach(candidateEl => {
         updateCandidateElimination(candidateEl)
       })
@@ -282,18 +284,19 @@ function getEntryObj(entryEl) {
 function setGrid() {
   if (boardData.isSet) return
   allEntryEls.forEach(entryEl => {
-    const entryObj = getEntryObj(entryEl)
     if (entryObj.shownValue != "") {
       entryObj.isLocked = true
-      refreshEntryEl(entryObj, entryEl)
+      refreshEntryEl(entryEl)
     }
   })
   boardData.isSet = true
 }
 
-function refreshEntryEl(entryObj, entryEl) {
+function refreshEntryEl(entryEl) {
+  const entryObj = getEntryObj(entryEl)
   entryEl.contentEditable = !entryObj.isLocked
   entryEl.classList.toggle("set", entryObj.isLocked)
+  entryEl.textContent = entryObj.shownValue
 }
 
 function clearBoard() {
