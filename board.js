@@ -82,12 +82,9 @@ function createSquares(b) {
       colN: colN,
       boxN: b,
       squareId: squareId,
-      isHighlighted: false,
       entry: {
         squareN: squareId,
-        solution: "0",
         shownValue: "",
-        isHighlighted: false,
         isLocked: false
       },
       squareCandidates: createCandidates(squareId)
@@ -103,7 +100,6 @@ function createCandidates(squareId) {
     const candidate = {
       squareN: squareId,
       number: c.toString(),
-      isHighlighted: false,
       eliminated: false
     }
     squareCandidates.push(candidate)

@@ -25,13 +25,14 @@ document.body.addEventListener("click", e => {
 
   if (e.target.classList.contains("toggle-candidates-btn")) {
     toggleCandidates()
+    refreshAllCandidatesDisplay()
   }
   if (e.target.classList.contains("entry")) {
     focusTarget(e.target)
   }
   if (e.target.classList.contains("clear-grid-btn")) {
     if (confirm("clear all?")) {
-      clearBoard()
+      resetAll()
     }
   }
   if (e.target.classList.contains("input-grid-string-btn")) {
@@ -70,60 +71,44 @@ document.body.addEventListener("keydown", e => {
 
     if (!entryObj.isLocked) {
       const previousValue = entryObj.shownValue
-      if (/[1-9]/.test(e.key) && !e.repeat) {
+      if (isDeleting(e.key) || (/[1-9]/.test(e.key) && !e.repeat)) {
         if (previousValue == e.key) {
           return
         }
 
         if (previousValue) {
-          removeEntryValue(entryObj, entryEl)
+          removeEntryValue(entryObj)
           updateCandidateEliminationOfPeers(
             previousValue,
             entryEl.parentElement
           )
+          unhighlightEls([entryEl])
         }
 
-        // unhighlightEls([e.target])
+        if (/[1-9]/.test(e.key) && !e.repeat) {
+          if (!isLocallyValidPlacement(e.key, entryEl.parentElement, false)) {
+            entryEl.textContent = e.key
+            entryEl.classList.add("wrong")
+            return
+          }
 
-        if (!checkLocallyValidPlacement(e.key, entryEl.parentElement, false)) {
-          entryEl.textContent = e.key
-          entryEl.classList.add("wrong")
-          return
+          inputCharacter(e.key)
+          updateCandidateEliminationOfPeers(e.key, entryEl.parentElement)
+
+          if (
+            document
+              .querySelector(`.pad${e.key}`)
+              .classList.contains("highlight")
+          ) {
+            highlightEls([entryEl])
+          }
         }
-        inputCharacter(e.key)
-        updateCandidateEliminationOfPeers(e.key, entryEl.parentElement)
+
         refreshEntryEl(entryEl)
-
-        if (
-          document.querySelector(`.pad${e.key}`).classList.contains("highlight")
-        ) {
-          highlightEls([entryEl])
-        }
-        // refreshAllHighlights()
-
-        if (!boardData.isSet) movePlaceBy(1)
-        return
       }
 
-      if (
-        e.key === "0" ||
-        e.key === "Backspace" ||
-        e.key === "Delete" ||
-        e.key === "."
-      ) {
-        if (previousValue) {
-          removeEntryValue(entryObj, entryEl)
-          eliminateCandidatesOf(entryEl, false)
-          updateCandidateEliminationOfPeers(
-            previousValue,
-            entryEl.parentElement
-          )
-          //unhighlightEls([entryEl])
-        }
-
-        if (!boardData.isSet) movePlaceBy(1)
-        return
-      }
+      if (!boardData.isSet) movePlaceBy(1)
+      return
     }
 
     if (e.key === "ArrowUp" || e.key === "w") {
@@ -146,59 +131,9 @@ document.body.addEventListener("keydown", e => {
   }
 })
 
-// function tryNextSolve(ruleItem) {
-//   console.log("try next solve")
-//   rulesArr[[...ruleItem.parentElement.children].indexOf(ruleItem)](
-//     allUnitSquaresEls,
-//     focusTarget,
-//     inputCharacter
-//   )
-// }
-
-// function refreshAllHighlights() {
-//   allPadNumEls.forEach(padNumber => {
-//     refreshHighlightsOf(padNumber)
-//   })
-// }
-
-// function refreshHighlightsOf(padNumber) {
-//   const padNumIsHighlighted = padNumber.classList.contains("highlight")
-//   const number = padNumber.textContent
-//   const matchingEntryEls = allEntryEls.filter(entryEl => {
-//     return getEntryObj(entryEl).shownValue === number
-//   })
-//   const matchingCandidateEls = allCandidateEls.filter(candidateEl => {
-//     return getCandidateObj(candidateEl).number === number
-//   })
-//   const matchingEls = [...matchingCandidateEls, ...matchingEntryEls]
-
-//   matchingEls.forEach(el => {
-//     padNumIsHighlighted ? highlightEls([el]) : unhighlightEls([el])
-//   })
-// }
-
-// function toggleHighlight(target) {
-//   if (!target.classList.contains("highlight")) {
-//     unhighlightEls(allPadNumEls)
-//     highlightEls([target])
-//   } else {
-//     unhighlightEls([target])
-//   }
-
-//   refreshAllHighlights()
-// }
-
-// function highlightEls(elArr) {
-//   elArr.forEach(el => {
-//     el.classList.add("highlight")
-//   })
-// }
-
-// function unhighlightEls(elArr) {
-//   elArr.forEach(el => {
-//     el.classList.remove("highlight")
-//   })
-// }
+function isDeleting(key) {
+  return key === "0" || key === "Backspace" || key === "Delete" || key === "."
+}
 
 // function inputGridString() {
 //   const gridStringInput = document.querySelector(".grid-string")
@@ -208,15 +143,12 @@ document.body.addEventListener("keydown", e => {
 //     gridStringInput.value = ""
 //     return
 //   }
-
 //   gridString.split("").forEach((character, index) => {
 //     setTimeout(() => {
 //       const squareNumberFocus = document.querySelector(
 //         `.square[data-square-id='${(index + 1).toString()}'] .entry`
 //       )
-
 //       focusTarget(squareNumberFocus)
-
 //       inputCharacter(character)
 //       if (index + 1 == 81) setGrid()
 //     }, 10 * (index + 1))
@@ -224,37 +156,44 @@ document.body.addEventListener("keydown", e => {
 //   gridStringInput.value = ""
 // }
 
-// function setGrid() {
-//   if (boardData.isSet) return
-//   allEntryEls.forEach(entryEl => {
-//     if (entryObj.shownValue != "") {
-//       entryObj.isLocked = true
-//       refreshEntryEl(entryEl)
-//     }
-//   })
-//   boardData.isSet = true
-// }
-
-// function clearBoard() {
-//   resetBoardData()
-//   unhighlightEls(allPadNumEls)
+// function tryNextSolve(ruleItem) {
+//   console.log("try next solve")
+//   rulesArr[[...ruleItem.parentElement.children].indexOf(ruleItem)](
+//     allUnitSquaresEls,
+//     focusTarget,
+//     inputCharacter
+//   )
 // }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-function removeEntryValue(entryObj, entryEl) {
-  entryObj.shownValue = ""
-  entryEl.textContent = entryObj.shownValue
+function setGrid() {
+  if (boardData.isSet) return
+  allEntryEls.forEach(entryEl => {
+    const entryObj = getEntryObj(entryEl)
+    if (entryObj.shownValue != "") {
+      entryObj.isLocked = true
+      refreshEntryEl(entryEl)
+    }
+  })
+  boardData.isSet = true
+}
+
+function resetAll() {
+  resetBoardData()
+  unhighlightEls(allPadNumEls)
+  unhighlightEls(allEntryEls)
+  unhighlightEls(allCandidateEls)
+  allEntryEls.forEach(entryEl => {
+    refreshEntryEl(entryEl)
+  })
+  refreshAllCandidatesDisplay()
 }
 
 function inputCharacter(character) {
   if (/[1-9]/.test(character)) {
     getEntryObj(document.activeElement).shownValue = character
-    updateCandidateEliminationOfPeers(
-      character,
-      document.activeElement.parentElement
-    )
   }
 }
 
@@ -277,34 +216,30 @@ function updateCandidateEliminationOfPeers(number, squareEl) {
     }
   })
 }
+/////////////// Change Data Only
 
-function eliminateCandidatesOf(entryEl, eliminate = true) {
-  const squareCandidatesObjs = getSquareCandidateObjsOf(entryEl)
-  squareCandidatesObjs.forEach(squareCandidateObj => {
-    squareCandidateObj.eliminated = eliminate
-  })
+function removeEntryValue(entryObj) {
+  entryObj.shownValue = ""
 }
 
 function updateCandidateElimination(candidateEl) {
-  getCandidateObj(candidateEl).eliminated = !checkLocallyValidPlacement(
+  getCandidateObj(candidateEl).eliminated = !isLocallyValidPlacement(
     candidateEl.dataset.number,
     candidateEl.parentElement,
     true
   )
 }
 
-function checkLocallyValidPlacement(number, squareEl, includeSelf = true) {
+function isLocallyValidPlacement(number, squareEl, includeSelf = true) {
   const squareElPeers = getSquareElPeersOf(squareEl)
   const entryEl = squareEl.querySelector(".entry")
   const entryObj = getEntryObj(entryEl)
   if (entryObj.shownValue) {
     return false
   }
-
   if (isAlreadyIn(number, squareElPeers, squareEl, includeSelf)) {
     return false
   }
-
   return true
 }
 
@@ -322,15 +257,7 @@ function isAlreadyIn(number, squareElPeers, squareEl, includeSelf) {
       return isIn
     }
   }
-
   return isIn
-}
-
-function refreshEntryEl(entryEl) {
-  const entryObj = getEntryObj(entryEl)
-  entryEl.contentEditable = !entryObj.isLocked
-  entryEl.classList.toggle("set", entryObj.isLocked)
-  entryEl.textContent = entryObj.shownValue
 }
 
 function getEntryObj(entryEl) {
@@ -342,6 +269,79 @@ function getEntryObj(entryEl) {
   )
   const entryObj = entrySquare.entry
   return entryObj
+}
+
+function getCandidateObj(candidateEl) {
+  const boxN = candidateEl.dataset.boxN
+  const squareN = candidateEl.dataset.squareN
+  const number = candidateEl.dataset.number
+  const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
+  const candidateSquare = candidateBox.boxSquares.find(
+    square => square.squareId == squareN
+  )
+  const candidateObj = candidateSquare.squareCandidates.find(
+    candidate => candidate.number == number
+  )
+  return candidateObj
+}
+
+function toggleCandidates() {
+  boardData.candidatesOn = !boardData.candidatesOn
+}
+
+////////////////////// Change DOM Only
+function refreshAllCandidatesDisplay() {
+  allCandidateEls.forEach(candidateEl => {
+    refreshCandidateDisplay(candidateEl)
+  })
+}
+
+function refreshCandidateDisplay(candidateEl) {
+  const candidateObj = getCandidateObj(candidateEl)
+  candidateEl.classList.toggle(
+    "hidden",
+    candidateObj.eliminated || !boardData.candidatesOn
+  )
+}
+
+function refreshEntryEl(entryEl) {
+  const entryObj = getEntryObj(entryEl)
+  entryEl.contentEditable = !entryObj.isLocked
+  entryEl.classList.toggle("set", entryObj.isLocked)
+  entryEl.textContent = entryObj.shownValue
+}
+
+function highlightEls(elArr) {
+  elArr.forEach(el => {
+    el.classList.add("highlight")
+  })
+}
+
+function unhighlightEls(elArr) {
+  elArr.forEach(el => {
+    el.classList.remove("highlight")
+  })
+}
+
+const focusTarget = target => {
+  target.focus()
+}
+
+function movePlaceBy(numPlaces) {
+  const currentFocusedEl = document.activeElement
+  const currentSquareN = Number(currentFocusedEl.dataset.squareN)
+  const nextSquareN = (currentSquareN + numPlaces + 81) % 81 || 81
+  const selector = `.square[data-square-id="${nextSquareN.toString()}"] .entry`
+  const nextEl = document.querySelector(selector)
+  focusTarget(nextEl)
+}
+
+function clearAnyWrong() {
+  const wrongEntryEl = document.querySelector(".wrong")
+  if (wrongEntryEl) {
+    wrongEntryEl.classList.remove("wrong")
+    wrongEntryEl.textContent = ""
+  }
 }
 
 function getSquareElPeersOf(squareEl) {
@@ -377,71 +377,39 @@ function getAllUnitSquaresEls() {
   return allUnitSquaresEls
 }
 
-function getSquareCandidateObjsOf(entryEl) {
-  const boxN = entryEl.dataset.boxN
-  const squareN = entryEl.dataset.squareN
-
-  const entryBox = boardData.allBoxes.find(box => box.boxId == boxN)
-  const entrySquare = entryBox.boxSquares.find(
-    square => square.squareId == squareN
-  )
-
-  const squareCandidatesObjs = entrySquare.squareCandidates
-
-  return squareCandidatesObjs
-}
-
-function getCandidateObj(candidateEl) {
-  const boxN = candidateEl.dataset.boxN
-  const squareN = candidateEl.dataset.squareN
-  const number = candidateEl.dataset.number
-  const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
-  const candidateSquare = candidateBox.boxSquares.find(
-    square => square.squareId == squareN
-  )
-  const candidateObj = candidateSquare.squareCandidates.find(
-    candidate => candidate.number == number
-  )
-  return candidateObj
-}
-
-function refreshCandidateDisplay(candidateEl) {
-  const candidateObj = getCandidateObj(candidateEl)
-  candidateEl.classList.toggle(
-    "hidden",
-    candidateObj.eliminated || !boardData.candidatesOn
-  )
-  candidateEl.classList.toggle("highlight", candidateObj.isHighlighted)
-}
-
-function refreshAllCandidatesDisplay() {
-  allCandidateEls.forEach(candidateEl => {
-    refreshCandidateDisplay(candidateEl)
+function refreshAllHighlights() {
+  allPadNumEls.forEach(padNumEl => {
+    refreshHighlightsOf(padNumEl)
   })
 }
 
-function toggleCandidates() {
-  boardData.candidatesOn = !boardData.candidatesOn
-  refreshAllCandidatesDisplay()
+function refreshHighlightsOf(padNumEl) {
+  const isPadNumElHighlighted = padNumEl.classList.contains("highlight")
+  const number = padNumEl.textContent
+  const matchingEntryEls = allEntryEls.filter(entryEl => {
+    return getEntryObj(entryEl).shownValue === number
+  })
+  const matchingCandidateEls = allCandidateEls.filter(candidateEl => {
+    return getCandidateObj(candidateEl).number === number
+  })
+  const matchingEls = [...matchingCandidateEls, ...matchingEntryEls]
+  matchingEls.forEach(matchingEl => {
+    isPadNumElHighlighted
+      ? highlightEls([matchingEl])
+      : unhighlightEls([matchingEl])
+  })
 }
 
-const focusTarget = target => {
-  target.focus()
-}
-
-function movePlaceBy(numPlaces) {
-  const currentFocusedEl = document.activeElement
-  const currentSquareN = Number(currentFocusedEl.dataset.squareN)
-  const nextSquareN = (currentSquareN + numPlaces + 81) % 81 || 81
-  const selector = `.square[data-square-id="${nextSquareN.toString()}"] .entry`
-  const nextEl = document.querySelector(selector)
-  focusTarget(nextEl)
-}
-
-function clearAnyWrong() {
-  const wrongEntryEl = document.querySelector(".wrong")
-  if (wrongEntryEl) {
-    wrongEntryEl.classList.remove("wrong")
-    wrongEntryEl.textContent = ""
+function toggleHighlight(padNumEl) {
+  const previouslyHighlightedPadNumEl = document.querySelector(
+    ".pad-number.highlight"
+  )
+  if (previouslyHighlightedPadNumEl) {
+    unhighlightEls([previouslyHighlightedPadNumEl])
+    refreshHighlightsOf(previouslyHighlightedPadNumEl)
+  }
+  if (previouslyHighlightedPadNumEl != padNumEl) {
+    highlightEls([padNumEl])
+    refreshHighlightsOf(padNumEl)
   }
 }
