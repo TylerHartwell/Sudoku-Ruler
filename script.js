@@ -18,11 +18,9 @@ document.body.addEventListener("click", e => {
       refreshCandidateDisplay(candidateEl)
     }
   }
-
   if (e.target.classList.contains("try-next-btn")) {
     tryNextSolve(e.target.parentElement)
   }
-
   if (e.target.classList.contains("toggle-candidates-btn")) {
     toggleCandidates()
     refreshAllCandidatesDisplay()
@@ -61,21 +59,17 @@ document.body.addEventListener("keydown", e => {
     })
     return
   }
-
   if (e.target.classList.contains("entry")) {
     e.preventDefault()
     clearAnyWrong()
-
     const entryEl = e.target
     const entryObj = getEntryObj(entryEl)
-
     if (!entryObj.isLocked) {
       const previousValue = entryObj.shownValue
       if (isDeleting(e.key) || (/[1-9]/.test(e.key) && !e.repeat)) {
         if (previousValue == e.key) {
           return
         }
-
         if (previousValue) {
           removeEntryValue(entryObj)
           updateCandidateEliminationOfPeers(
@@ -84,17 +78,14 @@ document.body.addEventListener("keydown", e => {
           )
           unhighlightEls([entryEl])
         }
-
         if (/[1-9]/.test(e.key) && !e.repeat) {
           if (!isLocallyValidPlacement(e.key, entryEl.parentElement, false)) {
             entryEl.textContent = e.key
             entryEl.classList.add("wrong")
             return
           }
-
           inputCharacter(e.key)
           updateCandidateEliminationOfPeers(e.key, entryEl.parentElement)
-
           if (
             document
               .querySelector(`.pad${e.key}`)
@@ -103,10 +94,8 @@ document.body.addEventListener("keydown", e => {
             highlightEls([entryEl])
           }
         }
-
         refreshEntryEl(entryEl)
       }
-
       if (!boardData.isSet) movePlaceBy(1)
       return
     }
@@ -119,7 +108,6 @@ document.body.addEventListener("keydown", e => {
       movePlaceBy(-1)
       return
     }
-
     if (e.key === "ArrowDown" || e.key === "s") {
       movePlaceBy(9)
       return
@@ -135,35 +123,43 @@ function isDeleting(key) {
   return key === "0" || key === "Backspace" || key === "Delete" || key === "."
 }
 
-// function inputGridString() {
-//   const gridStringInput = document.querySelector(".grid-string")
-//   const gridString = gridStringInput.value
-//   if (gridString.length != 81) {
-//     console.log("not 81")
-//     gridStringInput.value = ""
-//     return
-//   }
-//   gridString.split("").forEach((character, index) => {
-//     setTimeout(() => {
-//       const squareNumberFocus = document.querySelector(
-//         `.square[data-square-id='${(index + 1).toString()}'] .entry`
-//       )
-//       focusTarget(squareNumberFocus)
-//       inputCharacter(character)
-//       if (index + 1 == 81) setGrid()
-//     }, 10 * (index + 1))
-//   })
-//   gridStringInput.value = ""
-// }
+function inputGridString() {
+  const gridStringInputEl = document.querySelector(".grid-string")
+  const gridString = gridStringInputEl.value
+  if (gridString.length != 81) {
+    console.log("not 81")
+    gridStringInputEl.value = ""
+    return
+  }
+  gridString.split("").forEach((character, index) => {
+    setTimeout(() => {
+      const entryEl = document.querySelector(
+        `.square[data-square-id='${(index + 1).toString()}'] .entry`
+      )
+      focusTarget(entryEl)
+      inputCharacter(character)
+      refreshEntryEl(entryEl)
+      if (/[1-9]/.test(character)) {
+        updateCandidateEliminationOfPeers(character, entryEl.parentElement)
+      }
+      if (index + 1 == 81) setGrid()
+    }, 10 * (index + 1))
+  })
+  gridStringInputEl.value = ""
+}
 
-// function tryNextSolve(ruleItem) {
-//   console.log("try next solve")
-//   rulesArr[[...ruleItem.parentElement.children].indexOf(ruleItem)](
-//     allUnitSquaresEls,
-//     focusTarget,
-//     inputCharacter
-//   )
-// }
+function tryNextSolve(ruleListItemEl) {
+  console.log("try next solve")
+  rulesArr[[...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)](
+    allUnitSquaresEls,
+    focusTarget,
+    inputCharacter,
+    getCandidateObj,
+    getEntryObj,
+    refreshEntryEl,
+    updateCandidateEliminationOfPeers
+  )
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -375,12 +371,6 @@ function getAllUnitSquaresEls() {
     )
   }
   return allUnitSquaresEls
-}
-
-function refreshAllHighlights() {
-  allPadNumEls.forEach(padNumEl => {
-    refreshHighlightsOf(padNumEl)
-  })
 }
 
 function refreshHighlightsOf(padNumEl) {

@@ -26,26 +26,43 @@ export function createRulesHTML() {
   })
 }
 
-const nakedSingle = (allUnitsSquares, focusTarget, inputCharacter) => {
+const nakedSingle = (
+  allUnitsSquares,
+  focusTarget,
+  inputCharacter,
+  getCandidateObj,
+  getEntryObj,
+  refreshEntryEl,
+  updateCandidateEliminationOfPeers
+) => {
   console.log("try naked single")
   let unitCount = 0
   for (const unit of allUnitsSquares) {
     unitCount++
     let instanceCount = 0
-    let solutionSquareNumber = null
+    let solutionEntryEl = null
     for (let i = 1; i <= 9; i++) {
-      for (const square of unit) {
-        if (!square.textContent) continue
-        if (square.querySelector(`.candidate[data-number="${i}"`).textContent) {
+      for (const squareEl of unit) {
+        if (getEntryObj(squareEl.querySelector(".entry")).shownValue) continue
+
+        if (
+          !getCandidateObj(
+            squareEl.querySelector(`.candidate[data-number="${i}"`)
+          ).eliminated
+        ) {
           instanceCount++
-          solutionSquareNumber = square.querySelector(".square-number")
+          solutionEntryEl = squareEl.querySelector(".entry")
         }
       }
       if (instanceCount === 1) {
         console.log("only one " + i)
-        focusTarget(solutionSquareNumber)
-
+        focusTarget(solutionEntryEl)
         inputCharacter(i.toString())
+        refreshEntryEl(solutionEntryEl)
+        updateCandidateEliminationOfPeers(
+          i.toString(),
+          solutionEntryEl.parentElement
+        )
         return true
       }
       instanceCount = 0
