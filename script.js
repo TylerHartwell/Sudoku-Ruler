@@ -19,7 +19,7 @@ document.body.addEventListener("click", e => {
     }
   }
   if (e.target.classList.contains("try-next-btn")) {
-    tryNextSolve(e.target.parentElement)
+    tryNextRule(e.target.parentElement)
   }
   if (e.target.classList.contains("toggle-candidates-btn")) {
     toggleCandidates()
@@ -76,6 +76,7 @@ document.body.addEventListener("keydown", e => {
             previousValue,
             entryEl.parentElement
           )
+          refreshEntryEl(entryEl)
           unhighlightEls([entryEl])
         }
         if (/[1-9]/.test(e.key) && !e.repeat) {
@@ -84,17 +85,8 @@ document.body.addEventListener("keydown", e => {
             entryEl.classList.add("wrong")
             return
           }
-          inputCharacter(e.key)
-          updateCandidateEliminationOfPeers(e.key, entryEl.parentElement)
-          if (
-            document
-              .querySelector(`.pad${e.key}`)
-              .classList.contains("highlight")
-          ) {
-            highlightEls([entryEl])
-          }
+          handleNewEntry(entryEl, e.key)
         }
-        refreshEntryEl(entryEl)
       }
       if (!boardData.isSet) movePlaceBy(1)
       return
@@ -119,6 +111,19 @@ document.body.addEventListener("keydown", e => {
   }
 })
 
+function tryNextRule(ruleListItemEl) {
+  console.log("try next solve")
+  rulesArr[[...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)](
+    allUnitSquaresEls,
+    getCandidateObj,
+    getEntryObj,
+    handleNewEntry
+  )
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+
 function isDeleting(key) {
   return key === "0" || key === "Backspace" || key === "Delete" || key === "."
 }
@@ -136,33 +141,26 @@ function inputGridString() {
       const entryEl = document.querySelector(
         `.square[data-square-id='${(index + 1).toString()}'] .entry`
       )
-      focusTarget(entryEl)
-      inputCharacter(character)
-      refreshEntryEl(entryEl)
-      if (/[1-9]/.test(character)) {
-        updateCandidateEliminationOfPeers(character, entryEl.parentElement)
-      }
+      handleNewEntry(entryEl, character)
       if (index + 1 == 81) setGrid()
     }, 10 * (index + 1))
   })
   gridStringInputEl.value = ""
 }
 
-function tryNextSolve(ruleListItemEl) {
-  console.log("try next solve")
-  rulesArr[[...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)](
-    allUnitSquaresEls,
-    focusTarget,
-    inputCharacter,
-    getCandidateObj,
-    getEntryObj,
-    refreshEntryEl,
-    updateCandidateEliminationOfPeers
-  )
+function handleNewEntry(entryEl, character) {
+  focusTarget(entryEl)
+  inputCharacter(character)
+  refreshEntryEl(entryEl)
+  if (/[1-9]/.test(character)) {
+    updateCandidateEliminationOfPeers(character, entryEl.parentElement)
+    if (
+      document.querySelector(`.pad${character}`).classList.contains("highlight")
+    ) {
+      highlightEls([entryEl])
+    }
+  }
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
 
 function setGrid() {
   if (boardData.isSet) return
@@ -286,6 +284,7 @@ function toggleCandidates() {
 }
 
 ////////////////////// Change DOM Only
+
 function refreshAllCandidatesDisplay() {
   allCandidateEls.forEach(candidateEl => {
     refreshCandidateDisplay(candidateEl)

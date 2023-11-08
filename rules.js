@@ -27,24 +27,21 @@ export function createRulesHTML() {
 }
 
 const nakedSingle = (
-  allUnitsSquares,
-  focusTarget,
-  inputCharacter,
+  allUnitsSquaresEls,
   getCandidateObj,
   getEntryObj,
-  refreshEntryEl,
-  updateCandidateEliminationOfPeers
+  handleNewEntry
 ) => {
   console.log("try naked single")
   let unitCount = 0
-  for (const unit of allUnitsSquares) {
+  for (const unitSquareEls of allUnitsSquaresEls) {
     unitCount++
     let instanceCount = 0
     let solutionEntryEl = null
     for (let i = 1; i <= 9; i++) {
-      for (const squareEl of unit) {
+      for (const squareEl of unitSquareEls) {
+        if (instanceCount > 1) break
         if (getEntryObj(squareEl.querySelector(".entry")).shownValue) continue
-
         if (
           !getCandidateObj(
             squareEl.querySelector(`.candidate[data-number="${i}"`)
@@ -56,22 +53,18 @@ const nakedSingle = (
       }
       if (instanceCount === 1) {
         console.log("only one " + i)
-        focusTarget(solutionEntryEl)
-        inputCharacter(i.toString())
-        refreshEntryEl(solutionEntryEl)
-        updateCandidateEliminationOfPeers(
-          i.toString(),
-          solutionEntryEl.parentElement
-        )
+        handleNewEntry(solutionEntryEl, i.toString())
         return true
       }
       instanceCount = 0
     }
-    if (unitCount == allUnitsSquares.length) {
+    if (unitCount == allUnitsSquaresEls.length) {
       console.log("nothing")
       return false
     }
   }
 }
 
-export const rulesArr = [nakedSingle]
+const intersectionRemoval = () => {}
+
+export const rulesArr = [nakedSingle, intersectionRemoval]
