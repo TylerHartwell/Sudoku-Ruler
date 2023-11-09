@@ -1,13 +1,13 @@
 import { boardData, createBoardHTML, resetBoardData } from "./board.js"
-import { createRulesHTML, rulesArr } from "./rules.js"
+import { createRulesHTML, rulesArr, assignAllUnits } from "./rules.js"
 
 createBoardHTML()
+assignAllUnits()
 createRulesHTML()
 
 let allEntryEls = Array.from(document.querySelectorAll(".entry"))
 let allCandidateEls = Array.from(document.querySelectorAll(".candidate"))
 let allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
-let allUnitSquaresEls = getAllUnitSquaresEls()
 
 document.body.addEventListener("click", e => {
   clearAnyWrong()
@@ -114,10 +114,10 @@ document.body.addEventListener("keydown", e => {
 function tryNextRule(ruleListItemEl) {
   console.log("try next solve")
   rulesArr[[...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)](
-    allUnitSquaresEls,
     getCandidateObj,
     getEntryObj,
-    handleNewEntry
+    handleNewEntry,
+    refreshCandidateDisplay
   )
 }
 
@@ -354,22 +354,6 @@ function getSquareElPeersOf(squareEl) {
     new Set([...rowSquares, ...colSquares, ...boxSquares])
   )
   return squaresSeenBy
-}
-
-function getAllUnitSquaresEls() {
-  let allUnitSquaresEls = []
-  for (let i = 1; i <= 9; i++) {
-    allUnitSquaresEls.push(
-      Array.from(document.querySelectorAll(`.square[data-row-n="${i}"]`))
-    )
-    allUnitSquaresEls.push(
-      Array.from(document.querySelectorAll(`.square[data-col-n="${i}"]`))
-    )
-    allUnitSquaresEls.push(
-      Array.from(document.querySelectorAll(`.square[data-box-n="${i}"]`))
-    )
-  }
-  return allUnitSquaresEls
 }
 
 function refreshHighlightsOf(padNumEl) {

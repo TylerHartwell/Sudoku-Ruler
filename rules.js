@@ -1,3 +1,5 @@
+let allUnits
+
 export function createRulesHTML() {
   const listEl = document.querySelector(".rules-list")
   listEl.innerHTML = ""
@@ -26,20 +28,36 @@ export function createRulesHTML() {
   })
 }
 
+export function assignAllUnits() {
+  let allUnitsConstruct = []
+  for (let i = 1; i <= 9; i++) {
+    allUnitsConstruct.push(
+      Array.from(document.querySelectorAll(`.square[data-row-n="${i}"]`))
+    )
+    allUnitsConstruct.push(
+      Array.from(document.querySelectorAll(`.square[data-col-n="${i}"]`))
+    )
+    allUnitsConstruct.push(
+      Array.from(document.querySelectorAll(`.square[data-box-n="${i}"]`))
+    )
+  }
+  allUnits = allUnitsConstruct
+}
+
 const nakedSingle = (
-  allUnitsSquaresEls,
   getCandidateObj,
   getEntryObj,
-  handleNewEntry
+  handleNewEntry,
+  refreshCandidateDisplay
 ) => {
   console.log("try naked single")
   let unitCount = 0
-  for (const unitSquareEls of allUnitsSquaresEls) {
+  for (const unit of allUnits) {
     unitCount++
     let instanceCount = 0
     let solutionEntryEl = null
     for (let i = 1; i <= 9; i++) {
-      for (const squareEl of unitSquareEls) {
+      for (const squareEl of unit) {
         if (instanceCount > 1) break
         if (getEntryObj(squareEl.querySelector(".entry")).shownValue) continue
         if (
@@ -58,13 +76,117 @@ const nakedSingle = (
       }
       instanceCount = 0
     }
-    if (unitCount == allUnitsSquaresEls.length) {
+    if (unitCount == allUnits.length) {
       console.log("nothing")
       return false
     }
   }
 }
 
-const intersectionRemoval = () => {}
+const intersectionRemoval = (
+  getCandidateObj,
+  getEntryObj,
+  handleNewEntry,
+  refreshCandidateDisplay
+) => {
+  console.log("try intersection removal")
+  let unitCount = 0
+  for (const unit of allUnits) {
+    unitCount++
+    const unitIndex = allUnits.indexOf(unit)
+    for (let i = 1; i <= 9; i++) {
+      const candidateObjArr = []
+      for (const squareEl of unit) {
+        const candidateObj = getCandidateObj(
+          squareEl.querySelector(`.candidate[data-number="${i}"`)
+        )
+        if (!candidateObj.eliminated) {
+          candidateObjArr.push(candidateObj)
+          if (candidateObjArr.length > 3) break
+        }
+      }
+      if (candidateObjArr.length > 1 && candidateObjArr.length < 4) {
+        const unitTypes = ["row", "col", "box"]
+        let currentUnitType = unitTypes[unitIndex % 3]
+        let rowNOfFirst = candidateObjArr[0].rowN
+        let colNOfFirst = candidateObjArr[0].colN
+        let boxNOfFirst = candidateObjArr[0].boxN
+        let peerUnitType
+        let peerUnitIndex
+        let hasPeerUnit = false
+        for (const unitType of unitTypes) {
+          if (currentUnitType == unitType) continue
+          if (unitType == "row") {
+            if (
+              candidateObjArr.every(candidateObj => {
+                return candidateObj.rowN === rowNOfFirst
+              })
+            ) {
+              hasPeerUnit = true
+            }
+            if (hasPeerUnit) {
+              peerUnitIndex = rowNOfFirst - 1
+              peerUnitType = unitType
+              console.log("matches first object row")
+              break
+            }
+          }
+          if (unitType == "col") {
+            if (
+              candidateObjArr.every(candidateObj => {
+                return candidateObj.colN === colNOfFirst
+              })
+            ) {
+              hasPeerUnit = true
+            }
+            if (hasPeerUnit) {
+              peerUnitIndex = colNOfFirst - 1
+              peerUnitType = unitType
+              console.log("matches first object col")
+              break
+            }
+          }
+          if (unitType == "box") {
+            if (
+              candidateObjArr.every(candidateObj => {
+                return candidateObj.boxN === boxNOfFirst
+              })
+            ) {
+              hasPeerUnit = true
+            }
+            if (hasPeerUnit) {
+              peerUnitIndex = boxNOfFirst - 1
+              peerUnitType = unitType
+              console.log("matches first object box")
+              break
+            }
+          }
+        }
+        console.log(peerUnitType)
+        if (peerUnitType) {
+          const offset = unitTypes.indexOf(peerUnitType)
+          const peerUnit = allUnits[peerUnitIndex * 3 + offset]
+          for (const squareEl of peerUnit) {
+            const candidateEl = squareEl.querySelector(
+              `.candidate[data-number="${i}"`
+            )
+            const candidateObj = getCandidateObj(candidateEl)
+            if (!candidateObjArr.includes(candidateObj)) {
+              candidateObj.eliminated = true
+              refreshCandidateDisplay(candidateEl)
+            }
+          }
+          console.log(candidateObjArr)
+        }
+
+        return
+      }
+    }
+    if (unitCount == allUnits.length) {
+      console.log("nothing")
+      return false
+    }
+  }
+}
 
 export const rulesArr = [nakedSingle, intersectionRemoval]

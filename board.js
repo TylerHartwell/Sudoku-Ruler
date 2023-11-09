@@ -87,17 +87,20 @@ function createSquares(b) {
         shownValue: "",
         isLocked: false
       },
-      squareCandidates: createCandidates(squareId)
+      squareCandidates: createCandidates(rowN, colN, b, squareId)
     }
     boxSquares.push(square)
   }
   return boxSquares
 }
 
-function createCandidates(squareId) {
+function createCandidates(rowN, colN, b, squareId) {
   let squareCandidates = []
   for (let c = 1; c <= 9; c++) {
     const candidate = {
+      rowN: rowN,
+      colN: colN,
+      boxN: b,
       squareN: squareId,
       number: c.toString(),
       eliminated: false
