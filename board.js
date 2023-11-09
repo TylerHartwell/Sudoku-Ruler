@@ -2,6 +2,7 @@ export const boardData = {
   isSet: false,
   candidatesOn: false,
   allBoxes: [],
+  allSquares: [],
   allEntries: [],
   allCandidates: []
 }
@@ -12,6 +13,7 @@ export function resetBoardData() {
   boardData.isSet = false
   boardData.candidatesOn = false
   boardData.allBoxes = createBoxes()
+  boardData.allSquares = getAllSquares()
   boardData.allEntries = getAllEntries()
   boardData.allCandidates = getAllCandidates()
 }
@@ -108,6 +110,16 @@ function createCandidates(rowN, colN, b, squareId) {
     squareCandidates.push(candidate)
   }
   return squareCandidates
+}
+
+function getAllSquares() {
+  let allSquares = []
+  boardData.allBoxes.forEach(box => {
+    box.boxSquares.forEach(square => {
+      allSquares.push(square)
+    })
+  })
+  return allSquares
 }
 
 function getAllEntries() {

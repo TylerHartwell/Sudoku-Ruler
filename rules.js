@@ -1,3 +1,5 @@
+import { boardData } from "./board.js"
+
 let allUnits
 
 export function createRulesHTML() {
@@ -203,4 +205,34 @@ const intersectionRemoval = (
   }
 }
 
-export const rulesArr = [nakedSingle, intersectionRemoval]
+const loneSingle = (
+  getCandidateObj,
+  getEntryObj,
+  handleNewEntry,
+  refreshCandidateDisplay
+) => {
+  console.log("try lone singles")
+  for (const square of boardData.allSquares) {
+    let candidatateCount = 0
+    let candidateNumber
+    for (const squareCandidate of square.squareCandidates) {
+      if (!squareCandidate.eliminated) {
+        candidatateCount++
+        if (candidatateCount > 1) break
+        candidateNumber = squareCandidate.number
+      }
+    }
+    if (candidatateCount > 1 || candidatateCount == 0) continue
+    const entryEl = document.querySelector(
+      `.entry[data-square-n="${square.squareId}"]`
+    )
+    console.log(entryEl)
+    handleNewEntry(entryEl, candidateNumber)
+
+    return true
+  }
+  console.log("no lone singles")
+  return false
+}
+
+export const rulesArr = [loneSingle, nakedSingle, intersectionRemoval]
