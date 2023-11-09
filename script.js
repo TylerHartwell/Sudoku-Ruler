@@ -112,13 +112,31 @@ document.body.addEventListener("keydown", e => {
 })
 
 function tryNextRule(ruleListItemEl) {
+  console.log("\n")
   console.log("try next solve")
-  rulesArr[[...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)](
-    getCandidateObj,
-    getEntryObj,
-    handleNewEntry,
-    refreshCandidateDisplay
-  )
+  const ruleSuccessful = rulesArr[
+    [...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)
+  ](getCandidateObj, getEntryObj, handleNewEntry, refreshCandidateDisplay)
+  if (ruleSuccessful) {
+    if (tryAutoSolves()) {
+      return true
+    }
+  }
+  return false
+}
+
+function tryAutoSolves() {
+  if (boardData.isSet) {
+    console.log("TRY AUTO")
+    const ruleList = document.querySelector(".rules-list")
+    const children = [...ruleList.children]
+    for (const child of children) {
+      if (child.querySelector("input").checked) {
+        if (tryNextRule(child)) return true
+      }
+    }
+    return false
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,6 +190,7 @@ function setGrid() {
     }
   })
   boardData.isSet = true
+  tryAutoSolves()
 }
 
 function resetAll() {

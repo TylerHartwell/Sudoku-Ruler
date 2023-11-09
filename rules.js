@@ -130,7 +130,6 @@ const intersectionRemoval = (
             if (hasPeerUnit) {
               peerUnitIndex = rowNOfFirst - 1
               peerUnitType = unitType
-              console.log("matches first object row")
               break
             }
           }
@@ -145,7 +144,6 @@ const intersectionRemoval = (
             if (hasPeerUnit) {
               peerUnitIndex = colNOfFirst - 1
               peerUnitType = unitType
-              console.log("matches first object col")
               break
             }
           }
@@ -160,13 +158,12 @@ const intersectionRemoval = (
             if (hasPeerUnit) {
               peerUnitIndex = boxNOfFirst - 1
               peerUnitType = unitType
-              console.log("matches first object box")
+
               break
             }
           }
         }
         if (!peerUnitType) continue
-        console.log(peerUnitType)
         if (peerUnitType) {
           const offset = unitTypes.indexOf(peerUnitType)
           const peerUnit = allUnits[peerUnitIndex * 3 + offset]
@@ -192,7 +189,7 @@ const intersectionRemoval = (
             hasPeerUnit = false
             continue
           } else {
-            console.log(candidateObjArr)
+            console.log("intersection eliminated")
             return true
           }
         }
@@ -226,9 +223,8 @@ const loneSingle = (
     const entryEl = document.querySelector(
       `.entry[data-square-n="${square.squareId}"]`
     )
-    console.log(entryEl)
     handleNewEntry(entryEl, candidateNumber)
-
+    console.log("lone single of ", candidateNumber)
     return true
   }
   console.log("no lone singles")
