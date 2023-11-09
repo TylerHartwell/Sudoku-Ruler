@@ -51,9 +51,8 @@ const nakedSingle = (
   refreshCandidateDisplay
 ) => {
   console.log("try naked single")
-  let unitCount = 0
   for (const unit of allUnits) {
-    unitCount++
+    const unitIndex = allUnits.indexOf(unit)
     let instanceCount = 0
     let solutionEntryEl = null
     for (let i = 1; i <= 9; i++) {
@@ -76,7 +75,7 @@ const nakedSingle = (
       }
       instanceCount = 0
     }
-    if (unitCount == allUnits.length) {
+    if (unitIndex == allUnits.length - 1) {
       console.log("nothing")
       return false
     }
@@ -90,13 +89,14 @@ const intersectionRemoval = (
   refreshCandidateDisplay
 ) => {
   console.log("try intersection removal")
-  let unitCount = 0
   for (const unit of allUnits) {
-    unitCount++
+    //////////
     const unitIndex = allUnits.indexOf(unit)
     for (let i = 1; i <= 9; i++) {
+      ///////////
       const candidateObjArr = []
       for (const squareEl of unit) {
+        /////////////
         const candidateObj = getCandidateObj(
           squareEl.querySelector(`.candidate[data-number="${i}"`)
         )
@@ -115,6 +115,7 @@ const intersectionRemoval = (
         let peerUnitIndex
         let hasPeerUnit = false
         for (const unitType of unitTypes) {
+          /////////////
           if (currentUnitType == unitType) continue
           if (unitType == "row") {
             if (
@@ -162,27 +163,40 @@ const intersectionRemoval = (
             }
           }
         }
+        if (!peerUnitType) continue
         console.log(peerUnitType)
         if (peerUnitType) {
           const offset = unitTypes.indexOf(peerUnitType)
           const peerUnit = allUnits[peerUnitIndex * 3 + offset]
+          let hasElimination = false
           for (const squareEl of peerUnit) {
+            /////////////
             const candidateEl = squareEl.querySelector(
               `.candidate[data-number="${i}"`
             )
             const candidateObj = getCandidateObj(candidateEl)
-            if (!candidateObjArr.includes(candidateObj)) {
+            if (
+              !candidateObjArr.includes(candidateObj) &&
+              !candidateObj.eliminated
+            ) {
+              hasElimination = true
               candidateObj.eliminated = true
               refreshCandidateDisplay(candidateEl)
             }
           }
-          console.log(candidateObjArr)
+          if (!hasElimination) {
+            peerUnitType
+            peerUnitIndex
+            hasPeerUnit = false
+            continue
+          } else {
+            console.log(candidateObjArr)
+            return true
+          }
         }
-
-        return
       }
     }
-    if (unitCount == allUnits.length) {
+    if (unitIndex == allUnits.length - 1) {
       console.log("nothing")
       return false
     }
