@@ -46,6 +46,35 @@ export function assignAllUnits() {
   allUnits = allUnitsConstruct
 }
 
+const loneSingle = (
+  getCandidateObj,
+  getEntryObj,
+  handleNewEntry,
+  refreshCandidateDisplay
+) => {
+  console.log("try lone singles")
+  for (const square of boardData.allSquares) {
+    let candidatateCount = 0
+    let candidateNumber
+    for (const squareCandidate of square.squareCandidates) {
+      if (!squareCandidate.eliminated) {
+        candidatateCount++
+        if (candidatateCount > 1) break
+        candidateNumber = squareCandidate.number
+      }
+    }
+    if (candidatateCount > 1 || candidatateCount == 0) continue
+    const entryEl = document.querySelector(
+      `.entry[data-square-n="${square.squareId}"]`
+    )
+    handleNewEntry(entryEl, candidateNumber)
+    console.log("lone single of ", candidateNumber)
+    return true
+  }
+  console.log("no lone singles")
+  return false
+}
+
 const nakedSingle = (
   getCandidateObj,
   getEntryObj,
@@ -202,33 +231,55 @@ const intersectionRemoval = (
   }
 }
 
-const loneSingle = (
+const nakedMultiples = (
   getCandidateObj,
   getEntryObj,
   handleNewEntry,
   refreshCandidateDisplay
 ) => {
-  console.log("try lone singles")
-  for (const square of boardData.allSquares) {
-    let candidatateCount = 0
-    let candidateNumber
-    for (const squareCandidate of square.squareCandidates) {
-      if (!squareCandidate.eliminated) {
-        candidatateCount++
-        if (candidatateCount > 1) break
-        candidateNumber = squareCandidate.number
-      }
+  console.log("try naked multiples")
+  for (const unit of allUnits) {
+    const unitIndex = allUnits.indexOf(unit)
+    let groupSize = 2
+
+    ////look at all the squares with groupSize or less candidates not eliminated and add to colection,
+    ////if that collection of squares is less than groupSize, increase groupSize and start over,
+    ////if collection >= groupSize, search collection for group of groupSize squares that share their only candidates from the same list of groupSize candidates,
+    ////eliminate all of those candidates from any other square in that unit and return true
+    ////if no elimination and group size < 4, increase groupSize and start over, else search next unit
+
+    //   let instanceCount = 0
+    //   let solutionEntryEl = null
+    //   for (let i = 1; i <= 9; i++) {
+    //     for (const squareEl of unit) {
+    //       if (instanceCount > 1) break
+    //       if (getEntryObj(squareEl.querySelector(".entry")).shownValue) continue
+    //       if (
+    //         !getCandidateObj(
+    //           squareEl.querySelector(`.candidate[data-number="${i}"`)
+    //         ).eliminated
+    //       ) {
+    //         instanceCount++
+    //         solutionEntryEl = squareEl.querySelector(".entry")
+    //       }
+    //     }
+    //     if (instanceCount === 1) {
+    //       console.log("only one " + i)
+    //       handleNewEntry(solutionEntryEl, i.toString())
+    //       return true
+    //     }
+    //     instanceCount = 0
+    //   }
+    if (unitIndex == allUnits.length - 1) {
+      console.log("nothing")
+      return false
     }
-    if (candidatateCount > 1 || candidatateCount == 0) continue
-    const entryEl = document.querySelector(
-      `.entry[data-square-n="${square.squareId}"]`
-    )
-    handleNewEntry(entryEl, candidateNumber)
-    console.log("lone single of ", candidateNumber)
-    return true
   }
-  console.log("no lone singles")
-  return false
 }
 
-export const rulesArr = [loneSingle, nakedSingle, intersectionRemoval]
+export const rulesArr = [
+  loneSingle,
+  nakedSingle,
+  intersectionRemoval,
+  nakedMultiples
+]
