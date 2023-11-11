@@ -238,11 +238,33 @@ const nakedMultiples = (
   refreshCandidateDisplay
 ) => {
   console.log("try naked multiples")
+
   for (const unit of allUnits) {
     const unitIndex = allUnits.indexOf(unit)
     let groupSize = 2
+    let groupOfSize = []
+    let groupOfAll = []
+    for (const squareEl of unit) {
+      const boxN = squareEl.dataset.boxN
+      const squareId = squareEl.dataset.squareId
+      const squareBox = boardData.allBoxes.find(box => box.boxId == boxN)
+      const squareObj = squareBox.boxSquares.find(
+        square => square.squareId == squareId
+      )
+      let squareCandidateGroup = []
+      for (const squareCandidate of squareObj.squareCandidates) {
+        if (!squareCandidate.eliminated) {
+          squareCandidateGroup.push(squareCandidate)
+        }
+      }
+      groupOfAll.push(squareCandidateGroup)
+    }
 
-    ////look at all the squares with groupSize or less candidates not eliminated and add to colection,
+    groupOfSize = groupOfAll.filter(
+      squareCandidateGroup => squareCandidateGroup.length <= groupSize
+    )
+
+    ////look at all the squares with groupSize or less candidates not eliminated and add to collection,
     ////if that collection of squares is less than groupSize, increase groupSize and start over,
     ////if collection >= groupSize, search collection for group of groupSize squares that share their only candidates from the same list of groupSize candidates,
     ////eliminate all of those candidates from any other square in that unit and return true
