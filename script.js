@@ -405,3 +405,11 @@ function toggleHighlight(padNumEl) {
     refreshHighlightsOf(padNumEl)
   }
 }
+
+//TODO
+//Fix layout for desktop
+//test if already workable for mobile
+//properly style
+//hide button/fields per context
+// name/describe rules better
+//reorganize functions
