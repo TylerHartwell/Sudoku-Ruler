@@ -231,13 +231,13 @@ const intersectionRemoval = (
   }
 }
 
-const nakedMultiples = (
+const nakedPairs = (
   getCandidateObj,
   getEntryObj,
   handleNewEntry,
   refreshCandidateDisplay
 ) => {
-  console.log("try naked multiples")
+  console.log("try naked pairs")
 
   for (const unit of allUnits) {
     const unitIndex = allUnits.indexOf(unit)
@@ -263,6 +263,21 @@ const nakedMultiples = (
     groupOfSize = groupOfAll.filter(
       squareCandidateGroup => squareCandidateGroup.length <= groupSize
     )
+
+    if (groupOfSize.length > 1) {
+      console.log(groupOfSize)
+      for (let i = 0; i < groupOfSize.length - 1; i++) {
+        for (let j = i + 1; j < groupOfSize.length; j++) {
+          if (
+            groupOfSize[i][0] == groupOfSize[j][0] &&
+            groupOfSize[i][1] == groupOfSize[j][1]
+          ) {
+            console.log("found pair", groupOfSize[i])
+            return true
+          }
+        }
+      }
+    }
 
     ////look at all the squares with groupSize or less candidates not eliminated and add to collection,
     ////if that collection of squares is less than groupSize, increase groupSize and start over,
@@ -303,5 +318,5 @@ export const rulesArr = [
   loneSingle,
   nakedSingle,
   intersectionRemoval,
-  nakedMultiples
+  nakedPairs
 ]
