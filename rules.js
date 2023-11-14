@@ -238,7 +238,7 @@ const nakedPairs = (
   refreshCandidateDisplay
 ) => {
   console.log("try naked pairs")
-
+  let hasElimination = false
   for (const unit of allUnits) {
     const unitIndex = allUnits.indexOf(unit)
     let groupSize = 2
@@ -257,56 +257,90 @@ const nakedPairs = (
           squareCandidateGroup.push(squareCandidate)
         }
       }
-      groupOfAll.push(squareCandidateGroup)
+      if (squareCandidateGroup.length > 0) {
+        groupOfAll.push(squareCandidateGroup)
+      }
     }
 
     groupOfSize = groupOfAll.filter(
       squareCandidateGroup => squareCandidateGroup.length <= groupSize
     )
 
-    if (groupOfSize.length > 1) {
-      console.log(groupOfSize)
+    if (groupOfSize.length >= groupSize) {
       for (let i = 0; i < groupOfSize.length - 1; i++) {
         for (let j = i + 1; j < groupOfSize.length; j++) {
           if (
-            groupOfSize[i][0] == groupOfSize[j][0] &&
-            groupOfSize[i][1] == groupOfSize[j][1]
+            groupOfSize[i][0].number == groupOfSize[j][0].number &&
+            groupOfSize[i][1].number == groupOfSize[j][1].number
           ) {
-            console.log("found pair", groupOfSize[i])
-            return true
+            const firstNumberOfPair = groupOfSize[i][0].number
+            const secondNumberOfPair = groupOfSize[i][1].number
+            const pair1SquareN = groupOfSize[i][0].squareN
+            const pair2SquareN = groupOfSize[j][0].squareN
+            if (groupOfSize[i][0].boxN == groupOfSize[j][0].boxN) {
+              //eliminate others from box if present
+              const unit = allUnits[groupOfSize[i][0].boxN * 3 - 1]
+              removeNakedPairCandidatesFrom(unit)
+            }
+            //eliminate others from unit if present
+            const unit = allUnits[unitIndex]
+            removeNakedPairCandidatesFrom(unit)
+
+            if (hasElimination) {
+              console.log("has elimination")
+              return true
+            }
+
+            function removeNakedPairCandidatesFrom(unit) {
+              for (const squareEl of unit) {
+                const boxN = squareEl.dataset.boxN
+                const squareId = squareEl.dataset.squareId
+                const squareBox = boardData.allBoxes.find(
+                  box => box.boxId == boxN
+                )
+                const squareObj = squareBox.boxSquares.find(
+                  square => square.squareId == squareId
+                )
+                if (
+                  squareObj.squareId != pair1SquareN &&
+                  squareObj.squareId != pair2SquareN
+                ) {
+                  if (
+                    !squareObj.squareCandidates[firstNumberOfPair - 1]
+                      .eliminated
+                  ) {
+                    hasElimination = true
+                    squareObj.squareCandidates[
+                      firstNumberOfPair - 1
+                    ].eliminated = true
+                    refreshCandidateDisplay(
+                      document.querySelector(
+                        `.candidate[data-number="${firstNumberOfPair}"][data-square-n="${squareId}"]`
+                      )
+                    )
+                  }
+                  if (
+                    !squareObj.squareCandidates[secondNumberOfPair - 1]
+                      .eliminated
+                  ) {
+                    hasElimination = true
+                    squareObj.squareCandidates[
+                      secondNumberOfPair - 1
+                    ].eliminated = true
+                    refreshCandidateDisplay(
+                      document.querySelector(
+                        `.candidate[data-number="${secondNumberOfPair}"][data-square-n="${squareId}"]`
+                      )
+                    )
+                  }
+                }
+              }
+            }
           }
         }
       }
     }
 
-    ////look at all the squares with groupSize or less candidates not eliminated and add to collection,
-    ////if that collection of squares is less than groupSize, increase groupSize and start over,
-    ////if collection >= groupSize, search collection for group of groupSize squares that share their only candidates from the same list of groupSize candidates,
-    ////eliminate all of those candidates from any other square in that unit and return true
-    ////if no elimination and group size < 4, increase groupSize and start over, else search next unit
-
-    //   let instanceCount = 0
-    //   let solutionEntryEl = null
-    //   for (let i = 1; i <= 9; i++) {
-    //     for (const squareEl of unit) {
-    //       if (instanceCount > 1) break
-    //       if (getEntryObj(squareEl.querySelector(".entry")).shownValue) continue
-    //       if (
-    //         !getCandidateObj(
-    //           squareEl.querySelector(`.candidate[data-number="${i}"`)
-    //         ).eliminated
-    //       ) {
-    //         instanceCount++
-    //         solutionEntryEl = squareEl.querySelector(".entry")
-    //       }
-    //     }
-    //     if (instanceCount === 1) {
-    //       console.log("only one " + i)
-    //       handleNewEntry(solutionEntryEl, i.toString())
-    //       return true
-    //     }
-    //     instanceCount = 0
-    //   }
     if (unitIndex == allUnits.length - 1) {
       console.log("nothing")
       return false
