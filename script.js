@@ -88,7 +88,7 @@ document.body.addEventListener("keydown", e => {
           handleNewEntry(entryEl, e.key)
         }
       }
-      if (!boardData.isSet) movePlaceBy(1)
+      if (!boardData.isSet && e.key !== "Shift") movePlaceBy(1)
       return
     }
 
