@@ -14,14 +14,14 @@
 }
 body {
   border: none;
-  background-color: antiquewhite;
+  background-color: rgb(140, 174, 207);
 }
 
 .container {
   margin: 20px auto;
   padding: 5px;
   border-color: blue;
-  width: 95vw;
+  max-width: 90vw;
   height: max-content;
   min-height: 200px;
   display: grid;
@@ -31,12 +31,13 @@ body {
     "rules grid grid"
     "controls numberpad numberpad";
   grid-template-rows: min-content minmax(auto, auto) min-content;
-  grid-template-columns: auto min-content min-content;
+  grid-template-columns: min-content min-content min-content;
 }
 
 .title {
   grid-area: title;
   text-align: center;
+  font-size: 30px;
 }
 
 .rules {
@@ -106,7 +107,7 @@ body {
 }
 
 .entry {
-  font-size: 1em;
+  font-size: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -143,7 +144,7 @@ body {
 }
 
 .set {
-  background-color: lightgray;
+  background-color: rgb(153, 165, 180);
 }
 
 .wrong {
@@ -151,7 +152,7 @@ body {
 }
 
 .highlight.candidate {
-  background-color: yellow;
+  background-color: rgb(248, 248, 120);
   font-weight: bold;
 }
 
@@ -166,5 +167,10 @@ body {
 }
 
 .candidate:hover {
-  background-color: red;
+  background-color: rgb(255, 83, 83);
+  font-weight: bold;
+}
+
+.entry:hover {
+  border: 1px solid rgb(80, 80, 80);
 }

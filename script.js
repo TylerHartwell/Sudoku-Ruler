@@ -86,6 +86,9 @@ document.body.addEventListener("keydown", e => {
             return
           }
           handleNewEntry(entryEl, e.key)
+          if (tryAutoSolves()) {
+            return true
+          }
         }
       }
       if (!boardData.isSet && e.key !== "Shift") movePlaceBy(1)
