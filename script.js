@@ -28,7 +28,7 @@ document.body.addEventListener("click", e => {
   if (e.target.classList.contains("entry")) {
     focusTarget(e.target)
   }
-  if (e.target.classList.contains("clear-grid-btn")) {
+  if (e.target.classList.contains("clear-all-btn")) {
     if (confirm("clear all?")) {
       resetAll()
     }
@@ -36,7 +36,7 @@ document.body.addEventListener("click", e => {
   if (e.target.classList.contains("input-grid-string-btn")) {
     inputGridString()
   }
-  if (e.target.classList.contains("set-grid-btn")) {
+  if (e.target.classList.contains("set-puzzle-btn")) {
     setGrid()
   }
   if (e.target.classList.contains("pad-number")) {
@@ -192,6 +192,9 @@ function setGrid() {
       refreshEntryEl(entryEl)
     }
   })
+  document.querySelector(".grid-string").classList.add("hidden")
+  document.querySelector(".input-grid-string-btn").classList.add("hidden")
+  document.querySelector(".set-puzzle-btn").classList.add("hidden")
   boardData.isSet = true
   tryAutoSolves()
 }

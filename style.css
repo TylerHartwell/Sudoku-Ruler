@@ -14,7 +14,7 @@
 }
 body {
   border: none;
-  background-color: rgb(140, 174, 207);
+  background-color: rgb(149, 176, 202);
 }
 
 .container {
@@ -25,13 +25,13 @@ body {
   height: max-content;
   min-height: 200px;
   display: grid;
-  gap: 5px;
+  /* gap: 5px; */
   grid-template-areas:
     "title title title"
     "rules grid grid"
     "controls numberpad numberpad";
-  grid-template-rows: min-content minmax(auto, auto) min-content;
-  grid-template-columns: min-content min-content min-content;
+  grid-template-rows: auto auto auto;
+  grid-template-columns: 30% 35% 35%;
 }
 
 .title {
@@ -47,11 +47,12 @@ body {
 }
 
 .board {
+  width: 100%;
   user-select: none;
   grid-area: grid;
   display: grid;
-  grid-template-columns: auto auto auto;
-  grid-template-rows: auto auto auto;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
   border: 2px solid black;
 }
 
@@ -87,6 +88,7 @@ body {
   grid-template-columns: auto auto auto;
   grid-template-rows: auto auto auto;
   border: 2px solid black;
+  aspect-ratio: 1;
 }
 
 .square {
@@ -133,9 +135,10 @@ body {
 }
 
 .control-buttons {
-  width: 100%;
   display: flex;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
 }
 
 /* style toggles */
@@ -173,4 +176,22 @@ body {
 
 .entry:hover {
   border: 1px solid rgb(80, 80, 80);
+}
+
+.grid-string {
+  width: 80%;
+}
+.input-grid-string-btn {
+  width: 20%;
+}
+.clear-all-btn {
+  width: min-content;
+  margin-right: auto;
+}
+.set-puzzle-btn {
+  width: 20%;
+}
+.toggle-candidates-btn {
+  width: min-content;
+  margin-left: auto;
 }
