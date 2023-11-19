@@ -38,12 +38,14 @@ body {
   grid-area: title;
   text-align: center;
   font-size: 30px;
+  border: none;
 }
 
 .rules {
   grid-area: rules;
   text-align: center;
-  border: 1px solid red;
+  border: none;
+  min-width: min-content;
 }
 
 .board {
@@ -62,6 +64,7 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  border: none;
 }
 
 .numberpad {
@@ -70,6 +73,7 @@ body {
   justify-content: space-around;
   align-items: center;
   font-size: 32px;
+  border: none;
 }
 .pad-number {
   width: 50px;
@@ -132,6 +136,7 @@ body {
 /* .control children */
 .controls-title {
   text-align: center;
+  border: none;
 }
 
 .control-buttons {
@@ -139,6 +144,8 @@ body {
   flex-wrap: wrap;
   justify-content: space-between;
   width: 100%;
+  border: none;
+  align-items: center;
 }
 
 /* style toggles */
@@ -180,18 +187,71 @@ body {
 
 .grid-string {
   width: 80%;
+  border: none;
+  height: 50px;
 }
 .input-grid-string-btn {
   width: 20%;
+  border: none;
+  border-radius: 10px;
+  margin: 2px 0;
+  box-shadow: black 0px 0px 3px;
 }
+
 .clear-all-btn {
   width: min-content;
+  margin: 2px;
   margin-right: auto;
+  border: none;
+  border-radius: 10px;
+  box-shadow: black 0px 0px 3px;
 }
+
 .set-puzzle-btn {
   width: 20%;
+  border: none;
+  border-radius: 10px;
+  margin: 2px;
+  box-shadow: black 0px 0px 3px;
 }
+
 .toggle-candidates-btn {
   width: min-content;
+  margin: 2px;
   margin-left: auto;
+  border: none;
+  border-radius: 10px;
+  box-shadow: black 0px 0px 3px;
+}
+
+.try-next-btn {
+  border: none;
+  border-radius: 10px;
+  margin: 2px;
+  box-shadow: black 0px 0px 3px;
+  white-space: nowrap;
+}
+
+.checkbox-label {
+  border: none;
+  margin-left: auto;
+  margin-right: 5px;
+  white-space: nowrap;
+}
+
+.rule-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 30px;
+  border: none;
+}
+
+.rules-list {
+  border: none;
+  margin: 0 10px;
+}
+
+.rules-title {
+  border: none;
 }

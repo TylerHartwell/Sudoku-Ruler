@@ -208,6 +208,9 @@ function resetAll() {
     refreshEntryEl(entryEl)
   })
   refreshAllCandidatesDisplay()
+  document.querySelector(".grid-string").classList.remove("hidden")
+  document.querySelector(".input-grid-string-btn").classList.remove("hidden")
+  document.querySelector(".set-puzzle-btn").classList.remove("hidden")
 }
 
 function inputCharacter(character) {

@@ -11,18 +11,20 @@ export function createRulesHTML() {
     tryNextBtn.textContent = "Try Next"
 
     const autoCheckbox = document.createElement("input")
+    autoCheckbox.classList.add("checkbox")
     autoCheckbox.type = "checkbox"
     autoCheckbox.id = "checkbox" + index + 1
 
     const checkboxLabel = document.createElement("label")
     checkboxLabel.htmlFor = "checkbox" + index + 1
     checkboxLabel.textContent = "Auto Solve:"
+    checkboxLabel.classList.add("checkbox-label")
 
     const li = document.createElement("li")
     li.classList.add("rule-item")
     li.id = "rule" + index + 1
-    li.textContent = rule.name
     li.appendChild(tryNextBtn)
+    li.appendChild(document.createTextNode(rule.name))
     li.appendChild(checkboxLabel)
     li.appendChild(autoCheckbox)
 
