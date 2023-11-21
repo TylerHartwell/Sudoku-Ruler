@@ -10,6 +10,14 @@ export function createRulesHTML() {
     tryNextBtn.classList.add("try-next-btn")
     tryNextBtn.textContent = "Try Next"
 
+    const ruleName = document.createElement("span")
+    ruleName.textContent = rule.name
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, function (str) {
+        return str.toUpperCase()
+      })
+    ruleName.classList.add("rule-name")
+
     const autoCheckbox = document.createElement("input")
     autoCheckbox.classList.add("checkbox")
     autoCheckbox.type = "checkbox"
@@ -24,7 +32,7 @@ export function createRulesHTML() {
     li.classList.add("rule-item")
     li.id = "rule" + index + 1
     li.appendChild(tryNextBtn)
-    li.appendChild(document.createTextNode(rule.name))
+    li.appendChild(ruleName)
     li.appendChild(checkboxLabel)
     li.appendChild(autoCheckbox)
 

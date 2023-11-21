@@ -6,37 +6,36 @@ body {
 .container {
   margin: 20px auto;
   padding: 5px;
-  min-width: min-content;
-  max-width: 90vw;
-  height: max-content;
-  min-height: 200px;
   display: grid;
-  /* gap: 5px; */
+  min-width: min-content;
+  max-width: max-content;
+  max-height: max-content;
   grid-template-areas:
-    "title title title"
-    "rules grid grid"
-    "controls numberpad numberpad";
-  grid-template-rows: auto max-content auto;
-  grid-template-columns: min-content max-content;
+    "title title"
+    "rules grid"
+    "controls numberpad";
+  grid-template-columns: minmax(30%, min-content) minmax(40%, 75vh);
+  border: 1px solid blue;
 }
 
 .title {
   grid-area: title;
   text-align: center;
-  font-size: 30px;
+  font-size: 2em;
   border: none;
+  height: auto;
 }
 
 .rules {
   grid-area: rules;
   text-align: center;
   border: none;
-  max-width: 400px;
+  max-width: min-content;
+  border: 1px solid red;
 }
 
 .board {
-  /* min-width: max-content; */
-  min-height: max-content;
+  /* max-height: max-content; */
   user-select: none;
   grid-area: grid;
   display: grid;
@@ -44,6 +43,7 @@ body {
   grid-template-rows: 1fr 1fr 1fr;
   border: 2px solid black;
   aspect-ratio: 1;
+  border: 1px solid red;
 }
 
 .controls {
@@ -53,21 +53,24 @@ body {
   justify-content: flex-start;
   align-items: center;
   border: none;
-  max-width: 400px;
+  width: auto;
+  border: 1px solid red;
 }
 
 .numberpad {
   grid-area: numberpad;
   display: flex;
   justify-content: space-around;
-  align-items: center;
-  font-size: 32px;
+  align-items: flex-start;
   border: none;
+  margin: auto 0;
+  border: 1px solid red;
 }
 .pad-number {
-  width: 50px;
+  width: 100%;
+  height: 100%;
   text-align: center;
-  border: none;
+  font-size: 32px;
   user-select: none;
 }
 .pad-number:hover {
@@ -102,7 +105,7 @@ body {
 }
 
 .entry {
-  font-size: clamp(40px, 4vw, 400px);
+  font-size: clamp(32px, 4vw, 64px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -113,7 +116,7 @@ body {
 }
 
 .candidate {
-  font-size: clamp(12px, 1.5vw, 400px);
+  font-size: clamp(4px, 90%, 20px);
   width: 95%;
   height: 95%;
   border: 1px dashed #0000ff22;
@@ -136,6 +139,7 @@ body {
   width: 100%;
   border: none;
   align-items: center;
+  position: relative;
 }
 
 /* style toggles */
@@ -176,20 +180,23 @@ body {
 }
 
 .grid-string {
-  width: 85%;
+  width: 100%;
   border: none;
-  height: 50px;
+  height: 2em;
+  font-size: 0.85em;
+  margin: 2px;
 }
 .input-grid-string-btn {
-  width: 15%;
+  width: 50%;
   border: none;
   border-radius: 10px;
-  margin: 2px 0;
+  margin: 2px 25%;
+  margin-bottom: 5px;
   box-shadow: black 0px 0px 3px;
 }
 
 .clear-all-btn {
-  width: min-content;
+  max-width: min-content;
   margin: 2px;
   margin-right: auto;
   border: none;
@@ -203,10 +210,14 @@ body {
   border-radius: 10px;
   margin: 2px;
   box-shadow: black 0px 0px 3px;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
 }
 
 .toggle-candidates-btn {
-  width: min-content;
+  max-width: min-content;
   margin: 2px;
   margin-left: auto;
   border: none;
@@ -214,26 +225,7 @@ body {
   box-shadow: black 0px 0px 3px;
 }
 
-.try-next-btn {
-  border: none;
-  border-radius: 10px;
-  margin: 2px;
-  box-shadow: black 0px 0px 3px;
-  white-space: nowrap;
-}
-
-.checkbox-label {
-  border: none;
-  margin-left: auto;
-  margin-right: 5px;
-  white-space: nowrap;
-}
-
-.rule-item {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  height: 30px;
+.rules-title {
   border: none;
 }
 
@@ -246,6 +238,54 @@ body {
   padding: 0;
 }
 
-.rules-title {
+.rule-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 30px;
   border: none;
+}
+
+.try-next-btn {
+  border: none;
+  border-radius: 10px;
+  margin: 2px;
+  box-shadow: black 0px 0px 3px;
+  white-space: nowrap;
+}
+
+.rule-name {
+  margin-left: 5px;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.checkbox-label {
+  border: none;
+  margin-left: auto;
+  margin-right: 5px;
+  white-space: nowrap;
+}
+.checkbox {
+  margin-left: 5px;
+}
+
+@media (max-width: 899px) {
+  body {
+    background-color: yellow;
+  }
+
+  .container {
+    grid-template-areas:
+      "title"
+      "grid"
+      "numberpad"
+      "rules"
+      "controls";
+    grid-template-columns: auto;
+  }
+
+  .rules {
+    max-width: 100%;
+  }
 }
