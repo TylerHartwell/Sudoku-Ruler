@@ -47,7 +47,7 @@ export function createBoardHTML() {
 
       square.squareCandidates.forEach(candidate => {
         const candidateEl = document.createElement("div")
-        candidateEl.classList.add("candidate", "hidden")
+        candidateEl.classList.add("candidate", "hidden", "scaleFont")
         candidateEl.dataset.number = candidate.number
         candidateEl.dataset.boxN = square.boxN
         candidateEl.dataset.squareN = square.squareId

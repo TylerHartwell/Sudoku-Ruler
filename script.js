@@ -9,6 +9,13 @@ let allEntryEls = Array.from(document.querySelectorAll(".entry"))
 let allCandidateEls = Array.from(document.querySelectorAll(".candidate"))
 let allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
 
+window.onload = () => {
+  scaleFont()
+}
+window.onresize = () => {
+  scaleFont()
+}
+
 document.body.addEventListener("click", e => {
   clearAnyWrong()
   if (e.shiftKey) {
@@ -312,6 +319,12 @@ function toggleCandidates() {
 }
 
 ////////////////////// Change DOM Only
+
+function scaleFont() {
+  let squareEl = document.querySelector(".square")
+  let scaledFontSize = squareEl.offsetWidth * 1
+  divs[i].style.fontSize = scaledFontSize + "px"
+}
 
 function refreshAllCandidatesDisplay() {
   allCandidateEls.forEach(candidateEl => {
