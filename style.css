@@ -16,7 +16,6 @@ body {
     "rules grid"
     "controls numberpad";
   grid-template-columns: minmax(30%, min-content) minmax(40%, 75vh);
-  border: 1px solid blue;
 }
 
 .title {
@@ -32,11 +31,9 @@ body {
   text-align: center;
   border: none;
   width: 100%;
-  border: 1px solid red;
 }
 
 .board {
-  /* max-height: max-content; */
   user-select: none;
   grid-area: grid;
   display: grid;
@@ -44,7 +41,6 @@ body {
   grid-template-rows: 1fr 1fr 1fr;
   border: 2px solid black;
   aspect-ratio: 1;
-  border: 1px solid red;
 }
 
 .controls {
@@ -55,7 +51,6 @@ body {
   align-items: center;
   border: none;
   width: auto;
-  border: 1px solid red;
 }
 
 .numberpad {
@@ -65,7 +60,6 @@ body {
   align-items: flex-start;
   border: none;
   margin: auto 0;
-  border: 1px solid red;
 }
 .pad-number {
   width: 100%;
@@ -92,8 +86,8 @@ body {
   width: 100%;
   height: 100%;
   display: grid;
-  place-items: center;
-  justify-content: space-evenly;
+  align-items: center;
+  justify-content: center;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   grid-template-areas:
@@ -106,25 +100,28 @@ body {
 }
 
 .entry {
-  font-size: clamp(2em, 4vw, 3em);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-.candidate {
-  font-size: clamp(2px, 90%, 100%);
-  width: 98%;
-  height: 98%;
-  border: 1px dashed #0000ff22;
+  font-size: 1em;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  border: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 0.1em;
+}
+
+.candidate {
+  font-size: 0.3em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border: 1px dashed #0000ff22;
+  width: 98%;
+  height: 98%;
+  padding-bottom: 0.1em;
 }
 
 /* .control children */

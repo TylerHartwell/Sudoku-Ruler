@@ -321,9 +321,11 @@ function toggleCandidates() {
 ////////////////////// Change DOM Only
 
 function scaleFont() {
-  let squareEl = document.querySelector(".square")
-  let scaledFontSize = squareEl.offsetWidth * 1
-  divs[i].style.fontSize = scaledFontSize + "px"
+  let squareEls = document.querySelectorAll(".square")
+  let squareSize = squareEls[0].offsetWidth
+  for (let i = 0; i < squareEls.length; i++) {
+    squareEls[i].style.fontSize = squareSize * 1 + "px"
+  }
 }
 
 function refreshAllCandidatesDisplay() {
