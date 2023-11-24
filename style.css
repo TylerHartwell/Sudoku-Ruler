@@ -1,6 +1,6 @@
 body {
   border: none;
-  background-color: rgb(149, 176, 202);
+  background-color: rgb(163, 185, 206);
   font-size: 16px;
 }
 
@@ -269,10 +269,6 @@ body {
 }
 
 @media (max-width: 899px) {
-  body {
-    background-color: yellow;
-  }
-
   .container {
     grid-template-areas:
       "title"
