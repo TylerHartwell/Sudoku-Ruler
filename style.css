@@ -39,7 +39,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
-  border: 2px solid black;
+  border: 1px solid black;
   aspect-ratio: 1;
 }
 
@@ -78,7 +78,7 @@ body {
   place-items: center;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
-  border: 2px solid black;
+  border: 1px solid black;
   aspect-ratio: 1;
 }
 
@@ -95,7 +95,7 @@ body {
     "c4 c5 c6"
     "c7 c8 c9";
   position: relative;
-  border: 2px solid grey;
+  border: 1px solid grey;
   aspect-ratio: 1;
 }
 

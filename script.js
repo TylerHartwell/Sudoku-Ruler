@@ -16,6 +16,10 @@ window.onresize = () => {
   scaleFont()
 }
 
+document.body.addEventListener("touchstart", e => {
+  confirm("testing touch start event")
+})
+
 document.body.addEventListener("click", e => {
   clearAnyWrong()
   if (e.shiftKey) {
