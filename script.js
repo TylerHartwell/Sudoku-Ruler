@@ -16,9 +16,9 @@ window.onresize = () => {
   scaleFont()
 }
 
-document.body.addEventListener("touchstart", e => {
-  confirm(`e.target: ${e.target}`)
-})
+// document.body.addEventListener("touchstart", e => {
+//   confirm(`e.target: ${e.target}`)
+// })
 
 document.body.addEventListener("click", e => {
   clearAnyWrong()
@@ -64,6 +64,7 @@ document.body.addEventListener("keyup", e => {
 })
 
 document.body.addEventListener("keydown", e => {
+  if (e.isComposing) return
   if (e.shiftKey && !e.repeat) {
     allEntryEls.forEach(el => {
       el.classList.add("no-pointer")
