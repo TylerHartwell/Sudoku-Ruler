@@ -17,7 +17,7 @@ window.onresize = () => {
 }
 
 document.body.addEventListener("touchstart", e => {
-  confirm("testing touch start event")
+  confirm(`e.target: ${e.target}`)
 })
 
 document.body.addEventListener("click", e => {
