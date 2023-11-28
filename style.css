@@ -5,8 +5,8 @@ body {
 }
 
 .container {
-  margin: 20px auto;
-  padding: 5px;
+  margin: 10px auto;
+  padding: 2px;
   display: grid;
   min-width: min-content;
   max-width: max-content;
@@ -276,7 +276,8 @@ body {
       "numberpad"
       "rules"
       "controls";
-    grid-template-columns: minmax(min-content, 90vw);
+    grid-template-columns: minmax(min-content, 98vw);
+    margin: 2px auto;
   }
 
   .rules {

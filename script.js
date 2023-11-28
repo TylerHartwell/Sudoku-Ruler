@@ -64,7 +64,7 @@ document.body.addEventListener("keyup", e => {
 })
 
 document.body.addEventListener("keydown", e => {
-  if (e.isComposing) return
+  confirm(e + " " + e.isComposing + " " + e.target + " " + e.key)
   if (e.shiftKey && !e.repeat) {
     allEntryEls.forEach(el => {
       el.classList.add("no-pointer")
@@ -73,7 +73,6 @@ document.body.addEventListener("keydown", e => {
   }
   if (e.target.classList.contains("entry")) {
     e.preventDefault()
-    confirm("clicked entry")
     clearAnyWrong()
     const entryEl = e.target
     const entryObj = getEntryObj(entryEl)
