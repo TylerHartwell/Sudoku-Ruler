@@ -20,7 +20,7 @@ window.onresize = () => {
 //   confirm(`e.target: ${e.target}`)
 // })
 
-document.body.addEventListener("click", e => {
+document.body.addEventListener("pointerdown", e => {
   clearAnyWrong()
   if (e.shiftKey) {
     if (e.target.classList.contains("candidate")) {
@@ -64,7 +64,6 @@ document.body.addEventListener("keyup", e => {
 })
 
 document.body.addEventListener("keydown", e => {
-  confirm(e + " " + e.isComposing + " " + e.target + " " + e.key)
   if (e.shiftKey && !e.repeat) {
     allEntryEls.forEach(el => {
       el.classList.add("no-pointer")
