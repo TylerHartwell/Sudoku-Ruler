@@ -73,6 +73,7 @@ document.body.addEventListener("keydown", e => {
   }
   if (e.target.classList.contains("entry")) {
     e.preventDefault()
+    confirm("clicked entry")
     clearAnyWrong()
     const entryEl = e.target
     const entryObj = getEntryObj(entryEl)
