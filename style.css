@@ -1,7 +1,9 @@
 body {
   border: none;
   background-color: rgb(163, 185, 206);
+  background-color: darkgray;
   font-size: 16px;
+  height: 100%;
 }
 
 .container {
@@ -9,13 +11,15 @@ body {
   padding: 2px;
   display: grid;
   min-width: min-content;
-  max-width: max-content;
-  max-height: max-content;
+  min-height: 500px;
+  max-height: 95vh;
   grid-template-areas:
     "title title"
-    "rules grid"
+    "rules board"
     "controls numberpad";
-  grid-template-columns: minmax(30%, min-content) minmax(40%, 75vh);
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: min-content min-content min-content;
+  border: 1px solid red;
 }
 
 .title {
@@ -23,24 +27,26 @@ body {
   text-align: center;
   font-size: 2em;
   border: none;
-  height: auto;
 }
 
 .rules {
   grid-area: rules;
   text-align: center;
   border: none;
-  width: 100%;
+  overflow: hidden;
+  min-width: min-content;
 }
 
 .board {
   user-select: none;
-  grid-area: grid;
+  grid-area: board;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   border: 1px solid black;
   aspect-ratio: 1;
+  min-height: 350px;
+  border: 1px solid red;
 }
 
 .controls {
@@ -268,19 +274,21 @@ body {
   margin-left: 5px;
 }
 
-@media (max-width: 899px) {
+/* @media (max-width: 899px) {
   .container {
     grid-template-areas:
       "title"
-      "grid"
+      "board"
       "numberpad"
       "rules"
       "controls";
     grid-template-columns: minmax(min-content, 98vw);
+    grid-template-rows: auto auto auto auto auto;
     margin: 2px auto;
+    height: auto;
   }
 
   .rules {
     max-width: 100%;
   }
-}
+} */

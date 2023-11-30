@@ -16,11 +16,7 @@ window.onresize = () => {
   scaleFont()
 }
 
-// document.body.addEventListener("touchstart", e => {
-//   confirm(`e.target: ${e.target}`)
-// })
-
-document.body.addEventListener("pointerdown", e => {
+document.body.addEventListener("click", e => {
   clearAnyWrong()
   if (e.shiftKey) {
     if (e.target.classList.contains("candidate")) {
@@ -57,20 +53,17 @@ document.body.addEventListener("pointerdown", e => {
 
 document.body.addEventListener("keyup", e => {
   if (e.key === "Shift") {
-    allEntryEls.forEach(el => {
-      el.classList.remove("no-pointer")
-    })
+    allowPointingThroughEntries(false)
   }
 })
 
 document.body.addEventListener("keydown", e => {
   if (e.shiftKey && !e.repeat) {
-    allEntryEls.forEach(el => {
-      el.classList.add("no-pointer")
-    })
+    allowPointingThroughEntries(true)
     return
   }
   if (e.target.classList.contains("entry")) {
+    console.log("reached")
     e.preventDefault()
     clearAnyWrong()
     const entryEl = e.target
@@ -106,24 +99,34 @@ document.body.addEventListener("keydown", e => {
       return
     }
 
-    if (e.key === "ArrowUp" || e.key === "w") {
-      movePlaceBy(-9)
-      return
-    }
-    if (e.key === "ArrowLeft" || e.key === "a") {
-      movePlaceBy(-1)
-      return
-    }
-    if (e.key === "ArrowDown" || e.key === "s") {
-      movePlaceBy(9)
-      return
-    }
-    if (e.key === "ArrowRight" || e.key === "d" || e.key === " ") {
-      movePlaceBy(1)
-      return
-    }
+    handleFocusMovementByKey(e.key)
   }
 })
+
+function handleFocusMovementByKey(key) {
+  if (key === "ArrowUp" || key === "w") {
+    movePlaceBy(-9)
+    return
+  }
+  if (key === "ArrowLeft" || key === "a") {
+    movePlaceBy(-1)
+    return
+  }
+  if (key === "ArrowDown" || key === "s") {
+    movePlaceBy(9)
+    return
+  }
+  if (key === "ArrowRight" || key === "d" || key === " ") {
+    movePlaceBy(1)
+    return
+  }
+}
+
+function allowPointingThroughEntries(isAllowed) {
+  allEntryEls.forEach(el => {
+    el.classList.toggle("no-pointer", isAllowed)
+  })
+}
 
 function tryNextRule(ruleListItemEl) {
   console.log("\n")
