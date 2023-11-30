@@ -11,8 +11,7 @@ body {
   padding: 2px;
   display: grid;
   min-width: min-content;
-  min-height: 500px;
-  max-height: 95vh;
+  max-width: 120vh;
   grid-template-areas:
     "title title"
     "rules board"
@@ -274,7 +273,7 @@ body {
   margin-left: 5px;
 }
 
-/* @media (max-width: 899px) {
+@media (max-width: 899px) {
   .container {
     grid-template-areas:
       "title"
@@ -291,4 +290,4 @@ body {
   .rules {
     max-width: 100%;
   }
-} */
+}
