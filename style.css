@@ -1,24 +1,25 @@
 body {
   border: none;
-  background-color: rgb(163, 185, 206);
   background-color: darkgray;
   font-size: 16px;
   height: 100%;
+  border: 1px solid blue;
 }
 
 .container {
   margin: 10px auto;
   padding: 2px;
   display: grid;
-  min-width: min-content;
-  max-width: 120vh;
-  max-height: max(min-content, 95vh);
   grid-template-areas:
     "title title"
     "rules board"
     "controls numberpad";
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: min-content min-content min-content;
+  grid-template-rows: min-content 1fr min-content;
+  grid-template-columns: minmax(min-content, 40%) 1fr;
+  border: 1px solid red;
+  height: minmax(min-content, max(95vh, min-content));
+  min-width: min-content;
+  max-width: 120vh;
 }
 
 .title {
@@ -33,7 +34,7 @@ body {
   text-align: center;
   border: none;
   overflow: hidden;
-  min-width: min-content;
+  border: 1px solid yellow;
 }
 
 .board {
@@ -45,6 +46,7 @@ body {
   border: 1px solid black;
   aspect-ratio: 1;
   min-height: 350px;
+  border: 1px solid green;
 }
 
 .controls {
@@ -64,6 +66,7 @@ body {
   border: none;
   margin: auto 0;
   align-items: top;
+  border: 1px solid pink;
 }
 .pad-number {
   width: 100%;
@@ -256,27 +259,26 @@ body {
   border-radius: 10px;
   margin: 2px;
   padding: 2px 5px;
-  box-shadow: black 0px 0px 3px;
+  box-shadow: black 0px 0px 4px;
   white-space: nowrap;
 }
 
 .rule-name {
   margin-left: 5px;
-  margin-right: 10px;
+  margin-right: 20px;
   white-space: nowrap;
 }
 
 .checkbox-label {
   border: none;
   margin-left: auto;
-  margin-right: 5px;
   white-space: nowrap;
 }
 .checkbox {
   margin-left: 5px;
 }
 
-@media (max-width: 899px) {
+@media (max-width: 799px) {
   .container {
     grid-template-areas:
       "title"
