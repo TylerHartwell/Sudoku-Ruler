@@ -2,8 +2,10 @@ body {
   border: none;
   background-color: darkgray;
   font-size: 16px;
-  height: 100%;
-  border: 1px solid blue;
+  min-height: 100vh;
+  width: 100vw;
+  min-width: min-content;
+  border: 5px solid blue;
 }
 
 .container {
@@ -17,9 +19,10 @@ body {
   grid-template-rows: min-content 1fr min-content;
   grid-template-columns: minmax(min-content, 40%) 1fr;
   border: 1px solid red;
-  height: minmax(min-content, max(95vh, min-content));
+  min-height: min-content;
+  max-height: 100%;
   min-width: min-content;
-  max-width: 120vh;
+  max-width: 125vh;
 }
 
 .title {
@@ -287,9 +290,13 @@ body {
       "rules"
       "controls";
     grid-template-columns: minmax(min-content, 98vw);
-    grid-template-rows: auto auto auto auto auto;
+    grid-template-rows: repeat(5, min-content);
     margin: 2px auto;
-    height: auto;
+
+    min-height: min-content;
+    max-height: min-content;
+    min-width: min-content;
+    max-width: max-content;
   }
 
   .rules {
