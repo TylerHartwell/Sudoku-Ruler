@@ -5,11 +5,11 @@ body {
   min-height: 100vh;
   width: 100vw;
   min-width: min-content;
-  border: 5px solid blue;
+  margin: 0;
 }
 
 .container {
-  margin: 10px auto;
+  margin: auto auto;
   padding: 2px;
   display: grid;
   grid-template-areas:
@@ -18,7 +18,6 @@ body {
     "controls numberpad";
   grid-template-rows: min-content 1fr min-content;
   grid-template-columns: minmax(min-content, 40%) 1fr;
-  border: 1px solid red;
   min-height: min-content;
   max-height: 100%;
   min-width: min-content;
@@ -37,7 +36,6 @@ body {
   text-align: center;
   border: none;
   overflow: hidden;
-  border: 1px solid yellow;
 }
 
 .board {
@@ -49,7 +47,6 @@ body {
   border: 1px solid black;
   aspect-ratio: 1;
   min-height: 350px;
-  border: 1px solid green;
 }
 
 .controls {
@@ -69,7 +66,6 @@ body {
   border: none;
   margin: auto 0;
   align-items: top;
-  border: 1px solid pink;
 }
 .pad-number {
   width: 100%;
@@ -171,7 +167,8 @@ body {
 }
 
 .highlight.entry,
-.highlight.pad-number {
+.highlight.pad-number,
+.pad-number:hover {
   font-weight: bold;
 }
 
@@ -224,7 +221,11 @@ body {
   position: absolute;
   left: 50%;
   bottom: 0;
+  transform-origin: center;
   transform: translateX(-50%);
+}
+.set-puzzle-btn:active {
+  transform: translateX(-50%) scale(0.98);
 }
 
 .toggle-candidates-btn {
@@ -279,6 +280,18 @@ body {
 }
 .checkbox {
   margin-left: 5px;
+}
+
+button {
+  padding: 4px 6px;
+}
+
+button:hover {
+  box-shadow: 0 0 3px 2px black;
+}
+
+button:active {
+  transform: scale(0.98);
 }
 
 @media (max-width: 799px) {
