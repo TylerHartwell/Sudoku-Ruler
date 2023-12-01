@@ -224,8 +224,10 @@ body {
   transform-origin: center;
   transform: translateX(-50%);
 }
-.set-puzzle-btn:active {
+button.set-puzzle-btn:active {
+  left: 50%;
   transform: translateX(-50%) scale(0.98);
+  background-color: yellow;
 }
 
 .toggle-candidates-btn {
@@ -265,6 +267,13 @@ body {
   padding: 2px 5px;
   box-shadow: black 0px 0px 4px;
   white-space: nowrap;
+  width: 70px;
+}
+.try-next-btn:hover:disabled {
+  box-shadow: black 0px 0px 4px;
+}
+.try-next-btn:active:disabled {
+  transform: none;
 }
 
 .rule-name {
@@ -294,6 +303,14 @@ button:active {
   transform: scale(0.98);
 }
 
+.success {
+  background-color: green;
+}
+
+.fail {
+  background-color: red;
+}
+
 @media (max-width: 799px) {
   .container {
     grid-template-areas:
@@ -314,5 +331,10 @@ button:active {
 
   .rules {
     max-width: 100%;
+    margin-top: 10px;
+  }
+
+  .controls {
+    margin-top: 10px;
   }
 }

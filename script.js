@@ -26,7 +26,16 @@ document.body.addEventListener("click", e => {
     }
   }
   if (e.target.classList.contains("try-next-btn")) {
-    tryNextRule(e.target.parentElement)
+    const btnEl = e.target
+    const ruleOutcome = tryNextRule(btnEl.parentElement) ? "success" : "fail"
+    btnEl.classList.add(ruleOutcome)
+
+    setTimeout(() => {
+      btnEl.classList.remove(ruleOutcome)
+    }, 200)
+  }
+  if (e.target.classList.contains("checkbox")) {
+    toggleAutoSolve(e.target)
   }
   if (e.target.classList.contains("toggle-candidates-btn")) {
     toggleCandidates()
@@ -102,6 +111,18 @@ document.body.addEventListener("keydown", e => {
     handleFocusMovementByKey(e.key)
   }
 })
+
+function toggleAutoSolve(checkbox) {
+  const btnEl = checkbox.parentElement.querySelector(".try-next-btn")
+  if (checkbox.checked) {
+    btnEl.disabled = true
+    btnEl.textContent = "Auto"
+    tryAutoSolves()
+  } else {
+    btnEl.disabled = false
+    btnEl.textContent = "Try Next"
+  }
+}
 
 function handleFocusMovementByKey(key) {
   if (key === "ArrowUp" || key === "w") {
