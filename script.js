@@ -17,6 +17,7 @@ window.onresize = () => {
 }
 
 document.body.addEventListener("click", e => {
+  confirm(e.type)
   clearAnyWrong()
   if (e.shiftKey) {
     if (e.target.classList.contains("candidate")) {
@@ -75,7 +76,6 @@ document.body.addEventListener("keydown", e => {
     return
   }
   if (e.target.classList.contains("entry")) {
-    console.log("reached")
     e.preventDefault()
     clearAnyWrong()
     const entryEl = e.target
