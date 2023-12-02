@@ -27,12 +27,15 @@ document.body.addEventListener("click", e => {
   }
   if (e.target.classList.contains("try-next-btn")) {
     const btnEl = e.target
-    const ruleOutcome = tryNextRule(btnEl.parentElement) ? "success" : "fail"
+    const isSuccess = tryNextRule(btnEl.parentElement)
+    const ruleOutcome = isSuccess ? "success" : "fail"
     btnEl.classList.add(ruleOutcome)
 
     setTimeout(() => {
       btnEl.classList.remove(ruleOutcome)
     }, 200)
+
+    if (isSuccess) tryAutoSolves()
   }
   if (e.target.classList.contains("checkbox")) {
     toggleAutoSolve(e.target)
@@ -99,9 +102,7 @@ document.body.addEventListener("keydown", e => {
             return
           }
           handleNewEntry(entryEl, e.key)
-          if (tryAutoSolves()) {
-            return true
-          }
+          tryAutoSolves()
         }
       }
       if (!boardData.isSet && e.key !== "Shift") movePlaceBy(1)
@@ -152,28 +153,34 @@ function allowPointingThroughEntries(isAllowed) {
 function tryNextRule(ruleListItemEl) {
   console.log("\n")
   console.log("try next solve")
-  const ruleSuccessful = rulesArr[
+  const ruleOutcome = rulesArr[
     [...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)
   ](getCandidateObj, getEntryObj, handleNewEntry, refreshCandidateDisplay)
-  if (ruleSuccessful) {
-    if (tryAutoSolves()) {
-      return true
-    }
-  }
-  return false
+  return ruleOutcome
 }
 
-function tryAutoSolves() {
+function tryAutoSolves(hasSuccessfulRecursion = false) {
   if (boardData.isSet) {
     console.log("TRY AUTO")
+    let isSuccessfulCall = false
     const ruleList = document.querySelector(".rules-list")
     const children = [...ruleList.children]
     for (const child of children) {
       if (child.querySelector("input").checked) {
-        if (tryNextRule(child)) return true
+        if (tryNextRule(child)) {
+          isSuccessfulCall = true
+          break
+        }
       }
     }
-    return false
+    if (isSuccessfulCall) {
+      tryAutoSolves(true)
+    } else {
+      console.log("hasSuccessfuleRecursion: ", hasSuccessfulRecursion)
+      console.log("\n")
+      console.log("\n")
+      return hasSuccessfulRecursion
+    }
   }
 }
 
