@@ -18,13 +18,15 @@ window.onload = () => {
 window.onresize = () => {
   scaleFont()
 }
+
 document.body.addEventListener("pointerdown", e => {
   pointerTarget = e.target
 })
 
 document.body.addEventListener("pointerup", e => {
-  if (e.target != pointerTarget) return
   clearAnyWrong()
+  if (e.target != pointerTarget) return
+  /////
   if (e.shiftKey) {
     if (e.target.classList.contains("candidate")) {
       const candidateEl = e.target
@@ -32,6 +34,7 @@ document.body.addEventListener("pointerup", e => {
       refreshCandidateDisplay(candidateEl)
     }
   }
+  /////
   if (e.target.classList.contains("try-next-btn")) {
     const btnEl = e.target
     const isSuccess = tryNextRule(btnEl.parentElement)
@@ -44,27 +47,34 @@ document.body.addEventListener("pointerup", e => {
 
     if (isSuccess) tryAutoSolves()
   }
+
   if (e.target.classList.contains("checkbox")) {
     toggleAutoSolve(e.target)
   }
+
   if (e.target.classList.contains("toggle-candidates-btn")) {
     toggleCandidates()
     refreshAllCandidatesDisplay()
   }
+
   if (e.target.classList.contains("entry")) {
     focusTarget(e.target)
   }
+
   if (e.target.classList.contains("clear-all-btn")) {
     if (confirm("clear all?")) {
       resetAll()
     }
   }
+
   if (e.target.classList.contains("input-grid-string-btn")) {
     inputGridString()
   }
+
   if (e.target.classList.contains("set-puzzle-btn")) {
     setGrid()
   }
+
   if (e.target.classList.contains("pad-number")) {
     toggleHighlight(e.target)
   }
@@ -77,6 +87,7 @@ document.body.addEventListener("keyup", e => {
 })
 
 document.body.addEventListener("keydown", e => {
+  confirm("keydown test")
   if (e.shiftKey && !e.repeat) {
     allowPointingThroughEntries(true)
     return
@@ -121,7 +132,7 @@ document.body.addEventListener("keydown", e => {
 
 function toggleAutoSolve(checkbox) {
   const btnEl = checkbox.parentElement.querySelector(".try-next-btn")
-  if (checkbox.checked) {
+  if (!checkbox.checked) {
     btnEl.disabled = true
     btnEl.textContent = "Auto"
     tryAutoSolves()
