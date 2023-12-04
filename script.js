@@ -21,12 +21,13 @@ window.onresize = () => {
 }
 
 document.body.addEventListener("pointerdown", e => {
+  e.preventDefault()
   pointerTarget = e.target
   lastPointerType = e.pointerType
 })
 
 document.body.addEventListener("pointerup", e => {
-  if (lastPointerType != "mouse") return
+  e.preventDefault()
   clearAnyWrong()
   if (e.target != pointerTarget) return
   /////
