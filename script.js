@@ -11,6 +11,7 @@ let allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
 
 let inSolutionEntryMode = true
 let pointerTarget = null
+let lastPointerType = null
 
 window.onload = () => {
   scaleFont()
@@ -21,6 +22,7 @@ window.onresize = () => {
 
 document.body.addEventListener("pointerdown", e => {
   pointerTarget = e.target
+  lastPointerType = e.pointerType
 })
 
 document.body.addEventListener("pointerup", e => {
@@ -87,7 +89,7 @@ document.body.addEventListener("keyup", e => {
 })
 
 document.body.addEventListener("keydown", e => {
-  confirm("keydown test")
+  if (lastPointerType != "mouse") return
   if (e.shiftKey && !e.repeat) {
     allowPointingThroughEntries(true)
     return
