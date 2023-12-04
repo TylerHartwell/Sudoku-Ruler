@@ -60,6 +60,7 @@ document.body.addEventListener("pointerup", e => {
   }
 
   if (e.target.classList.contains("entry")) {
+    confirm(lastPointerType)
     if (lastPointerType != "mouse") return
     focusTarget(e.target)
   }
