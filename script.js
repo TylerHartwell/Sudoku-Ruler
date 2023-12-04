@@ -26,6 +26,7 @@ document.body.addEventListener("pointerdown", e => {
 })
 
 document.body.addEventListener("pointerup", e => {
+  if (lastPointerType != "mouse") return
   clearAnyWrong()
   if (e.target != pointerTarget) return
   /////
@@ -59,7 +60,7 @@ document.body.addEventListener("pointerup", e => {
     refreshAllCandidatesDisplay()
   }
 
-  if (e.target.classList.contains("entry") && lastPointerType == "mouse") {
+  if (e.target.classList.contains("entry")) {
     focusTarget(e.target)
   }
 
