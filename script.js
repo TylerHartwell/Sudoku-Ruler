@@ -9,15 +9,21 @@ let allEntryEls = Array.from(document.querySelectorAll(".entry"))
 let allCandidateEls = Array.from(document.querySelectorAll(".candidate"))
 let allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
 
+let inSolutionEntryMode = true
+let pointerTarget = null
+
 window.onload = () => {
   scaleFont()
 }
 window.onresize = () => {
   scaleFont()
 }
+document.body.addEventListener("pointerdown", e => {
+  pointerTarget = e.target
+})
 
-document.body.addEventListener("click", e => {
-  confirm(e.type)
+document.body.addEventListener("pointerup", e => {
+  if (e.target != pointerTarget) return
   clearAnyWrong()
   if (e.shiftKey) {
     if (e.target.classList.contains("candidate")) {
