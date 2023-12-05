@@ -66,15 +66,47 @@ body {
   display: flex;
   border: none;
   margin: auto 0;
-  align-items: top;
+  border: 1px solid blue;
+  flex-wrap: wrap;
 }
 .pad-number {
-  width: 100%;
+  width: calc(100% / 9);
   padding: 5px 0;
-  height: min-content;
+  height: 1fr;
   text-align: center;
   font-size: 2em;
   user-select: none;
+  border: 1px solid red;
+}
+.pad-mode-container {
+  display: flex;
+  margin: 2px auto;
+  justify-content: center;
+  align-items: center;
+}
+.solution-mode-btn,
+.candidate-mode-btn {
+  height: 90%;
+  width: 100px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: black 0px 0px 3px;
+}
+.mode-switch-outer {
+  height: 100%;
+  width: 100px;
+  border-radius: 40%;
+  background-color: blue;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+.mode-switch-inner {
+  height: 80%;
+  width: 40%;
+  border-radius: 50%;
+  background-color: white;
+  margin-left: 10px;
 }
 
 /* grid children */
@@ -329,10 +361,6 @@ button:active {
   .candidate:hover {
     background-color: rgb(255, 83, 83);
     font-weight: bold;
-  }
-
-  .candidate {
-    transition: 0.1s;
   }
 
   .entry:hover {
