@@ -127,7 +127,6 @@ body {
   width: 98%;
   height: 98%;
   padding-bottom: 0.1em;
-  transition: 0.1s;
 }
 
 /* .control children */
@@ -330,6 +329,10 @@ button:active {
   .candidate:hover {
     background-color: rgb(255, 83, 83);
     font-weight: bold;
+  }
+
+  .candidate {
+    transition: 0.1s;
   }
 
   .entry:hover {
