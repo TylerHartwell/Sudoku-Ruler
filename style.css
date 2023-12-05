@@ -76,9 +76,6 @@ body {
   font-size: 2em;
   user-select: none;
 }
-.pad-number:hover {
-  cursor: pointer;
-}
 
 /* grid children */
 .box {
@@ -168,23 +165,13 @@ body {
 }
 
 .highlight.entry,
-.highlight.pad-number,
-.pad-number:hover {
+.highlight.pad-number {
   font-weight: bold;
 }
 
 .no-pointer {
   pointer-events: none;
   cursor: default;
-}
-
-.candidate:hover {
-  background-color: rgb(255, 83, 83);
-  font-weight: bold;
-}
-
-.entry:hover {
-  border: 1px solid rgb(80, 80, 80);
 }
 
 .grid-string {
@@ -270,9 +257,7 @@ button.set-puzzle-btn:active {
   white-space: nowrap;
   width: 70px;
 }
-.try-next-btn:hover:disabled {
-  box-shadow: black 0px 0px 4px;
-}
+
 .try-next-btn:active:disabled {
   transform: none;
 }
@@ -294,10 +279,6 @@ button.set-puzzle-btn:active {
 
 button {
   padding: 4px 6px;
-}
-
-button:hover {
-  box-shadow: 0 0 3px 2px black;
 }
 
 button:active {
@@ -337,5 +318,32 @@ button:active {
 
   .controls {
     margin-top: 10px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pad-number:hover {
+    cursor: pointer;
+  }
+
+  .pad-number:hover {
+    font-weight: bold;
+  }
+
+  .candidate:hover {
+    background-color: rgb(255, 83, 83);
+    font-weight: bold;
+  }
+
+  .entry:hover {
+    border: 1px solid rgb(80, 80, 80);
+  }
+
+  .try-next-btn:hover:disabled {
+    box-shadow: black 0px 0px 4px;
+  }
+
+  button:hover {
+    box-shadow: 0 0 3px 2px black;
   }
 }
