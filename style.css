@@ -324,9 +324,6 @@ button:active {
 @media (hover: hover) and (pointer: fine) {
   .pad-number:hover {
     cursor: pointer;
-  }
-
-  .pad-number:hover {
     font-weight: bold;
   }
 

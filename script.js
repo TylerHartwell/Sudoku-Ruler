@@ -12,6 +12,7 @@ let allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
 let inSolutionEntryMode = true
 let pointerTarget = null
 let lastPointerType = null
+let lastSelectedPadNum = null
 
 window.onload = () => {
   scaleFont()
@@ -86,8 +87,35 @@ document.body.addEventListener("pointerup", e => {
   }
 
   if (e.target.classList.contains("pad-number")) {
-    toggleHighlight(e.target)
+    if (e.target == lastSelectedPadNum) {
+      lastSelectedPadNum = null
+      toggleHighlight(e.target)
+    } else {
+      lastSelectedPadNum = e.target
+      highlightEls([e.target])
+      refreshHighlightsOf(e.target)
+    }
   }
+})
+
+allPadNumEls.forEach(el => {
+  el.addEventListener("mouseenter", e => {
+    console.log("target is pad num")
+    if (el == lastSelectedPadNum) return
+    toggleHighlight(e.target)
+  })
+})
+allPadNumEls.forEach(el => {
+  el.addEventListener("mouseout", e => {
+    console.log("exit")
+    if (lastSelectedPadNum) {
+      if (el == lastSelectedPadNum) return
+      toggleHighlight(lastSelectedPadNum)
+    } else {
+      unhighlightEls([el])
+      refreshHighlightsOf(el)
+    }
+  })
 })
 
 document.body.addEventListener("keyup", e => {
