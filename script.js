@@ -22,12 +22,14 @@ window.onresize = () => {
 
 document.body.addEventListener("pointerdown", e => {
   e.preventDefault()
+  e.stopPropagation()
   pointerTarget = e.target
   lastPointerType = e.pointerType
 })
 
 document.body.addEventListener("pointerup", e => {
   e.preventDefault()
+  e.stopPropagation()
   clearAnyWrong()
   if (e.target != pointerTarget) return
   /////
@@ -52,8 +54,11 @@ document.body.addEventListener("pointerup", e => {
     if (isSuccess) tryAutoSolves()
   }
 
-  if (e.target.classList.contains("checkbox")) {
-    toggleAutoSolve(e.target)
+  if (
+    e.target.classList.contains("checkbox") ||
+    e.target.classList.contains("checkbox-label")
+  ) {
+    toggleAutoSolve(e.target.parentElement.querySelector(".checkbox"))
   }
 
   if (e.target.classList.contains("toggle-candidates-btn")) {
