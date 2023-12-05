@@ -67,7 +67,7 @@ document.body.addEventListener("pointerup", e => {
     refreshAllCandidatesDisplay()
   }
 
-  if (e.target.classList.contains("entry")) {
+  if (e.target.classList.contains("entry") && lastPointerType == "mouse") {
     focusTarget(e.target)
   }
 
