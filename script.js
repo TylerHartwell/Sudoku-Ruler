@@ -22,14 +22,15 @@ window.onresize = () => {
 
 document.body.addEventListener("pointerdown", e => {
   e.preventDefault()
-  e.stopPropagation()
   pointerTarget = e.target
   lastPointerType = e.pointerType
+  if (lastPointerType != "mouse" && pointerTarget.classList.contains("entry")) {
+    pointerTarget.contentEditable = false
+  }
 })
 
 document.body.addEventListener("pointerup", e => {
   e.preventDefault()
-  e.stopPropagation()
   clearAnyWrong()
   if (e.target != pointerTarget) return
   /////
