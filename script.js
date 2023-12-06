@@ -1,7 +1,6 @@
 import { boardData, createBoardHTML, resetBoardData } from "./board.js"
 import { createRulesHTML, rulesArr, assignAllUnits } from "./rules.js"
 
-const modeCheckbox = document.querySelector("#mode-checkbox")
 const modeSwitchOuter = document.querySelector(".mode-switch-outer")
 const modeSwitchInner = document.querySelector(".mode-switch-inner")
 const solutionModeBtn = document.querySelector(".solution-mode-btn")
@@ -40,7 +39,7 @@ document.body.addEventListener("pointerup", e => {
   e.preventDefault()
   clearAnyWrong()
   if (e.target != pointerTarget) return
-  /////
+
   if (e.shiftKey) {
     if (e.target.classList.contains("candidate")) {
       const candidateEl = e.target
@@ -48,7 +47,7 @@ document.body.addEventListener("pointerup", e => {
       refreshCandidateDisplay(candidateEl)
     }
   }
-  /////
+
   if (e.target.classList.contains("try-next-btn")) {
     const btnEl = e.target
     const isSuccess = tryNextRule(btnEl.parentElement)
@@ -117,14 +116,6 @@ document.body.addEventListener("pointerup", e => {
     }
   }
 })
-
-function switchMode() {
-  isCandidateMode = !isCandidateMode
-  modeSwitchOuter.classList.toggle("candidate-mode-on", isCandidateMode)
-  modeSwitchInner.classList.toggle("candidate-mode-on", isCandidateMode)
-  solutionModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
-  candidateModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
-}
 
 allPadNumEls.forEach(el => {
   el.addEventListener("mouseenter", e => {
@@ -195,6 +186,14 @@ document.body.addEventListener("keydown", e => {
     handleFocusMovementByKey(e.key)
   }
 })
+
+function switchMode() {
+  isCandidateMode = !isCandidateMode
+  modeSwitchOuter.classList.toggle("candidate-mode-on", isCandidateMode)
+  modeSwitchInner.classList.toggle("candidate-mode-on", isCandidateMode)
+  solutionModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
+  candidateModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
+}
 
 function toggleAutoSolve(checkbox) {
   const btnEl = checkbox.parentElement.querySelector(".try-next-btn")

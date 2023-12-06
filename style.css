@@ -139,9 +139,6 @@ body {
   left: calc(100% - 5px);
   transform: translate(-100%, -50%);
 }
-#mode-checkbox {
-  display: none;
-}
 
 /* grid children */
 .box {
