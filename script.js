@@ -15,7 +15,7 @@ let allCandidateEls = Array.from(document.querySelectorAll(".candidate"))
 let allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
 
 let pointerTarget = null
-let lastPointerType = null
+let lastPointerType = "mouse"
 let lastSelectedPadNum = null
 let isCandidateMode = false
 
@@ -119,14 +119,12 @@ document.body.addEventListener("pointerup", e => {
 
 allPadNumEls.forEach(el => {
   el.addEventListener("mouseenter", e => {
-    console.log("target is pad num")
     if (el == lastSelectedPadNum) return
     toggleHighlight(e.target)
   })
 })
 allPadNumEls.forEach(el => {
   el.addEventListener("mouseout", e => {
-    console.log("exit")
     if (lastSelectedPadNum) {
       if (el == lastSelectedPadNum) return
       toggleHighlight(lastSelectedPadNum)
@@ -139,14 +137,14 @@ allPadNumEls.forEach(el => {
 
 document.body.addEventListener("keyup", e => {
   if (e.key === "Shift") {
-    allowPointingThroughEntries(false)
+    switchMode()
   }
 })
 
 document.body.addEventListener("keydown", e => {
   if (lastPointerType != "mouse") return
   if (e.shiftKey && !e.repeat) {
-    allowPointingThroughEntries(true)
+    switchMode()
     return
   }
   if (e.target.classList.contains("entry")) {
@@ -189,6 +187,7 @@ document.body.addEventListener("keydown", e => {
 
 function switchMode() {
   isCandidateMode = !isCandidateMode
+  allowPointingThroughEntries(isCandidateMode)
   modeSwitchOuter.classList.toggle("candidate-mode-on", isCandidateMode)
   modeSwitchInner.classList.toggle("candidate-mode-on", isCandidateMode)
   solutionModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
