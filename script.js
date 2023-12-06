@@ -19,7 +19,6 @@ let pointerTarget = null
 let lastPointerType = null
 let lastSelectedPadNum = null
 let isCandidateMode = false
-modeCheckbox.checked = isCandidateMode
 
 window.onload = () => {
   scaleFont()
@@ -107,7 +106,25 @@ document.body.addEventListener("pointerup", e => {
   if (e.target == modeSwitchOuter) {
     switchMode()
   }
+  if (e.target == solutionModeBtn) {
+    if (isCandidateMode) {
+      switchMode()
+    }
+  }
+  if (e.target == candidateModeBtn) {
+    if (!isCandidateMode) {
+      switchMode()
+    }
+  }
 })
+
+function switchMode() {
+  isCandidateMode = !isCandidateMode
+  modeSwitchOuter.classList.toggle("candidate-mode-on", isCandidateMode)
+  modeSwitchInner.classList.toggle("candidate-mode-on", isCandidateMode)
+  solutionModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
+  candidateModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
+}
 
 allPadNumEls.forEach(el => {
   el.addEventListener("mouseenter", e => {
@@ -178,14 +195,6 @@ document.body.addEventListener("keydown", e => {
     handleFocusMovementByKey(e.key)
   }
 })
-
-function switchMode() {
-  isCandidateMode = !modeCheckbox.checked
-  modeSwitchOuter.classList.toggle("candidate-mode-on", isCandidateMode)
-  modeSwitchInner.classList.toggle("candidate-mode-on", isCandidateMode)
-  solutionModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
-  candidateModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
-}
 
 function toggleAutoSolve(checkbox) {
   const btnEl = checkbox.parentElement.querySelector(".try-next-btn")
