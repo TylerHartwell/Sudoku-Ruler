@@ -1,6 +1,12 @@
 import { boardData, createBoardHTML, resetBoardData } from "./board.js"
 import { createRulesHTML, rulesArr, assignAllUnits } from "./rules.js"
 
+const modeCheckbox = document.querySelector("#mode-checkbox")
+const modeSwitchOuter = document.querySelector(".mode-switch-outer")
+const modeSwitchInner = document.querySelector(".mode-switch-inner")
+const solutionModeBtn = document.querySelector(".solution-mode-btn")
+const candidateModeBtn = document.querySelector(".candidate-mode-btn")
+
 createBoardHTML()
 assignAllUnits()
 createRulesHTML()
@@ -9,10 +15,11 @@ let allEntryEls = Array.from(document.querySelectorAll(".entry"))
 let allCandidateEls = Array.from(document.querySelectorAll(".candidate"))
 let allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
 
-let inSolutionEntryMode = true
 let pointerTarget = null
 let lastPointerType = null
 let lastSelectedPadNum = null
+let isCandidateMode = false
+modeCheckbox.checked = isCandidateMode
 
 window.onload = () => {
   scaleFont()
@@ -96,6 +103,10 @@ document.body.addEventListener("pointerup", e => {
       refreshHighlightsOf(e.target)
     }
   }
+
+  if (e.target == modeSwitchOuter) {
+    switchMode()
+  }
 })
 
 allPadNumEls.forEach(el => {
@@ -167,6 +178,14 @@ document.body.addEventListener("keydown", e => {
     handleFocusMovementByKey(e.key)
   }
 })
+
+function switchMode() {
+  isCandidateMode = !modeCheckbox.checked
+  modeSwitchOuter.classList.toggle("candidate-mode-on", isCandidateMode)
+  modeSwitchInner.classList.toggle("candidate-mode-on", isCandidateMode)
+  solutionModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
+  candidateModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
+}
 
 function toggleAutoSolve(checkbox) {
   const btnEl = checkbox.parentElement.querySelector(".try-next-btn")
@@ -519,11 +538,3 @@ function toggleHighlight(padNumEl) {
     refreshHighlightsOf(padNumEl)
   }
 }
-
-//TODO
-//Fix layout for desktop
-//test if already workable for mobile
-//properly style
-//hide button/fields per context
-// name/describe rules better
-//reorganize functions
