@@ -97,17 +97,12 @@ body {
   background-color: transparent;
 }
 .solution-mode-btn {
-  /* border: 2px solid rgba(0, 128, 0, 0.61); */
-  /* background-color: lightgray; */
   font-weight: bold;
 }
 .solution-mode-btn.candidate-mode-on {
-  /* border: 2px solid rgba(0, 128, 0, 0.61); */
-  /* background-color: lightgray; */
   font-weight: normal;
 }
 .candidate-mode-btn.candidate-mode-on {
-  /* border: 2px solid #ff5353; */
   font-weight: bold;
 }
 .mode-switch-outer {
@@ -121,7 +116,7 @@ body {
   cursor: pointer;
 }
 .mode-switch-outer.candidate-mode-on {
-  background-color: #ff5353;
+  background-color: #d14141;
 }
 .mode-switch-inner {
   height: 40px;
@@ -405,5 +400,11 @@ button:active {
   button:hover {
     box-shadow: 0 0 4px 1px black;
     cursor: pointer;
+  }
+
+  .candidate-mode-btn.candidate-mode-on:hover,
+  .solution-mode-btn:not(.candidate-mode-on):hover {
+    box-shadow: none;
+    cursor: default;
   }
 }
