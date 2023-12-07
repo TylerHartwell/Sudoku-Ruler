@@ -25,6 +25,7 @@ let pointerTarget = null
 let lastPointerType = "mouse"
 let lastSelectedPadNum = null
 let isCandidateMode = false
+let currentlySelectedEntryEl = null
 
 window.onload = () => {
   scaleFont()
@@ -47,7 +48,7 @@ document.body.addEventListener("pointerup", e => {
   clearAnyWrong()
   if (e.target != pointerTarget) return
 
-  if (e.shiftKey) {
+  if (isCandidateMode) {
     if (allCandidateEls.includes(e.target)) {
       const candidateEl = e.target
       getCandidateObj(candidateEl).eliminated = true
@@ -75,6 +76,13 @@ document.body.addEventListener("pointerup", e => {
   }
 
   if (allEntryEls.includes(e.target) && lastPointerType == "mouse") {
+    currentlySelectedEntryEl = e.target
+    const blurHandler = e => {
+      currentlySelectedEntryEl = null
+    }
+    currentlySelectedEntryEl.addEventListener("blur", blurHandler, {
+      once: true
+    })
     focusTarget(e.target)
   }
 

@@ -406,5 +406,6 @@ button:active {
   .solution-mode-btn:not(.candidate-mode-on):hover {
     box-shadow: none;
     cursor: default;
+    transform: scale(1);
   }
 }
