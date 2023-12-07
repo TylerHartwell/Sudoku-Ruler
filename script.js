@@ -1,18 +1,25 @@
 import { boardData, createBoardHTML, resetBoardData } from "./board.js"
 import { createRulesHTML, rulesArr, assignAllUnits } from "./rules.js"
 
-const modeSwitchOuter = document.querySelector(".mode-switch-outer")
-const modeSwitchInner = document.querySelector(".mode-switch-inner")
-const solutionModeBtn = document.querySelector(".solution-mode-btn")
-const candidateModeBtn = document.querySelector(".candidate-mode-btn")
-
 createBoardHTML()
 assignAllUnits()
 createRulesHTML()
 
-let allEntryEls = Array.from(document.querySelectorAll(".entry"))
-let allCandidateEls = Array.from(document.querySelectorAll(".candidate"))
-let allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
+const modeSwitchOuter = document.querySelector(".mode-switch-outer")
+const modeSwitchInner = document.querySelector(".mode-switch-inner")
+const solutionModeBtn = document.querySelector(".solution-mode-btn")
+const candidateModeBtn = document.querySelector(".candidate-mode-btn")
+const setPuzzleBtn = document.querySelector(".set-puzzle-btn")
+const gridStringEl = document.querySelector(".grid-string")
+const inputGridStringBtn = document.querySelector(".input-grid-string-btn")
+const clearAllBtn = document.querySelector(".clear-all-btn")
+const toggleCandidatesBtn = document.querySelector(".toggle-candidates-btn")
+const allSquareEls = Array.from(document.querySelectorAll(".square"))
+const allEntryEls = Array.from(document.querySelectorAll(".entry"))
+const allCandidateEls = Array.from(document.querySelectorAll(".candidate"))
+const allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
+const allTryNextBtns = Array.from(document.querySelectorAll(".try-next-btn"))
+const allCheckboxes = Array.from(document.querySelectorAll(".checkbox"))
 
 let pointerTarget = null
 let lastPointerType = "mouse"
@@ -41,14 +48,15 @@ document.body.addEventListener("pointerup", e => {
   if (e.target != pointerTarget) return
 
   if (e.shiftKey) {
-    if (e.target.classList.contains("candidate")) {
+    if (allCandidateEls.includes(e.target)) {
       const candidateEl = e.target
       getCandidateObj(candidateEl).eliminated = true
       refreshCandidateDisplay(candidateEl)
+      tryAutoSolves()
     }
   }
 
-  if (e.target.classList.contains("try-next-btn")) {
+  if (allTryNextBtns.includes(e.target)) {
     const btnEl = e.target
     const isSuccess = tryNextRule(btnEl.parentElement)
     const ruleOutcome = isSuccess ? "success" : "fail"
@@ -61,37 +69,30 @@ document.body.addEventListener("pointerup", e => {
     if (isSuccess) tryAutoSolves()
   }
 
-  if (
-    e.target.classList.contains("checkbox") ||
-    e.target.classList.contains("checkbox-label")
-  ) {
-    toggleAutoSolve(e.target.parentElement.querySelector(".checkbox"))
-  }
-
-  if (e.target.classList.contains("toggle-candidates-btn")) {
+  if (e.target == toggleCandidatesBtn) {
     toggleCandidates()
     refreshAllCandidatesDisplay()
   }
 
-  if (e.target.classList.contains("entry") && lastPointerType == "mouse") {
+  if (allEntryEls.includes(e.target) && lastPointerType == "mouse") {
     focusTarget(e.target)
   }
 
-  if (e.target.classList.contains("clear-all-btn")) {
+  if (e.target == clearAllBtn) {
     if (confirm("clear all?")) {
       resetAll()
     }
   }
 
-  if (e.target.classList.contains("input-grid-string-btn")) {
+  if (e.target == inputGridStringBtn) {
     inputGridString()
   }
 
-  if (e.target.classList.contains("set-puzzle-btn")) {
+  if (e.target == setPuzzleBtn) {
     setGrid()
   }
 
-  if (e.target.classList.contains("pad-number")) {
+  if (allPadNumEls.includes(e.target)) {
     if (e.target == lastSelectedPadNum) {
       lastSelectedPadNum = null
       toggleHighlight(e.target)
@@ -185,6 +186,10 @@ document.body.addEventListener("keydown", e => {
   }
 })
 
+allCheckboxes.forEach(el => {
+  el.addEventListener("change", toggleAutoSolve)
+})
+
 function switchMode() {
   isCandidateMode = !isCandidateMode
   allowPointingThroughEntries(isCandidateMode)
@@ -194,9 +199,9 @@ function switchMode() {
   candidateModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
 }
 
-function toggleAutoSolve(checkbox) {
-  const btnEl = checkbox.parentElement.querySelector(".try-next-btn")
-  if (!checkbox.checked) {
+function toggleAutoSolve(e) {
+  const btnEl = e.target.parentElement.querySelector(".try-next-btn")
+  if (e.target.checked) {
     btnEl.disabled = true
     btnEl.textContent = "Auto"
     tryAutoSolves()
@@ -241,27 +246,25 @@ function tryNextRule(ruleListItemEl) {
 }
 
 function tryAutoSolves(hasSuccessfulRecursion = false) {
-  if (boardData.isSet) {
-    console.log("TRY AUTO")
-    let isSuccessfulCall = false
-    const ruleList = document.querySelector(".rules-list")
-    const children = [...ruleList.children]
-    for (const child of children) {
-      if (child.querySelector("input").checked) {
-        if (tryNextRule(child)) {
-          isSuccessfulCall = true
-          break
-        }
+  console.log("TRY AUTO")
+  let isSuccessfulCall = false
+  const ruleList = document.querySelector(".rules-list")
+  const children = [...ruleList.children]
+  for (const child of children) {
+    if (child.querySelector(".checkbox").checked) {
+      if (tryNextRule(child)) {
+        isSuccessfulCall = true
+        break
       }
     }
-    if (isSuccessfulCall) {
-      tryAutoSolves(true)
-    } else {
-      console.log("hasSuccessfuleRecursion: ", hasSuccessfulRecursion)
-      console.log("\n")
-      console.log("\n")
-      return hasSuccessfulRecursion
-    }
+  }
+  if (isSuccessfulCall) {
+    tryAutoSolves(true)
+  } else {
+    console.log("hasSuccessfuleRecursion: ", hasSuccessfulRecursion)
+    console.log("\n")
+    console.log("\n")
+    return hasSuccessfulRecursion
   }
 }
 
@@ -298,9 +301,7 @@ function handleNewEntry(entryEl, character) {
   refreshEntryEl(entryEl)
   if (/[1-9]/.test(character)) {
     updateCandidateEliminationOfPeers(character, entryEl.parentElement)
-    if (
-      document.querySelector(`.pad${character}`).classList.contains("highlight")
-    ) {
+    if (allPadNumEls[Number(character) - 1].classList.contains("highlight")) {
       highlightEls([entryEl])
     }
   }
@@ -315,9 +316,9 @@ function setGrid() {
       refreshEntryEl(entryEl)
     }
   })
-  document.querySelector(".grid-string").classList.add("hidden")
-  document.querySelector(".input-grid-string-btn").classList.add("hidden")
-  document.querySelector(".set-puzzle-btn").classList.add("hidden")
+  gridStringEl.classList.add("hidden")
+  inputGridStringBtn.classList.add("hidden")
+  setPuzzleBtn.classList.add("hidden")
   boardData.isSet = true
   tryAutoSolves()
 }
@@ -331,9 +332,9 @@ function resetAll() {
     refreshEntryEl(entryEl)
   })
   refreshAllCandidatesDisplay()
-  document.querySelector(".grid-string").classList.remove("hidden")
-  document.querySelector(".input-grid-string-btn").classList.remove("hidden")
-  document.querySelector(".set-puzzle-btn").classList.remove("hidden")
+  gridStringEl.classList.remove("hidden")
+  inputGridStringBtn.classList.remove("hidden")
+  setPuzzleBtn.classList.remove("hidden")
 }
 
 function inputCharacter(character) {
@@ -437,10 +438,9 @@ function toggleCandidates() {
 ////////////////////// Change DOM Only
 
 function scaleFont() {
-  let squareEls = document.querySelectorAll(".square")
-  let squareSize = squareEls[0].offsetWidth
-  for (let i = 0; i < squareEls.length; i++) {
-    squareEls[i].style.fontSize = squareSize * 1 + "px"
+  let squareSize = allSquareEls[0].offsetWidth
+  for (let i = 0; i < allSquareEls.length; i++) {
+    allSquareEls[i].style.fontSize = squareSize * 1 + "px"
   }
 }
 
