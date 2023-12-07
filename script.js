@@ -186,10 +186,11 @@ document.body.addEventListener("keydown", e => {
           tryAutoSolves()
         }
       }
-      if (!boardData.isSet && e.key !== "Shift") movePlaceBy(1)
-      return
+      if (!boardData.isSet && !e.shiftKey) {
+        movePlaceBy(1)
+        return
+      }
     }
-
     handleFocusMovementByKey(e.key)
   }
 })
@@ -221,19 +222,20 @@ function toggleAutoSolve(e) {
 
 function handleFocusMovementByKey(key) {
   if (key === "ArrowUp" || key === "w") {
-    movePlaceBy(-9)
+    console.log("up")
+    movePlace("up")
     return
   }
   if (key === "ArrowLeft" || key === "a") {
-    movePlaceBy(-1)
+    movePlace("left")
     return
   }
   if (key === "ArrowDown" || key === "s") {
-    movePlaceBy(9)
+    movePlace("down")
     return
   }
-  if (key === "ArrowRight" || key === "d" || key === " ") {
-    movePlaceBy(1)
+  if (key === "ArrowRight" || key === "d") {
+    movePlace("right")
     return
   }
 }
@@ -280,7 +282,13 @@ function tryAutoSolves(hasSuccessfulRecursion = false) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 function isDeleting(key) {
-  return key === "0" || key === "Backspace" || key === "Delete" || key === "."
+  return (
+    key === "0" ||
+    key === "Backspace" ||
+    key === "Delete" ||
+    key === "." ||
+    key === " "
+  )
 }
 
 function inputGridString() {
@@ -291,6 +299,7 @@ function inputGridString() {
     gridStringInputEl.value = ""
     return
   }
+  resetBoardData()
   gridString.split("").forEach((character, index) => {
     setTimeout(() => {
       const entryEl = document.querySelector(
@@ -487,6 +496,47 @@ function unhighlightEls(elArr) {
 
 const focusTarget = target => {
   target.focus()
+}
+
+function movePlace(direction) {
+  const currentFocusedEl = document.activeElement
+  const currentSquareN = Number(currentFocusedEl.dataset.squareN)
+  let nextSquareN
+  switch (direction) {
+    case "right":
+      if (currentSquareN % 9 == 0) {
+        nextSquareN = currentSquareN - 8
+      } else {
+        nextSquareN = currentSquareN + 1
+      }
+      break
+    case "left":
+      if ((currentSquareN - 1) % 9 == 0) {
+        nextSquareN = currentSquareN + 8
+      } else {
+        nextSquareN = currentSquareN - 1
+      }
+      break
+    case "down":
+      if (currentSquareN + 9 > 81) {
+        nextSquareN = currentSquareN - 72
+      } else {
+        nextSquareN = currentSquareN + 9
+      }
+      break
+    case "up":
+      if (currentSquareN - 9 < 1) {
+        nextSquareN = currentSquareN + 72
+      } else {
+        nextSquareN = currentSquareN - 9
+      }
+      break
+    default:
+      console.log("invalid direction argument for movePlace")
+  }
+  const selector = `.square[data-square-id="${nextSquareN.toString()}"] .entry`
+  const nextEl = document.querySelector(selector)
+  focusTarget(nextEl)
 }
 
 function movePlaceBy(numPlaces) {
