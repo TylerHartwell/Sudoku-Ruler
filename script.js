@@ -21,7 +21,7 @@ const allPadNumEls = Array.from(document.querySelectorAll(".pad-number"))
 const allTryNextBtns = Array.from(document.querySelectorAll(".try-next-btn"))
 const allCheckboxes = Array.from(document.querySelectorAll(".checkbox"))
 
-let pointerTarget = null
+let pointerDownTarget = null
 let lastPointerType = "mouse"
 let lastSelectedPadNum = null
 let isCandidateMode = false
@@ -35,18 +35,23 @@ window.onresize = () => {
 }
 
 document.body.addEventListener("pointerdown", e => {
-  pointerTarget = e.target
+  e.preventDefault()
+  pointerDownTarget = e.target
   lastPointerType = e.pointerType
-  if (lastPointerType != "mouse" && pointerTarget.classList.contains("entry")) {
+  if (
+    lastPointerType != "mouse" &&
+    pointerDownTarget.classList.contains("entry")
+  ) {
     e.preventDefault()
-    pointerTarget.contentEditable = false
+    pointerDownTarget.contentEditable = false
   }
 })
 
 document.body.addEventListener("pointerup", e => {
   e.preventDefault()
   clearAnyWrong()
-  if (e.target != pointerTarget) return
+
+  if (e.target != pointerDownTarget) return
 
   if (isCandidateMode) {
     if (allCandidateEls.includes(e.target)) {
@@ -54,6 +59,7 @@ document.body.addEventListener("pointerup", e => {
       getCandidateObj(candidateEl).eliminated = true
       refreshCandidateDisplay(candidateEl)
       tryAutoSolves()
+      return
     }
   }
 
@@ -62,45 +68,61 @@ document.body.addEventListener("pointerup", e => {
     const isSuccess = tryNextRule(btnEl.parentElement)
     const ruleOutcome = isSuccess ? "success" : "fail"
     btnEl.classList.add(ruleOutcome)
-
     setTimeout(() => {
       btnEl.classList.remove(ruleOutcome)
     }, 200)
-
     if (isSuccess) tryAutoSolves()
+    return
   }
 
   if (e.target == toggleCandidatesBtn) {
     toggleCandidates()
     refreshAllCandidatesDisplay()
+    return
   }
 
-  if (allEntryEls.includes(e.target) && lastPointerType == "mouse") {
+  ///&& lastPointerType == "mouse"
+  if (allEntryEls.includes(e.target)) {
     currentlySelectedEntryEl = e.target
     const blurHandler = e => {
       currentlySelectedEntryEl = null
+      console.log("entry blur")
     }
     currentlySelectedEntryEl.addEventListener("blur", blurHandler, {
       once: true
     })
     focusTarget(e.target)
+    return
   }
 
   if (e.target == clearAllBtn) {
     if (confirm("clear all?")) {
       resetAll()
     }
+    return
   }
 
+  if (e.target == gridStringEl) {
+    focusTarget(e.target)
+    return
+  }
   if (e.target == inputGridStringBtn) {
     inputGridString()
+    return
   }
 
   if (e.target == setPuzzleBtn) {
     setGrid()
+    return
   }
 
   if (allPadNumEls.includes(e.target)) {
+    if (currentlySelectedEntryEl) {
+      const number = allPadNumEls.indexOf(e.target) + 1
+      const value = number.toString()
+      handleEntryInputAttempt(value, currentlySelectedEntryEl)
+      return
+    }
     if (e.target == lastSelectedPadNum) {
       lastSelectedPadNum = null
       toggleHighlight(e.target)
@@ -109,21 +131,26 @@ document.body.addEventListener("pointerup", e => {
       highlightEls([e.target])
       refreshHighlightsOf(e.target)
     }
+    return
   }
 
   if (e.target == modeSwitchOuter) {
     switchMode()
+    return
   }
   if (e.target == solutionModeBtn) {
     if (isCandidateMode) {
       switchMode()
     }
+    return
   }
   if (e.target == candidateModeBtn) {
     if (!isCandidateMode) {
       switchMode()
     }
+    return
   }
+  blurAnyFocus()
 })
 
 allPadNumEls.forEach(el => {
@@ -145,55 +172,60 @@ allPadNumEls.forEach(el => {
 })
 
 document.body.addEventListener("keyup", e => {
+  if (lastPointerType != "mouse") return
   if (e.key === "Shift") {
     switchMode()
   }
 })
 
 document.body.addEventListener("keydown", e => {
+  console.log(e.key)
   if (lastPointerType != "mouse") return
+  clearAnyWrong()
+  if (e.key == "Escape") {
+    blurAnyFocus()
+    return
+  }
   if (e.shiftKey && !e.repeat) {
     switchMode()
     return
   }
   if (e.target.classList.contains("entry")) {
     e.preventDefault()
-    clearAnyWrong()
-    const entryEl = e.target
-    const entryObj = getEntryObj(entryEl)
-    if (!entryObj.isLocked) {
-      const previousValue = entryObj.shownValue
-      if (isDeleting(e.key) || (/[1-9]/.test(e.key) && !e.repeat)) {
-        if (previousValue == e.key) {
-          return
-        }
-        if (previousValue) {
-          removeEntryValue(entryObj)
-          updateCandidateEliminationOfPeers(
-            previousValue,
-            entryEl.parentElement
-          )
-          refreshEntryEl(entryEl)
-          unhighlightEls([entryEl])
-        }
-        if (/[1-9]/.test(e.key) && !e.repeat) {
-          if (!isLocallyValidPlacement(e.key, entryEl.parentElement, false)) {
-            entryEl.textContent = e.key
-            entryEl.classList.add("wrong")
-            return
-          }
-          handleNewEntry(entryEl, e.key)
-          tryAutoSolves()
-        }
-      }
-      if (!boardData.isSet && !e.shiftKey) {
-        movePlaceBy(1)
-        return
-      }
-    }
-    handleFocusMovementByKey(e.key)
+    if (e.repeat) return
+    if (handleFocusMovementByKey(e.key)) return
+    handleEntryInputAttempt(e.key, e.target)
   }
 })
+
+function handleEntryInputAttempt(value, entryEl) {
+  const entryObj = getEntryObj(entryEl)
+  if (!entryObj.isLocked) {
+    const previousValue = entryObj.shownValue
+    if (previousValue) {
+      removeEntryValue(entryObj)
+      updateCandidateEliminationOfPeers(previousValue, entryEl.parentElement)
+      refreshEntryEl(entryEl)
+      unhighlightEls([entryEl])
+    }
+    if (previousValue == value) {
+      return
+    }
+    if (/[1-9]/.test(value)) {
+      if (!isLocallyValidPlacement(value, entryEl.parentElement, false)) {
+        entryEl.textContent = value
+        entryEl.classList.add("wrong")
+        return
+      }
+      handleNewEntry(entryEl, value)
+      tryAutoSolves()
+    }
+    if (!boardData.isSet && !isCandidateMode) {
+      movePlaceBy(1)
+      return
+    }
+  }
+}
 
 allCheckboxes.forEach(el => {
   el.addEventListener("change", toggleAutoSolve)
@@ -224,20 +256,21 @@ function handleFocusMovementByKey(key) {
   if (key === "ArrowUp" || key === "w") {
     console.log("up")
     movePlace("up")
-    return
+    return true
   }
   if (key === "ArrowLeft" || key === "a") {
     movePlace("left")
-    return
+    return true
   }
   if (key === "ArrowDown" || key === "s") {
     movePlace("down")
-    return
+    return true
   }
   if (key === "ArrowRight" || key === "d") {
     movePlace("right")
-    return
+    return true
   }
+  return false
 }
 
 function allowPointingThroughEntries(isAllowed) {
@@ -326,6 +359,7 @@ function handleNewEntry(entryEl, character) {
 
 function setGrid() {
   if (boardData.isSet) return
+  blurAnyFocus()
   allEntryEls.forEach(entryEl => {
     const entryObj = getEntryObj(entryEl)
     if (entryObj.shownValue != "") {
@@ -494,8 +528,18 @@ function unhighlightEls(elArr) {
   })
 }
 
+function blurAnyFocus() {
+  const focusedElement = document.activeElement
+  if (focusedElement) {
+    focusedElement.blur()
+  }
+}
+
 const focusTarget = target => {
   target.focus()
+  if (target.classList.contains("entry")) {
+    currentlySelectedEntryEl = target
+  }
 }
 
 function movePlace(direction) {
