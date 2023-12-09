@@ -47,6 +47,7 @@ document.body.addEventListener("pointerdown", e => {
   }
 })
 
+////////TODO fix clicking in candidate mode
 document.body.addEventListener("pointerup", e => {
   e.preventDefault()
   clearAnyWrong()
@@ -83,10 +84,13 @@ document.body.addEventListener("pointerup", e => {
 
   ///&& lastPointerType == "mouse"
   if (allEntryEls.includes(e.target)) {
+    if (currentlySelectedEntryEl == e.target) {
+      blurAnyFocus()
+      return
+    }
     currentlySelectedEntryEl = e.target
     const blurHandler = e => {
       currentlySelectedEntryEl = null
-      console.log("entry blur")
     }
     currentlySelectedEntryEl.addEventListener("blur", blurHandler, {
       once: true
@@ -173,30 +177,66 @@ allPadNumEls.forEach(el => {
 
 document.body.addEventListener("keyup", e => {
   if (lastPointerType != "mouse") return
-  if (e.key === "Shift") {
+  if (e.key === "Shift" && e.target !== gridStringEl) {
+    console.log(e)
     switchMode()
   }
 })
 
 document.body.addEventListener("keydown", e => {
-  console.log(e.key)
+  e.preventDefault()
+  if (e.repeat) {
+    console.log("repeat")
+    return
+  }
+  console.log("new")
   if (lastPointerType != "mouse") return
+
   clearAnyWrong()
   if (e.key == "Escape") {
     blurAnyFocus()
     return
   }
-  if (e.shiftKey && !e.repeat) {
+  if (e.key === "Shift" && e.target !== gridStringEl) {
     switchMode()
     return
   }
+  const shiftKeyPressed = e.getModifierState("Shift")
   if (e.target.classList.contains("entry")) {
-    e.preventDefault()
-    if (e.repeat) return
-    if (handleFocusMovementByKey(e.key)) return
-    handleEntryInputAttempt(e.key, e.target)
+    const inputValue = shiftKeyPressed
+      ? getUnshiftedNumericValue(e.code) || getUnshiftedNumericValue(e.key)
+      : e.key
+    if (handleFocusMovementByKey(inputValue)) return
+    if (isCandidateMode) return
+    handleEntryInputAttempt(inputValue, e.target)
   }
 })
+
+function getUnshiftedNumericValue(codeOrKey) {
+  const shiftedValues = {
+    Digit1: "1",
+    Digit2: "2",
+    Digit3: "3",
+    Digit4: "4",
+    Digit5: "5",
+    Digit6: "6",
+    Digit7: "7",
+    Digit8: "8",
+    Digit9: "9",
+    Digit0: "0",
+    Numpad1: "1",
+    Numpad2: "2",
+    Numpad3: "3",
+    Numpad4: "4",
+    Numpad5: "5",
+    Numpad6: "6",
+    Numpad7: "7",
+    Numpad8: "8",
+    Numpad9: "9",
+    Numpad0: "0"
+  }
+  return shiftedValues[codeOrKey] || codeOrKey
+}
 
 function handleEntryInputAttempt(value, entryEl) {
   const entryObj = getEntryObj(entryEl)
@@ -254,7 +294,6 @@ function toggleAutoSolve(e) {
 
 function handleFocusMovementByKey(key) {
   if (key === "ArrowUp" || key === "w") {
-    console.log("up")
     movePlace("up")
     return true
   }
@@ -280,8 +319,6 @@ function allowPointingThroughEntries(isAllowed) {
 }
 
 function tryNextRule(ruleListItemEl) {
-  console.log("\n")
-  console.log("try next solve")
   const ruleOutcome = rulesArr[
     [...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)
   ](getCandidateObj, getEntryObj, handleNewEntry, refreshCandidateDisplay)
@@ -289,7 +326,6 @@ function tryNextRule(ruleListItemEl) {
 }
 
 function tryAutoSolves(hasSuccessfulRecursion = false) {
-  console.log("TRY AUTO")
   let isSuccessfulCall = false
   const ruleList = document.querySelector(".rules-list")
   const children = [...ruleList.children]
@@ -304,9 +340,6 @@ function tryAutoSolves(hasSuccessfulRecursion = false) {
   if (isSuccessfulCall) {
     tryAutoSolves(true)
   } else {
-    console.log("hasSuccessfuleRecursion: ", hasSuccessfulRecursion)
-    console.log("\n")
-    console.log("\n")
     return hasSuccessfulRecursion
   }
 }
@@ -314,21 +347,20 @@ function tryAutoSolves(hasSuccessfulRecursion = false) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-function isDeleting(key) {
-  return (
-    key === "0" ||
-    key === "Backspace" ||
-    key === "Delete" ||
-    key === "." ||
-    key === " "
-  )
-}
+// function isDeleting(key) {
+//   return (
+//     key === "0" ||
+//     key === "Backspace" ||
+//     key === "Delete" ||
+//     key === "." ||
+//     key === " "
+//   )
+// }
 
 function inputGridString() {
   const gridStringInputEl = document.querySelector(".grid-string")
   const gridString = gridStringInputEl.value
   if (gridString.length != 81) {
-    console.log("not 81")
     gridStringInputEl.value = ""
     return
   }
@@ -537,9 +569,7 @@ function blurAnyFocus() {
 
 const focusTarget = target => {
   target.focus()
-  if (target.classList.contains("entry")) {
-    currentlySelectedEntryEl = target
-  }
+  currentlySelectedEntryEl = target.classList.contains("entry") ? target : null
 }
 
 function movePlace(direction) {
