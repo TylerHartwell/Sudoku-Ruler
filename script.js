@@ -124,6 +124,33 @@ document.body.addEventListener("pointerup", e => {
     if (currentlySelectedEntryEl) {
       const number = allPadNumEls.indexOf(e.target) + 1
       const value = number.toString()
+      if (isCandidateMode) {
+        console.log(document.activeElement)
+        console.log(currentlySelectedEntryEl)
+
+        const boxN = currentlySelectedEntryEl.dataset.boxN
+        const squareN = currentlySelectedEntryEl.dataset.squareN
+
+        const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
+        const candidateSquare = candidateBox.boxSquares.find(
+          square => square.squareId == squareN
+        )
+        const candidateObj = candidateSquare.squareCandidates.find(
+          candidate => candidate.number == value
+        )
+        const squareEl = currentlySelectedEntryEl.parentElement
+        if (candidateObj.eliminated) {
+          if (isLocallyValidPlacement(value, squareEl)) {
+            candidateObj.eliminated = false
+          }
+        } else {
+          candidateObj.eliminated = true
+        }
+        const candidateEl = squareEl.querySelector(`[data-number="${value}"`)
+        refreshCandidateDisplay(candidateEl)
+        tryAutoSolves()
+        return
+      }
       handleEntryInputAttempt(value, currentlySelectedEntryEl)
       return
     }
