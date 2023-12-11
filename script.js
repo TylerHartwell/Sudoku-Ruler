@@ -85,6 +85,11 @@ document.body.addEventListener("pointerup", e => {
   ///&& lastPointerType == "mouse"
   if (allEntryEls.includes(e.target)) {
     if (currentlySelectedEntryEl == e.target) {
+      if (lastSelectedPadNum) {
+        const number = allPadNumEls.indexOf(lastSelectedPadNum) + 1
+        const value = number.toString()
+        handleEntryInputAttempt(value, currentlySelectedEntryEl)
+      }
       blurAnyFocus()
       return
     }
@@ -149,9 +154,11 @@ document.body.addEventListener("pointerup", e => {
         const candidateEl = squareEl.querySelector(`[data-number="${value}"`)
         refreshCandidateDisplay(candidateEl)
         tryAutoSolves()
+        blurAnyFocus()
         return
       }
       handleEntryInputAttempt(value, currentlySelectedEntryEl)
+      if (boardData.isSet) blurAnyFocus()
       return
     }
     if (e.target == lastSelectedPadNum) {
@@ -236,6 +243,7 @@ document.body.addEventListener("keydown", e => {
     if (handleFocusMovementByKey(inputValue)) return
     if (isCandidateMode) return
     handleEntryInputAttempt(inputValue, e.target)
+    if (boardData.isSet) blurAnyFocus()
   }
 })
 
@@ -367,6 +375,7 @@ function tryAutoSolves(hasSuccessfulRecursion = false) {
   if (isSuccessfulCall) {
     tryAutoSolves(true)
   } else {
+    blurAnyFocus()
     return hasSuccessfulRecursion
   }
 }
@@ -591,6 +600,7 @@ function blurAnyFocus() {
   const focusedElement = document.activeElement
   if (focusedElement) {
     focusedElement.blur()
+    currentlySelectedEntryEl = null
   }
 }
 
