@@ -71,7 +71,7 @@ document.body.addEventListener("pointerup", e => {
     btnEl.classList.add(ruleOutcome)
     setTimeout(() => {
       btnEl.classList.remove(ruleOutcome)
-    }, 200)
+    }, 300)
     if (isSuccess) tryAutoSolves()
     return
   }

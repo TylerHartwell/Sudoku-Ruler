@@ -313,6 +313,7 @@ button.set-puzzle-btn:active {
   box-shadow: black 0px 0px 4px;
   white-space: nowrap;
   width: 70px;
+  transition: background-color 0.3s ease-out;
 }
 
 .try-next-btn:active:disabled {
