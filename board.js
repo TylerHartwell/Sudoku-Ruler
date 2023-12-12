@@ -1,6 +1,6 @@
 export const boardData = {
   isSet: false,
-  candidatesOn: false,
+  isCandidateMode: false,
   allBoxes: [],
   allSquares: [],
   allEntries: [],
@@ -11,7 +11,7 @@ resetBoardData()
 
 export function resetBoardData() {
   boardData.isSet = false
-  boardData.candidatesOn = false
+  boardData.isCandidateMode = false
   boardData.allBoxes = createBoxes()
   boardData.allSquares = getAllSquares()
   boardData.allEntries = getAllEntries()

@@ -24,7 +24,6 @@ const allCheckboxes = Array.from(document.querySelectorAll(".checkbox"))
 let pointerDownTarget = null
 let lastPointerType = "mouse"
 let lastSelectedPadNum = null
-let isCandidateMode = false
 let currentlySelectedEntryEl = null
 
 window.onload = () => {
@@ -47,14 +46,13 @@ document.body.addEventListener("pointerdown", e => {
   }
 })
 
-////////TODO fix clicking in candidate mode
 document.body.addEventListener("pointerup", e => {
   e.preventDefault()
   clearAnyWrong()
 
   if (e.target != pointerDownTarget) return
 
-  if (isCandidateMode) {
+  if (boardData.isCandidateMode) {
     if (allCandidateEls.includes(e.target)) {
       const candidateEl = e.target
       getCandidateObj(candidateEl).eliminated = true
@@ -129,7 +127,7 @@ document.body.addEventListener("pointerup", e => {
     if (currentlySelectedEntryEl) {
       const number = allPadNumEls.indexOf(e.target) + 1
       const value = number.toString()
-      if (isCandidateMode) {
+      if (boardData.isCandidateMode) {
         const boxN = currentlySelectedEntryEl.dataset.boxN
         const squareN = currentlySelectedEntryEl.dataset.squareN
         const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
@@ -157,14 +155,7 @@ document.body.addEventListener("pointerup", e => {
       if (boardData.isSet) blurAnyFocus()
       return
     }
-    if (e.target == lastSelectedPadNum) {
-      lastSelectedPadNum = null
-      toggleHighlight(e.target)
-    } else {
-      lastSelectedPadNum = e.target
-      highlightEls([e.target])
-      refreshHighlightsOf(e.target)
-    }
+    handlePadNumHighlight(e.target)
     return
   }
 
@@ -173,19 +164,34 @@ document.body.addEventListener("pointerup", e => {
     return
   }
   if (e.target == solutionModeBtn) {
-    if (isCandidateMode) {
+    if (boardData.isCandidateMode) {
       switchMode()
     }
     return
   }
   if (e.target == candidateModeBtn) {
-    if (!isCandidateMode) {
+    if (!boardData.isCandidateMode) {
       switchMode()
     }
     return
   }
   blurAnyFocus()
 })
+
+function handlePadNumHighlight(padNumEl) {
+  if (padNumEl == lastSelectedPadNum) {
+    lastSelectedPadNum = null
+    toggleHighlight(padNumEl)
+  } else {
+    if (lastSelectedPadNum) {
+      unhighlightEls([lastSelectedPadNum])
+      refreshHighlightsOf(lastSelectedPadNum)
+    }
+    lastSelectedPadNum = padNumEl
+    highlightEls([padNumEl])
+    refreshHighlightsOf(padNumEl)
+  }
+}
 
 allPadNumEls.forEach(el => {
   el.addEventListener("mouseenter", e => {
@@ -227,7 +233,7 @@ document.body.addEventListener("keydown", e => {
     blurAnyFocus()
     return
   }
-  if (e.key === "Shift" && e.target !== gridStringEl) {
+  if (e.key === "Shift") {
     switchMode()
     return
   }
@@ -237,10 +243,13 @@ document.body.addEventListener("keydown", e => {
     : e.key
   if (e.target.classList.contains("entry")) {
     if (handleFocusMovementByKey(inputValue)) return
-    if (isCandidateMode) return
+    if (boardData.isCandidateMode) return
     handleEntryInputAttempt(inputValue, e.target)
     if (boardData.isSet) blurAnyFocus()
     return
+  }
+  if (/[1-9]/.test(inputValue)) {
+    handlePadNumHighlight(allPadNumEls[Number(inputValue) - 1])
   }
   handleFocusMovementByKey(inputValue)
 })
@@ -295,7 +304,7 @@ function handleEntryInputAttempt(value, entryEl) {
         tryAutoSolves()
       }
     }
-    if (!boardData.isSet && !isCandidateMode) {
+    if (!boardData.isSet && !boardData.isCandidateMode) {
       movePlaceBy(1)
       return
     }
@@ -307,12 +316,24 @@ allCheckboxes.forEach(el => {
 })
 
 function switchMode() {
-  isCandidateMode = !isCandidateMode
-  allowPointingThroughEntries(isCandidateMode)
-  modeSwitchOuter.classList.toggle("candidate-mode-on", isCandidateMode)
-  modeSwitchInner.classList.toggle("candidate-mode-on", isCandidateMode)
-  solutionModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
-  candidateModeBtn.classList.toggle("candidate-mode-on", isCandidateMode)
+  boardData.isCandidateMode = !boardData.isCandidateMode
+  allowPointingThroughEntries(boardData.isCandidateMode)
+  modeSwitchOuter.classList.toggle(
+    "candidate-mode-on",
+    boardData.isCandidateMode
+  )
+  modeSwitchInner.classList.toggle(
+    "candidate-mode-on",
+    boardData.isCandidateMode
+  )
+  solutionModeBtn.classList.toggle(
+    "candidate-mode-on",
+    boardData.isCandidateMode
+  )
+  candidateModeBtn.classList.toggle(
+    "candidate-mode-on",
+    boardData.isCandidateMode
+  )
 }
 
 function toggleAutoSolve(e) {
@@ -400,7 +421,14 @@ function inputGridString() {
     gridStringInputEl.value = ""
     return
   }
+  const isMaintainingCandidateMode = boardData.candidatesOn
   resetBoardData()
+  unhighlightEls(allEntryEls)
+  allEntryEls.forEach(entryEl => {
+    refreshEntryEl(entryEl)
+  })
+  boardData.candidatesOn = isMaintainingCandidateMode
+  refreshAllCandidatesDisplay()
   gridString.split("").forEach((character, index) => {
     setTimeout(() => {
       const entryEl = document.querySelector(
