@@ -130,12 +130,8 @@ document.body.addEventListener("pointerup", e => {
       const number = allPadNumEls.indexOf(e.target) + 1
       const value = number.toString()
       if (isCandidateMode) {
-        console.log(document.activeElement)
-        console.log(currentlySelectedEntryEl)
-
         const boxN = currentlySelectedEntryEl.dataset.boxN
         const squareN = currentlySelectedEntryEl.dataset.squareN
-
         const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
         const candidateSquare = candidateBox.boxSquares.find(
           square => square.squareId == squareN
@@ -212,18 +208,18 @@ allPadNumEls.forEach(el => {
 document.body.addEventListener("keyup", e => {
   if (lastPointerType != "mouse") return
   if (e.key === "Shift" && e.target !== gridStringEl) {
-    console.log(e)
     switchMode()
   }
 })
 
 document.body.addEventListener("keydown", e => {
-  e.preventDefault()
-  if (e.repeat) {
-    console.log("repeat")
+  if (e.target == gridStringEl) {
     return
   }
-  console.log("new")
+  e.preventDefault()
+  if (e.repeat) {
+    return
+  }
   if (lastPointerType != "mouse") return
 
   clearAnyWrong()
@@ -236,15 +232,17 @@ document.body.addEventListener("keydown", e => {
     return
   }
   const shiftKeyPressed = e.getModifierState("Shift")
+  const inputValue = shiftKeyPressed
+    ? getUnshiftedNumericValue(e.code) || getUnshiftedNumericValue(e.key)
+    : e.key
   if (e.target.classList.contains("entry")) {
-    const inputValue = shiftKeyPressed
-      ? getUnshiftedNumericValue(e.code) || getUnshiftedNumericValue(e.key)
-      : e.key
     if (handleFocusMovementByKey(inputValue)) return
     if (isCandidateMode) return
     handleEntryInputAttempt(inputValue, e.target)
     if (boardData.isSet) blurAnyFocus()
+    return
   }
+  handleFocusMovementByKey(inputValue)
 })
 
 function getUnshiftedNumericValue(codeOrKey) {
@@ -293,7 +291,9 @@ function handleEntryInputAttempt(value, entryEl) {
         return
       }
       handleNewEntry(entryEl, value)
-      tryAutoSolves()
+      if (boardData.isSet) {
+        tryAutoSolves()
+      }
     }
     if (!boardData.isSet && !isCandidateMode) {
       movePlaceBy(1)
@@ -610,7 +610,14 @@ const focusTarget = target => {
 }
 
 function movePlace(direction) {
-  const currentFocusedEl = document.activeElement
+  const currentFocusedEl =
+    document.activeElement == document.body || !document.activeElement
+      ? null
+      : document.activeElement
+  if (!currentFocusedEl) {
+    focusCenter()
+    return
+  }
   const currentSquareN = Number(currentFocusedEl.dataset.squareN)
   let nextSquareN
   switch (direction) {
@@ -642,8 +649,6 @@ function movePlace(direction) {
         nextSquareN = currentSquareN - 9
       }
       break
-    default:
-      console.log("invalid direction argument for movePlace")
   }
   const selector = `.square[data-square-id="${nextSquareN.toString()}"] .entry`
   const nextEl = document.querySelector(selector)
@@ -651,12 +656,23 @@ function movePlace(direction) {
 }
 
 function movePlaceBy(numPlaces) {
-  const currentFocusedEl = document.activeElement
+  const currentFocusedEl =
+    document.activeElement == document.body || !document.activeElement
+      ? null
+      : document.activeElement
+  if (!currentFocusedEl) {
+    focusCenter()
+    return
+  }
   const currentSquareN = Number(currentFocusedEl.dataset.squareN)
   const nextSquareN = (currentSquareN + numPlaces + 81) % 81 || 81
   const selector = `.square[data-square-id="${nextSquareN.toString()}"] .entry`
   const nextEl = document.querySelector(selector)
   focusTarget(nextEl)
+}
+
+function focusCenter() {
+  focusTarget(allEntryEls[40])
 }
 
 function clearAnyWrong() {

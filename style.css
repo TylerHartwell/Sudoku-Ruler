@@ -409,3 +409,13 @@ button:active {
     transform: scale(1);
   }
 }
+
+@media (hover: hover) and (pointer: fine) and (max-width: 799px) {
+  body {
+    overflow-x: hidden;
+  }
+  .container {
+    grid-template-columns: minmax(min-content, 95vw);
+    margin-left: 5px;
+  }
+}
