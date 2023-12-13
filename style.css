@@ -237,6 +237,7 @@ body {
   height: 2em;
   font-size: 0.85em;
   margin: 2px;
+  user-select: text;
 }
 .input-grid-string-btn {
   width: 50%;

@@ -25,6 +25,7 @@ let pointerDownTarget = null
 let lastPointerType = "mouse"
 let lastSelectedPadNum = null
 let currentlySelectedEntryEl = null
+let isCandidatesToggleOn = false
 
 window.onload = () => {
   scaleFont()
@@ -34,7 +35,9 @@ window.onresize = () => {
 }
 
 document.body.addEventListener("pointerdown", e => {
-  e.preventDefault()
+  if (e.target != gridStringEl) {
+    e.preventDefault()
+  }
   pointerDownTarget = e.target
   lastPointerType = e.pointerType
   if (
@@ -75,7 +78,7 @@ document.body.addEventListener("pointerup", e => {
   }
 
   if (e.target == toggleCandidatesBtn) {
-    toggleCandidates()
+    isCandidatesToggleOn = !isCandidatesToggleOn
     refreshAllCandidatesDisplay()
     return
   }
@@ -334,6 +337,7 @@ function switchMode() {
     "candidate-mode-on",
     boardData.isCandidateMode
   )
+  refreshAllCandidatesDisplay()
 }
 
 function toggleAutoSolve(e) {
@@ -421,13 +425,13 @@ function inputGridString() {
     gridStringInputEl.value = ""
     return
   }
-  const isMaintainingCandidateMode = boardData.candidatesOn
+  const isMaintainingCandidateMode = boardData.isCandidateMode
   resetBoardData()
   unhighlightEls(allEntryEls)
   allEntryEls.forEach(entryEl => {
     refreshEntryEl(entryEl)
   })
-  boardData.candidatesOn = isMaintainingCandidateMode
+  boardData.isCandidateMode = isMaintainingCandidateMode
   refreshAllCandidatesDisplay()
   gridString.split("").forEach((character, index) => {
     setTimeout(() => {
@@ -482,6 +486,11 @@ function resetAll() {
   gridStringEl.classList.remove("hidden")
   inputGridStringBtn.classList.remove("hidden")
   setPuzzleBtn.classList.remove("hidden")
+  pointerDownTarget = null
+  lastPointerType = "mouse"
+  lastSelectedPadNum = null
+  currentlySelectedEntryEl = null
+  isCandidatesToggleOn = false
 }
 
 function inputCharacter(character) {
@@ -578,10 +587,6 @@ function getCandidateObj(candidateEl) {
   return candidateObj
 }
 
-function toggleCandidates() {
-  boardData.candidatesOn = !boardData.candidatesOn
-}
-
 ////////////////////// Change DOM Only
 
 function scaleFont() {
@@ -601,7 +606,8 @@ function refreshCandidateDisplay(candidateEl) {
   const candidateObj = getCandidateObj(candidateEl)
   candidateEl.classList.toggle(
     "hidden",
-    candidateObj.eliminated || !boardData.candidatesOn
+    candidateObj.eliminated ||
+      (!boardData.isCandidateMode && !isCandidatesToggleOn)
   )
 }
 
