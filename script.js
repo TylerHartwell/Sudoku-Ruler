@@ -630,7 +630,7 @@ function refreshCandidateDisplay(candidateEl) {
 
 function refreshEntryEl(entryEl) {
   const entryObj = getEntryObj(entryEl)
-  entryEl.contentEditable = !entryObj.isLocked
+  // entryEl.contentEditable = !entryObj.isLocked
   entryEl.classList.toggle("set", entryObj.isLocked)
   entryEl.textContent = entryObj.shownValue
 }

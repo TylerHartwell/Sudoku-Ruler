@@ -41,7 +41,8 @@ export function createBoardHTML() {
       entryEl.dataset.boxN = square.boxN
       entryEl.dataset.squareN = square.squareId
       entryEl.textContent = square.entry.shownValue
-      entryEl.contentEditable = true
+      // entryEl.contentEditable = true
+      entryEl.contentEditable = false
       entryEl.tabIndex = -1
       squareEl.appendChild(entryEl)
 
