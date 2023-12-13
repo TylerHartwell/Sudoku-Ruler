@@ -45,7 +45,7 @@ document.body.addEventListener("pointerdown", e => {
   pointerDownTarget = e.target
   lastPointerType = e.pointerType
   if (
-    lastPointerType != "mouse" &&
+    lastPointerType == "touch" &&
     pointerDownTarget.classList.contains("entry")
   ) {
     e.preventDefault()
@@ -59,7 +59,7 @@ document.body.addEventListener("pointerup", e => {
 
   if (e.target != pointerDownTarget) return
 
-  if (boardData.isCandidateMode) {
+  if (boardData.isCandidateMode && lastPointerType != "touch") {
     if (allCandidateEls.includes(e.target)) {
       const candidateEl = e.target
       getCandidateObj(candidateEl).eliminated = true
@@ -331,7 +331,9 @@ allCheckboxes.forEach(el => {
 
 function switchMode() {
   boardData.isCandidateMode = !boardData.isCandidateMode
-  allowPointingThroughEntries(boardData.isCandidateMode)
+  allowPointingThroughEntries(
+    boardData.isCandidateMode && lastPointerType != "touch"
+  )
   modeSwitchOuter.classList.toggle(
     "candidate-mode-on",
     boardData.isCandidateMode
