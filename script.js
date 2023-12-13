@@ -34,6 +34,10 @@ window.onresize = () => {
   scaleFont()
 }
 
+allEntryEls.forEach(el => {
+  el.inputmode = "none"
+})
+
 document.body.addEventListener("pointerdown", e => {
   if (e.target != gridStringEl) {
     e.preventDefault()
@@ -223,6 +227,13 @@ document.body.addEventListener("keyup", e => {
 
 document.body.addEventListener("keydown", e => {
   if (e.target == gridStringEl) {
+    if (
+      e.key === "Enter" ||
+      e.key === "Go" ||
+      e.key === "Next" ||
+      e.key === "Return"
+    )
+      inputGridString()
     return
   }
   e.preventDefault()
@@ -480,7 +491,13 @@ function setGrid() {
 }
 
 function resetAll() {
+  if (boardData.isCandidateMode) switchMode()
   resetBoardData()
+  pointerDownTarget = null
+  lastPointerType = "mouse"
+  lastSelectedPadNum = null
+  currentlySelectedEntryEl = null
+  isCandidatesToggleOn = false
   unhighlightEls(allPadNumEls)
   unhighlightEls(allEntryEls)
   unhighlightEls(allCandidateEls)
@@ -491,11 +508,6 @@ function resetAll() {
   gridStringEl.classList.remove("hidden")
   inputGridStringBtn.classList.remove("hidden")
   setPuzzleBtn.classList.remove("hidden")
-  pointerDownTarget = null
-  lastPointerType = "mouse"
-  lastSelectedPadNum = null
-  currentlySelectedEntryEl = null
-  isCandidatesToggleOn = false
 }
 
 function inputCharacter(character) {
