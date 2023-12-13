@@ -338,6 +338,11 @@ function switchMode() {
     boardData.isCandidateMode
   )
   refreshAllCandidatesDisplay()
+  toggleCandidatesBtn.disabled = boardData.isCandidateMode
+  // toggleCandidatesBtn.classList.toggle(
+  //   "candidate-mode-on",
+  //   boardData.isCandidateMode
+  // )
 }
 
 function toggleAutoSolve(e) {

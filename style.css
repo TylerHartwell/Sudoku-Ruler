@@ -285,6 +285,10 @@ button.set-puzzle-btn:active {
   box-shadow: black 0px 0px 3px;
 }
 
+.toggle-candidates-btn:active:disabled {
+  transform: none;
+}
+
 .rules-title {
   border: none;
 }
@@ -397,6 +401,11 @@ button:active {
 
   .try-next-btn:hover:disabled {
     box-shadow: black 0px 0px 4px;
+    cursor: default;
+  }
+  .toggle-candidates-btn:hover:disabled {
+    box-shadow: black 0px 0px 3px;
+    cursor: default;
   }
 
   button:hover {
