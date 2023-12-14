@@ -38,25 +38,22 @@ allEntryEls.forEach(el => {
   el.inputmode = "none"
 })
 
+// gridStringEl.addEventListener("paste", e => {
+//   // e.preventDefault()
+// })
+
 document.body.addEventListener("pointerdown", e => {
-  if (e.target != gridStringEl) {
-    e.preventDefault()
-  }
   pointerDownTarget = e.target
   lastPointerType = e.pointerType
-  if (
-    lastPointerType == "touch" &&
-    pointerDownTarget.classList.contains("entry")
-  ) {
-    e.preventDefault()
-    pointerDownTarget.contentEditable = false
-  }
+  e.preventDefault()
+  // if (e.target != gridStringEl) {
+  //   e.preventDefault()
+  // }
 })
 
 document.body.addEventListener("pointerup", e => {
   e.preventDefault()
   clearAnyWrong()
-
   if (e.target != pointerDownTarget) return
 
   if (boardData.isCandidateMode && lastPointerType != "touch") {
@@ -87,7 +84,6 @@ document.body.addEventListener("pointerup", e => {
     return
   }
 
-  ///&& lastPointerType == "mouse"
   if (allEntryEls.includes(e.target)) {
     if (currentlySelectedEntryEl == e.target) {
       if (lastSelectedPadNum) {
@@ -98,13 +94,6 @@ document.body.addEventListener("pointerup", e => {
       blurAnyFocus()
       return
     }
-    currentlySelectedEntryEl = e.target
-    const blurHandler = e => {
-      currentlySelectedEntryEl = null
-    }
-    currentlySelectedEntryEl.addEventListener("blur", blurHandler, {
-      once: true
-    })
     focusTarget(e.target)
     return
   }
@@ -155,7 +144,6 @@ document.body.addEventListener("pointerup", e => {
         const candidateEl = squareEl.querySelector(`[data-number="${value}"`)
         refreshCandidateDisplay(candidateEl)
         tryAutoSolves()
-        blurAnyFocus()
         return
       }
       handleEntryInputAttempt(value, currentlySelectedEntryEl)
@@ -241,7 +229,6 @@ document.body.addEventListener("keydown", e => {
     return
   }
   if (lastPointerType != "mouse") return
-
   clearAnyWrong()
   if (e.key == "Escape") {
     blurAnyFocus()
@@ -264,6 +251,7 @@ document.body.addEventListener("keydown", e => {
   }
   if (/[1-9]/.test(inputValue)) {
     handlePadNumHighlight(allPadNumEls[Number(inputValue) - 1])
+    return
   }
   handleFocusMovementByKey(inputValue)
 })
@@ -352,10 +340,6 @@ function switchMode() {
   )
   refreshAllCandidatesDisplay()
   toggleCandidatesBtn.disabled = boardData.isCandidateMode
-  // toggleCandidatesBtn.classList.toggle(
-  //   "candidate-mode-on",
-  //   boardData.isCandidateMode
-  // )
 }
 
 function toggleAutoSolve(e) {
@@ -418,7 +402,6 @@ function tryAutoSolves(hasSuccessfulRecursion = false) {
   if (isSuccessfulCall) {
     tryAutoSolves(true)
   } else {
-    blurAnyFocus()
     return hasSuccessfulRecursion
   }
 }
@@ -495,10 +478,10 @@ function setGrid() {
 function resetAll() {
   if (boardData.isCandidateMode) switchMode()
   resetBoardData()
+  blurAnyFocus()
   pointerDownTarget = null
   lastPointerType = "mouse"
   lastSelectedPadNum = null
-  currentlySelectedEntryEl = null
   isCandidatesToggleOn = false
   unhighlightEls(allPadNumEls)
   unhighlightEls(allEntryEls)
@@ -657,7 +640,7 @@ function blurAnyFocus() {
   }
 }
 
-const focusTarget = target => {
+function focusTarget(target) {
   target.focus()
   currentlySelectedEntryEl = target.classList.contains("entry") ? target : null
 }
