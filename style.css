@@ -7,6 +7,7 @@ body {
   min-width: min-content;
   margin: 0;
   user-select: none;
+  touch-action: none;
 }
 
 .container {
