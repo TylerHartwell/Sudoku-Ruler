@@ -86,9 +86,16 @@ document.body.addEventListener("pointerup", e => {
 
   if (allEntryEls.includes(e.target)) {
     if (currentlySelectedEntryEl == e.target) {
+      const number = allPadNumEls.indexOf(lastSelectedPadNum) + 1
+      const value = number.toString()
+      if (boardData.isCandidateMode) {
+        if (lastSelectedPadNum) {
+          toggleCandidateInEntryEl(value, currentlySelectedEntryEl)
+          return
+        }
+        blurAnyFocus()
+      }
       if (lastSelectedPadNum) {
-        const number = allPadNumEls.indexOf(lastSelectedPadNum) + 1
-        const value = number.toString()
         handleEntryInputAttempt(value, currentlySelectedEntryEl)
       }
       blurAnyFocus()
@@ -123,27 +130,9 @@ document.body.addEventListener("pointerup", e => {
     if (currentlySelectedEntryEl) {
       const number = allPadNumEls.indexOf(e.target) + 1
       const value = number.toString()
+
       if (boardData.isCandidateMode) {
-        const boxN = currentlySelectedEntryEl.dataset.boxN
-        const squareN = currentlySelectedEntryEl.dataset.squareN
-        const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
-        const candidateSquare = candidateBox.boxSquares.find(
-          square => square.squareId == squareN
-        )
-        const candidateObj = candidateSquare.squareCandidates.find(
-          candidate => candidate.number == value
-        )
-        const squareEl = currentlySelectedEntryEl.parentElement
-        if (candidateObj.eliminated) {
-          if (isLocallyValidPlacement(value, squareEl)) {
-            candidateObj.eliminated = false
-          }
-        } else {
-          candidateObj.eliminated = true
-        }
-        const candidateEl = squareEl.querySelector(`[data-number="${value}"`)
-        refreshCandidateDisplay(candidateEl)
-        tryAutoSolves()
+        toggleCandidateInEntryEl(value, currentlySelectedEntryEl)
         return
       }
       handleEntryInputAttempt(value, currentlySelectedEntryEl)
@@ -172,6 +161,29 @@ document.body.addEventListener("pointerup", e => {
   }
   blurAnyFocus()
 })
+
+function toggleCandidateInEntryEl(value, entryEl) {
+  const boxN = entryEl.dataset.boxN
+  const squareN = entryEl.dataset.squareN
+  const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
+  const candidateSquare = candidateBox.boxSquares.find(
+    square => square.squareId == squareN
+  )
+  const candidateObj = candidateSquare.squareCandidates.find(
+    candidate => candidate.number == value
+  )
+  const squareEl = entryEl.parentElement
+  if (candidateObj.eliminated) {
+    if (isLocallyValidPlacement(value, squareEl)) {
+      candidateObj.eliminated = false
+    }
+  } else {
+    candidateObj.eliminated = true
+  }
+  const candidateEl = squareEl.querySelector(`[data-number="${value}"`)
+  refreshCandidateDisplay(candidateEl)
+  tryAutoSolves()
+}
 
 function handlePadNumHighlight(padNumEl) {
   if (padNumEl == lastSelectedPadNum) {
