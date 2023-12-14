@@ -193,10 +193,12 @@ function toggleCandidateInEntryEl(value, entryEl) {
 function handlePadNumHighlight(padNumEl) {
   console.log("handle pad number")
   if (padNumEl == lastSelectedPadNum) {
+    console.log("padNumEl = lastSelectedPadNum")
     lastSelectedPadNum = null
     toggleHighlight(padNumEl)
   } else {
     if (lastSelectedPadNum) {
+      console.log("lastSelectedPadNum existed")
       unhighlightEls([lastSelectedPadNum])
       refreshHighlightsOf(lastSelectedPadNum)
     }
