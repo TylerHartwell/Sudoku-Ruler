@@ -127,6 +127,7 @@ document.body.addEventListener("pointerup", e => {
   }
 
   if (allPadNumEls.includes(e.target)) {
+    console.log("pointer event on pad")
     if (currentlySelectedEntryEl) {
       const number = allPadNumEls.indexOf(e.target) + 1
       const value = number.toString()
@@ -190,6 +191,7 @@ function toggleCandidateInEntryEl(value, entryEl) {
 }
 
 function handlePadNumHighlight(padNumEl) {
+  console.log("handle pad number")
   if (padNumEl == lastSelectedPadNum) {
     lastSelectedPadNum = null
     toggleHighlight(padNumEl)
