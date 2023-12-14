@@ -402,6 +402,7 @@ function tryAutoSolves(hasSuccessfulRecursion = false) {
   if (isSuccessfulCall) {
     tryAutoSolves(true)
   } else {
+    if (hasSuccessfulRecursion) blurAnyFocus()
     return hasSuccessfulRecursion
   }
 }
@@ -444,6 +445,7 @@ function inputGridString() {
     }, 10 * (index + 1))
   })
   gridStringInputEl.value = ""
+  blurAnyFocus()
 }
 
 function handleNewEntry(entryEl, character) {
