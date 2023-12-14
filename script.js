@@ -98,7 +98,7 @@ document.body.addEventListener("pointerup", e => {
       if (lastSelectedPadNum) {
         handleEntryInputAttempt(value, currentlySelectedEntryEl)
       }
-      blurAnyFocus()
+      if (!currentlySelectedEntryEl.classList.contains("wrong")) blurAnyFocus()
       return
     }
     focusTarget(e.target)
@@ -136,7 +136,11 @@ document.body.addEventListener("pointerup", e => {
         return
       }
       handleEntryInputAttempt(value, currentlySelectedEntryEl)
-      if (boardData.isSet) blurAnyFocus()
+      if (
+        boardData.isSet &&
+        !currentlySelectedEntryEl.classList.contains("wrong")
+      )
+        blurAnyFocus()
       return
     }
     handlePadNumHighlight(e.target)
@@ -258,7 +262,11 @@ document.body.addEventListener("keydown", e => {
     if (handleFocusMovementByKey(inputValue)) return
     if (boardData.isCandidateMode) return
     handleEntryInputAttempt(inputValue, e.target)
-    if (boardData.isSet) blurAnyFocus()
+    if (
+      boardData.isSet &&
+      !currentlySelectedEntryEl.classList.contains("wrong")
+    )
+      blurAnyFocus()
     return
   }
   if (/[1-9]/.test(inputValue)) {
@@ -311,6 +319,7 @@ function handleEntryInputAttempt(value, entryEl) {
       if (!isLocallyValidPlacement(value, entryEl.parentElement, false)) {
         entryEl.textContent = value
         entryEl.classList.add("wrong")
+        focusTarget(entryEl)
         return
       }
       handleNewEntry(entryEl, value)
