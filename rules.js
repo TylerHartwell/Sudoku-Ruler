@@ -267,14 +267,14 @@ const nakedPairs = (
           squareCandidateGroup.push(squareCandidate)
         }
       }
-      if (squareCandidateGroup.length > 0) {
+      if (squareCandidateGroup.length > 1) {
         groupOfAll.push(squareCandidateGroup)
       }
     }
 
-    groupOfSize = groupOfAll.filter(
-      squareCandidateGroup => squareCandidateGroup.length <= groupSize
-    )
+    groupOfSize = groupOfAll.filter(squareCandidateGroup => {
+      return squareCandidateGroup.length == groupSize
+    })
 
     if (groupOfSize.length >= groupSize) {
       for (let i = 0; i < groupOfSize.length - 1; i++) {
