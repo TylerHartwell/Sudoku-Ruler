@@ -223,6 +223,9 @@ function handlePadNumHighlight(padNumEl) {
 
 allPadNumEls.forEach(el => {
   el.addEventListener("mouseenter", e => {
+    if (lastPointerType == "touch") {
+      return
+    }
     if (el == lastSelectedPadNum) {
       return
     }
@@ -231,6 +234,9 @@ allPadNumEls.forEach(el => {
 })
 allPadNumEls.forEach(el => {
   el.addEventListener("mouseout", e => {
+    if (lastPointerType == "touch") {
+      return
+    }
     if (lastSelectedPadNum) {
       if (el == lastSelectedPadNum) {
         return
