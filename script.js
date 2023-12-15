@@ -592,26 +592,24 @@ function isAlreadyIn(number, squareElPeers, squareEl, includeSelf) {
 }
 
 function getEntryObj(entryEl) {
-  const boxN = entryEl.dataset.boxN
   const squareN = entryEl.dataset.squareN
-  const entryBox = boardData.allBoxes.find(box => box.boxId == boxN)
-  const entrySquare = entryBox.boxSquares.find(
-    square => square.squareId == squareN
-  )
-  const entryObj = entrySquare.entry
+  const entryObj = boardData.allEntries.find(entry => entry.squareN == squareN)
   return entryObj
 }
 
 function getCandidateObj(candidateEl) {
-  const boxN = candidateEl.dataset.boxN
+  // const boxN = candidateEl.dataset.boxN
   const squareN = candidateEl.dataset.squareN
   const number = candidateEl.dataset.number
-  const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
-  const candidateSquare = candidateBox.boxSquares.find(
-    square => square.squareId == squareN
-  )
-  const candidateObj = candidateSquare.squareCandidates.find(
-    candidate => candidate.number == number
+  // const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
+  // const candidateSquare = candidateBox.boxSquares.find(
+  //   square => square.squareId == squareN
+  // )
+  // const candidateObj = candidateSquare.squareCandidates.find(
+  //   candidate => candidate.number == number
+  // )
+  const candidateObj = boardData.allCandidates.find(
+    candidate => candidate.squareN == squareN && candidate.number == number
   )
   return candidateObj
 }
