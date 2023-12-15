@@ -150,6 +150,7 @@ document.body.addEventListener("pointerup", e => {
       handleEntryInputAttempt(value, currentlySelectedEntryEl)
       if (
         boardData.isSet &&
+        currentlySelectedEntryEl &&
         !currentlySelectedEntryEl.classList.contains("wrong")
       ) {
         blurAnyFocus()
