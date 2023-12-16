@@ -38,17 +38,10 @@ allEntryEls.forEach(el => {
   el.inputmode = "none"
 })
 
-// gridStringEl.addEventListener("paste", e => {
-//   // e.preventDefault()
-// })
-
 document.body.addEventListener("pointerdown", e => {
   pointerDownTarget = e.target
   lastPointerType = e.pointerType
   e.preventDefault()
-  // if (e.target != gridStringEl) {
-  //   e.preventDefault()
-  // }
 })
 
 document.body.addEventListener("pointerup", e => {
@@ -138,7 +131,6 @@ document.body.addEventListener("pointerup", e => {
   }
 
   if (allPadNumEls.includes(e.target)) {
-    console.log("pointer event on pad")
     if (currentlySelectedEntryEl) {
       const number = allPadNumEls.indexOf(e.target) + 1
       const value = number.toString()
@@ -204,14 +196,11 @@ function toggleCandidateInEntryEl(value, entryEl) {
 }
 
 function handlePadNumHighlight(padNumEl) {
-  console.log("handle pad number")
   if (padNumEl == lastSelectedPadNum) {
-    console.log("padNumEl = lastSelectedPadNum")
     lastSelectedPadNum = null
     toggleHighlight(padNumEl)
   } else {
     if (lastSelectedPadNum) {
-      console.log("lastSelectedPadNum existed")
       unhighlightEls([lastSelectedPadNum])
       refreshHighlightsOf(lastSelectedPadNum)
     }
