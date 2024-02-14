@@ -8,7 +8,7 @@ export function createRulesHTML() {
   rulesArr.forEach((rule, index) => {
     const tryNextBtn = document.createElement("button")
     tryNextBtn.classList.add("try-next-btn")
-    tryNextBtn.textContent = "Try Next"
+    tryNextBtn.textContent = "Attempt"
 
     const ruleName = document.createElement("span")
     ruleName.textContent = rule.name
@@ -25,7 +25,7 @@ export function createRulesHTML() {
 
     const checkboxLabel = document.createElement("label")
     checkboxLabel.htmlFor = "checkbox" + index + 1
-    checkboxLabel.textContent = "Auto Solve:"
+    checkboxLabel.textContent = "Auto Attempt:"
     checkboxLabel.classList.add("checkbox-label")
 
     const li = document.createElement("li")
