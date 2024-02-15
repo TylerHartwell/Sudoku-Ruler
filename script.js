@@ -821,3 +821,5 @@ function toggleHighlight(padNumEl) {
     refreshHighlightsOf(padNumEl)
   }
 }
+
+//TODO add copy current/starter board to string
