@@ -10,6 +10,7 @@ const modeSwitchInner = document.querySelector(".mode-switch-inner")
 const solutionModeBtn = document.querySelector(".solution-mode-btn")
 const candidateModeBtn = document.querySelector(".candidate-mode-btn")
 const setPuzzleBtn = document.querySelector(".set-puzzle-btn")
+const fetchGridStringBtn = document.querySelector(".fetch-grid-string-btn")
 const gridStringEl = document.querySelector(".grid-string")
 const inputGridStringBtn = document.querySelector(".input-grid-string-btn")
 const clearAllBtn = document.querySelector(".clear-all-btn")
@@ -44,7 +45,7 @@ document.body.addEventListener("pointerdown", e => {
   e.preventDefault()
 })
 
-document.body.addEventListener("pointerup", e => {
+document.body.addEventListener("pointerup", async e => {
   e.preventDefault()
   clearAnyWrong()
   if (e.target != pointerDownTarget) {
@@ -116,6 +117,11 @@ document.body.addEventListener("pointerup", e => {
     return
   }
 
+  if (e.target == fetchGridStringBtn) {
+    const gridString = await fetchGridString()
+    inputGridString(gridString)
+    return
+  }
   if (e.target == gridStringEl) {
     focusTarget(e.target)
     return
@@ -171,6 +177,37 @@ document.body.addEventListener("pointerup", e => {
   }
   blurAnyFocus()
 })
+
+async function fetchGridString() {
+  try {
+    const response = await fetch("https://youdosudoku.com/api/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        difficulty: "hard",
+        solution: true,
+        array: false
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    if (!data || !data.puzzle) {
+      throw new Error("Invalid response format")
+    }
+
+    return data.puzzle
+  } catch (error) {
+    console.error("Error fetching or processing data:", error.message)
+    return undefined
+  }
+}
 
 function toggleCandidateInEntryEl(value, entryEl) {
   const boxN = entryEl.dataset.boxN
@@ -469,11 +506,9 @@ function tryAutoSolves(hasSuccessfulRecursion = false) {
 //   )
 // }
 
-function inputGridString() {
-  const gridStringInputEl = document.querySelector(".grid-string")
-  const gridString = gridStringInputEl.value
+function inputGridString(gridString = gridStringEl.value) {
   if (gridString.length != 81) {
-    gridStringInputEl.value = ""
+    gridStringEl.value = ""
     return
   }
   const isMaintainingCandidateMode = boardData.isCandidateMode
@@ -495,7 +530,7 @@ function inputGridString() {
       }
     }, 10 * (index + 1))
   })
-  gridStringInputEl.value = ""
+  gridStringEl.value = ""
   blurAnyFocus()
 }
 
