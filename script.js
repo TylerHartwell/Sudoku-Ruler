@@ -39,6 +39,10 @@ allEntryEls.forEach(el => {
   el.inputmode = "none"
 })
 
+// fetch("https://sudoku-api.vercel.app/api/dosuku")
+//   .then(res => res.json())
+//   .then(data => console.log(data.newboard.grids[0].value))
+
 document.body.addEventListener("pointerdown", e => {
   pointerDownTarget = e.target
   lastPointerType = e.pointerType
@@ -180,17 +184,7 @@ document.body.addEventListener("pointerup", async e => {
 
 async function fetchGridString() {
   try {
-    const response = await fetch("https://youdosudoku.com/api/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        difficulty: "hard",
-        solution: true,
-        array: false
-      })
-    })
+    const response = await fetch("https://sudoku-api.vercel.app/api/dosuku")
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`)
@@ -198,11 +192,21 @@ async function fetchGridString() {
 
     const data = await response.json()
 
-    if (!data || !data.puzzle) {
+    if (!data || !data.newboard) {
       throw new Error("Invalid response format")
     }
 
-    return data.puzzle
+    const gridMatrix = data.newboard.grids[0].value
+    console.log(data.newboard.grids[0].difficulty)
+    let gridString = ""
+
+    for (let i = 0; i < gridMatrix.length; i++) {
+      for (let j = 0; j < gridMatrix[i].length; j++) {
+        gridString += gridMatrix[i][j]
+      }
+    }
+
+    return gridString
   } catch (error) {
     console.error("Error fetching or processing data:", error.message)
     return undefined
