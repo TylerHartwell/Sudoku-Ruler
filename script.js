@@ -39,6 +39,8 @@ allEntryEls.forEach(el => {
   el.inputmode = "none"
 })
 
+// need to check potential harmful change to netlify settings
+
 // fetch("https://sudoku-api.vercel.app/api/dosuku")
 //   .then(res => res.json())
 //   .then(data => console.log(data.newboard.grids[0].value))
