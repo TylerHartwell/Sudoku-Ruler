@@ -1,0 +1,20 @@
+{
+  "name": "sudoku-ruler",
+  "version": "1.0.0",
+  "description": "This is NOT your average sudoku solver!",
+  "main": "board.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "moment": "^2.30.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}
