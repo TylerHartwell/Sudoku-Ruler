@@ -6,9 +6,21 @@ const members = require("./Members")
 const app = express()
 
 //Init middleware
-app.use(logger)
+// app.use(logger)
 
+// Gets All Members
 app.get("/api/members", (req, res) => res.json(members))
+
+// Get Singe Member
+app.get("/api/members/:id", (req, res) => {
+  const found = members.some(member => member.id === parseInt(req.params.id))
+
+  if (found) {
+    res.json(members.filter(member => member.id === parseInt(req.params.id)))
+  } else {
+    res.status(400).json({ msg: `No member with the id of ${req.params.id}` })
+  }
+})
 
 // send html directly
 // app.get("/", (req, res) => {
@@ -20,7 +32,7 @@ app.get("/api/members", (req, res) => res.json(members))
 //   res.sendFile(path.join(__dirname, "public", "index-example.html"))
 // })
 
-//Set public folder to static so static assets (such as HTML, CSS, images, and client-side JavaScript files are served directly to clients without any processing by the server. any request that matches a file in the "public" folder will be served directly by Express
+//Set public folder to static so static assets (such as HTML, CSS, images, and client-side JavaScript files) are served directly to clients without any processing by the server. any request that matches a file in the "public" folder will be served directly by Express
 app.use(express.static(path.join(__dirname, "public")))
 
 const PORT = process.eventNames.PORT || 5000
