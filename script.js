@@ -35,6 +35,13 @@ window.onresize = () => {
   scaleFont()
 }
 
+const cors_api_url = "https://cors-anywhere.herokuapp.com/"
+const sudoku_api_url = "https://sudoku-api.vercel.app/api/dosuku"
+
+fetch(cors_api_url + sudoku_api_url)
+  .then(res => res.json())
+  .then(data => console.log(data.newboard.grids[0].value))
+
 allEntryEls.forEach(el => {
   el.inputmode = "none"
 })
@@ -97,10 +104,7 @@ document.body.addEventListener("pointerup", async e => {
       if (lastSelectedPadNum) {
         handleEntryInputAttempt(value, currentlySelectedEntryEl)
       }
-      if (
-        currentlySelectedEntryEl &&
-        !currentlySelectedEntryEl.classList.contains("wrong")
-      ) {
+      if (currentlySelectedEntryEl && !currentlySelectedEntryEl.classList.contains("wrong")) {
         blurAnyFocus()
       }
 
@@ -146,11 +150,7 @@ document.body.addEventListener("pointerup", async e => {
         return
       }
       handleEntryInputAttempt(value, currentlySelectedEntryEl)
-      if (
-        boardData.isSet &&
-        currentlySelectedEntryEl &&
-        !currentlySelectedEntryEl.classList.contains("wrong")
-      ) {
+      if (boardData.isSet && currentlySelectedEntryEl && !currentlySelectedEntryEl.classList.contains("wrong")) {
         blurAnyFocus()
       }
       return
@@ -213,12 +213,8 @@ function toggleCandidateInEntryEl(value, entryEl) {
   const boxN = entryEl.dataset.boxN
   const squareN = entryEl.dataset.squareN
   const candidateBox = boardData.allBoxes.find(box => box.boxId == boxN)
-  const candidateSquare = candidateBox.boxSquares.find(
-    square => square.squareId == squareN
-  )
-  const candidateObj = candidateSquare.squareCandidates.find(
-    candidate => candidate.number == value
-  )
+  const candidateSquare = candidateBox.boxSquares.find(square => square.squareId == squareN)
+  const candidateObj = candidateSquare.squareCandidates.find(candidate => candidate.number == value)
   const squareEl = entryEl.parentElement
   if (candidateObj.eliminated) {
     if (isLocallyValidPlacement(value, squareEl)) {
@@ -286,12 +282,7 @@ document.body.addEventListener("keyup", e => {
 
 document.body.addEventListener("keydown", e => {
   if (e.target == gridStringEl) {
-    if (
-      e.key === "Enter" ||
-      e.key === "Go" ||
-      e.key === "Next" ||
-      e.key === "Return"
-    ) {
+    if (e.key === "Enter" || e.key === "Go" || e.key === "Next" || e.key === "Return") {
       inputGridString()
     }
     return
@@ -313,9 +304,7 @@ document.body.addEventListener("keydown", e => {
     return
   }
   const shiftKeyPressed = e.getModifierState("Shift")
-  const inputValue = shiftKeyPressed
-    ? getUnshiftedNumericValue(e.code) || getUnshiftedNumericValue(e.key)
-    : e.key
+  const inputValue = shiftKeyPressed ? getUnshiftedNumericValue(e.code) || getUnshiftedNumericValue(e.key) : e.key
   if (e.target.classList.contains("entry")) {
     if (handleFocusMovementByKey(inputValue)) {
       return
@@ -324,10 +313,7 @@ document.body.addEventListener("keydown", e => {
       return
     }
     handleEntryInputAttempt(inputValue, e.target)
-    if (
-      boardData.isSet &&
-      !currentlySelectedEntryEl.classList.contains("wrong")
-    ) {
+    if (boardData.isSet && !currentlySelectedEntryEl.classList.contains("wrong")) {
       blurAnyFocus()
     }
     return
@@ -403,25 +389,11 @@ allCheckboxes.forEach(el => {
 
 function switchMode() {
   boardData.isCandidateMode = !boardData.isCandidateMode
-  allowPointingThroughEntries(
-    boardData.isCandidateMode && lastPointerType != "touch"
-  )
-  modeSwitchOuter.classList.toggle(
-    "candidate-mode-on",
-    boardData.isCandidateMode
-  )
-  modeSwitchInner.classList.toggle(
-    "candidate-mode-on",
-    boardData.isCandidateMode
-  )
-  solutionModeBtn.classList.toggle(
-    "candidate-mode-on",
-    boardData.isCandidateMode
-  )
-  candidateModeBtn.classList.toggle(
-    "candidate-mode-on",
-    boardData.isCandidateMode
-  )
+  allowPointingThroughEntries(boardData.isCandidateMode && lastPointerType != "touch")
+  modeSwitchOuter.classList.toggle("candidate-mode-on", boardData.isCandidateMode)
+  modeSwitchInner.classList.toggle("candidate-mode-on", boardData.isCandidateMode)
+  solutionModeBtn.classList.toggle("candidate-mode-on", boardData.isCandidateMode)
+  candidateModeBtn.classList.toggle("candidate-mode-on", boardData.isCandidateMode)
   refreshAllCandidatesDisplay()
   toggleCandidatesBtn.disabled = boardData.isCandidateMode
 }
@@ -465,9 +437,12 @@ function allowPointingThroughEntries(isAllowed) {
 }
 
 function tryNextRule(ruleListItemEl) {
-  const ruleOutcome = rulesArr[
-    [...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)
-  ](getCandidateObj, getEntryObj, handleNewEntry, refreshCandidateDisplay)
+  const ruleOutcome = rulesArr[[...ruleListItemEl.parentElement.children].indexOf(ruleListItemEl)](
+    getCandidateObj,
+    getEntryObj,
+    handleNewEntry,
+    refreshCandidateDisplay
+  )
   return ruleOutcome
 }
 
@@ -521,9 +496,7 @@ function inputGridString(gridString = gridStringEl.value) {
   refreshAllCandidatesDisplay()
   gridString.split("").forEach((character, index) => {
     setTimeout(() => {
-      const entryEl = document.querySelector(
-        `.square[data-square-id='${(index + 1).toString()}'] .entry`
-      )
+      const entryEl = document.querySelector(`.square[data-square-id='${(index + 1).toString()}'] .entry`)
       handleNewEntry(entryEl, character)
       if (index + 1 == 81) {
         setGrid()
@@ -597,16 +570,12 @@ function updateCandidateEliminationOfPeers(number, squareEl) {
   const squareElPeers = getSquareElPeersOf(squareEl)
   squareElPeers.forEach(squareElPeer => {
     if (squareElPeer.dataset.squareId === squareEl.dataset.squareId) {
-      Array.from(squareEl.querySelectorAll(".candidate")).forEach(
-        candidateEl => {
-          updateCandidateElimination(candidateEl)
-          refreshCandidateDisplay(candidateEl)
-        }
-      )
+      Array.from(squareEl.querySelectorAll(".candidate")).forEach(candidateEl => {
+        updateCandidateElimination(candidateEl)
+        refreshCandidateDisplay(candidateEl)
+      })
     } else {
-      const matchingCandidateEl = squareElPeer.querySelector(
-        `.candidate[data-number="${number}"]`
-      )
+      const matchingCandidateEl = squareElPeer.querySelector(`.candidate[data-number="${number}"]`)
       updateCandidateElimination(matchingCandidateEl)
       refreshCandidateDisplay(matchingCandidateEl)
     }
@@ -619,11 +588,7 @@ function removeEntryValue(entryObj) {
 }
 
 function updateCandidateElimination(candidateEl) {
-  getCandidateObj(candidateEl).eliminated = !isLocallyValidPlacement(
-    candidateEl.dataset.number,
-    candidateEl.parentElement,
-    true
-  )
+  getCandidateObj(candidateEl).eliminated = !isLocallyValidPlacement(candidateEl.dataset.number, candidateEl.parentElement, true)
 }
 
 function isLocallyValidPlacement(number, squareEl, includeSelf = true) {
@@ -673,9 +638,7 @@ function getCandidateObj(candidateEl) {
   // const candidateObj = candidateSquare.squareCandidates.find(
   //   candidate => candidate.number == number
   // )
-  const candidateObj = boardData.allCandidates.find(
-    candidate => candidate.squareN == squareN && candidate.number == number
-  )
+  const candidateObj = boardData.allCandidates.find(candidate => candidate.squareN == squareN && candidate.number == number)
   return candidateObj
 }
 
@@ -696,11 +659,7 @@ function refreshAllCandidatesDisplay() {
 
 function refreshCandidateDisplay(candidateEl) {
   const candidateObj = getCandidateObj(candidateEl)
-  candidateEl.classList.toggle(
-    "hidden",
-    candidateObj.eliminated ||
-      (!boardData.isCandidateMode && !isCandidatesToggleOn)
-  )
+  candidateEl.classList.toggle("hidden", candidateObj.eliminated || (!boardData.isCandidateMode && !isCandidatesToggleOn))
 }
 
 function refreshEntryEl(entryEl) {
@@ -736,10 +695,7 @@ function focusTarget(target) {
 }
 
 function movePlace(direction) {
-  const currentFocusedEl =
-    document.activeElement == document.body || !document.activeElement
-      ? null
-      : document.activeElement
+  const currentFocusedEl = document.activeElement == document.body || !document.activeElement ? null : document.activeElement
   if (!currentFocusedEl) {
     focusCenter()
     return
@@ -782,10 +738,7 @@ function movePlace(direction) {
 }
 
 function movePlaceBy(numPlaces) {
-  const currentFocusedEl =
-    document.activeElement == document.body || !document.activeElement
-      ? null
-      : document.activeElement
+  const currentFocusedEl = document.activeElement == document.body || !document.activeElement ? null : document.activeElement
   if (!currentFocusedEl) {
     focusCenter()
     return
@@ -810,19 +763,11 @@ function clearAnyWrong() {
 }
 
 function getSquareElPeersOf(squareEl) {
-  const rowSquares = Array.from(
-    document.querySelectorAll(`.square[data-row-n='${squareEl.dataset.rowN}']`)
-  )
-  const colSquares = Array.from(
-    document.querySelectorAll(`.square[data-col-n='${squareEl.dataset.colN}']`)
-  )
-  const boxSquares = Array.from(
-    document.querySelectorAll(`.square[data-box-n='${squareEl.dataset.boxN}']`)
-  )
+  const rowSquares = Array.from(document.querySelectorAll(`.square[data-row-n='${squareEl.dataset.rowN}']`))
+  const colSquares = Array.from(document.querySelectorAll(`.square[data-col-n='${squareEl.dataset.colN}']`))
+  const boxSquares = Array.from(document.querySelectorAll(`.square[data-box-n='${squareEl.dataset.boxN}']`))
 
-  const squaresSeenBy = Array.from(
-    new Set([...rowSquares, ...colSquares, ...boxSquares])
-  )
+  const squaresSeenBy = Array.from(new Set([...rowSquares, ...colSquares, ...boxSquares]))
   return squaresSeenBy
 }
 
@@ -837,16 +782,12 @@ function refreshHighlightsOf(padNumEl) {
   })
   const matchingEls = [...matchingCandidateEls, ...matchingEntryEls]
   matchingEls.forEach(matchingEl => {
-    isPadNumElHighlighted
-      ? highlightEls([matchingEl])
-      : unhighlightEls([matchingEl])
+    isPadNumElHighlighted ? highlightEls([matchingEl]) : unhighlightEls([matchingEl])
   })
 }
 
 function toggleHighlight(padNumEl) {
-  const previouslyHighlightedPadNumEl = document.querySelector(
-    ".pad-number.highlight"
-  )
+  const previouslyHighlightedPadNumEl = document.querySelector(".pad-number.highlight")
   if (previouslyHighlightedPadNumEl) {
     unhighlightEls([previouslyHighlightedPadNumEl])
     refreshHighlightsOf(previouslyHighlightedPadNumEl)
