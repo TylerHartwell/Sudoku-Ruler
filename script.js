@@ -35,12 +35,10 @@ window.onresize = () => {
   scaleFont()
 }
 
-const cors_api_url = "https://cors-anywhere.herokuapp.com/"
-const sudoku_api_url = "https://sudoku-api.vercel.app/api/dosuku"
-
-fetch(cors_api_url + sudoku_api_url)
-  .then(res => res.json())
-  .then(data => console.log(data.newboard.grids[0].value))
+fetch("/.netlify/functions/fetch-grid-string")
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error("Error: ", error))
 
 allEntryEls.forEach(el => {
   el.inputmode = "none"
@@ -177,37 +175,6 @@ document.body.addEventListener("pointerup", async e => {
   }
   blurAnyFocus()
 })
-
-async function fetchGridString() {
-  try {
-    const response = await fetch("https://youdosudoku.com/api/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        difficulty: "hard",
-        solution: true,
-        array: false
-      })
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    if (!data || !data.puzzle) {
-      throw new Error("Invalid response format")
-    }
-
-    return data.puzzle
-  } catch (error) {
-    console.error("Error fetching or processing data:", error.message)
-    return undefined
-  }
-}
 
 function toggleCandidateInEntryEl(value, entryEl) {
   const boxN = entryEl.dataset.boxN
