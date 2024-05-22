@@ -1,4 +1,6 @@
-export async function fetchGridString(event, context) {
+const fetch = require("node-fetch")
+
+export async function handler(event, context) {
   const sudoku_api_url = "https://youdosudoku.com/api/"
 
   try {
@@ -14,7 +16,7 @@ export async function fetchGridString(event, context) {
       })
     })
 
-    if (response.status !== 200) {
+    if (!response.ok) {
       return {
         statusCode: response.status,
         body: JSON.stringify({ error: `HTTP error! Status: ${response.status}` })
