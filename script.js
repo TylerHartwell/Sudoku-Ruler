@@ -45,17 +45,18 @@ fetchGridString().then(puzzle => {
 
 async function fetchGridString() {
   try {
-    const response = await fetch("/.netlify/functions/fetch-grid-string", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        difficulty: "hard",
-        solution: true,
-        array: false
-      })
-    })
+    const response = await fetch("/.netlify/functions/fetch-grid-string")
+    // const response = await fetch("/.netlify/functions/fetch-grid-string", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify({
+    //     difficulty: "hard",
+    //     solution: true,
+    //     array: false
+    //   })
+    // })
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`)
