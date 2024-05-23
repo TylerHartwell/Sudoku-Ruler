@@ -7,7 +7,10 @@ exports.handler = async function (event, context) {
     const response = await fetch(sudoku_api_url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "GET, POST"
       },
       body: JSON.stringify({
         difficulty: "hard",
