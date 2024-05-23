@@ -4,21 +4,20 @@ exports.handler = async function (event, context) {
   const sudoku_api_url = "https://youdosudoku.com/api/"
 
   try {
-    const response = await fetch(sudoku_api_url)
-    // const response = await fetch(sudoku_api_url, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "Access-Control-Allow-Origin": "*",
-    //     "Access-Control-Allow-Headers": "Content-Type",
-    //     "Access-Control-Allow-Methods": "GET, POST"
-    //   },
-    //   body: JSON.stringify({
-    //     difficulty: "hard",
-    //     solution: true,
-    //     array: false
-    //   })
-    // })
+    const response = await fetch(sudoku_api_url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+        // "Access-Control-Allow-Origin": "*",
+        // "Access-Control-Allow-Headers": "Content-Type",
+        // "Access-Control-Allow-Methods": "GET, POST"
+      },
+      body: JSON.stringify({
+        difficulty: "hard",
+        solution: true,
+        array: false
+      })
+    })
 
     if (!response.ok) {
       return {
@@ -27,7 +26,7 @@ exports.handler = async function (event, context) {
       }
     }
 
-    const data = response.data
+    const data = await response.json()
 
     if (!data || !data.puzzle) {
       return {
@@ -38,7 +37,7 @@ exports.handler = async function (event, context) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ puzzle: data.puzzle })
+      body: JSON.stringify(data.puzzle)
     }
   } catch (error) {
     console.error("Error fetching or processing data:", error.message)

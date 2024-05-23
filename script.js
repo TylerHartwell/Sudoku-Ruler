@@ -35,40 +35,33 @@ window.onresize = () => {
   scaleFont()
 }
 
-fetchGridString().then(puzzle => {
-  if (puzzle) {
-    console.log("Fetched puzzle:", puzzle)
-  } else {
-    console.log("Failed to fetch the puzzle.")
-  }
-})
-
 async function fetchGridString() {
   try {
-    const response = await fetch("/.netlify/functions/fetch-grid-string")
-    // const response = await fetch("/.netlify/functions/fetch-grid-string", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify({
-    //     difficulty: "hard",
-    //     solution: true,
-    //     array: false
-    //   })
-    // })
+    const response = await fetch("/.netlify/functions/fetch-grid-string", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        difficulty: "hard",
+        solution: true,
+        array: false
+      })
+    })
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`)
-    }
+    // if (!response.ok) {
+    //   throw new Error(`HTTP error! Status: ${response.status}`)
+    // }
 
     const data = await response.json()
 
-    if (!data || !data.puzzle) {
-      throw new Error("Invalid response format")
-    }
+    // if (!data || !data.puzzle) {
+    //   throw new Error("Invalid response format")
+    // }
 
-    return data.puzzle
+    const gridString = JSON.stringify(data)
+    console.log(gridString)
+    return gridString
   } catch (error) {
     console.error("Error fetching or processing data:", error.message)
     return undefined
