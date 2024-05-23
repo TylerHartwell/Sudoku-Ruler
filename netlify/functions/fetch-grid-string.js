@@ -1,6 +1,6 @@
-const fetch = require("node-fetch")
+import fetch from "node-fetch"
 
-export async function handler(event, context) {
+exports.handler = async function (event, context) {
   const sudoku_api_url = "https://youdosudoku.com/api/"
 
   try {

@@ -35,10 +35,56 @@ window.onresize = () => {
   scaleFont()
 }
 
-fetch("/.netlify/functions/fetch-grid-string")
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error("Error: ", error))
+fetchGridString().then(puzzle => {
+  if (puzzle) {
+    console.log("Fetched puzzle:", puzzle)
+  } else {
+    console.log("Failed to fetch the puzzle.")
+  }
+})
+
+async function fetchGridString(event, context) {
+  try {
+    const response = await fetch("/.netlify/functions/fetch-grid-string", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        difficulty: "hard",
+        solution: true,
+        array: false
+      })
+    })
+
+    if (!response.ok) {
+      return {
+        statusCode: response.status,
+        body: JSON.stringify({ error: `HTTP error! Status: ${response.status}` })
+      }
+    }
+
+    const data = response.data
+
+    if (!data || !data.puzzle) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "Invalid response format" })
+      }
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ puzzle: data.puzzle })
+    }
+  } catch (error) {
+    console.error("Error fetching or processing data:", error.message)
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message })
+    }
+  }
+}
 
 allEntryEls.forEach(el => {
   el.inputmode = "none"
