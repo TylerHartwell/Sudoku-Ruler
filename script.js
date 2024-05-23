@@ -43,7 +43,7 @@ fetchGridString().then(puzzle => {
   }
 })
 
-async function fetchGridString(event, context) {
+async function fetchGridString() {
   try {
     const response = await fetch("/.netlify/functions/fetch-grid-string", {
       method: "POST",
@@ -58,31 +58,19 @@ async function fetchGridString(event, context) {
     })
 
     if (!response.ok) {
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: `HTTP error! Status: ${response.status}` })
-      }
+      throw new Error(`HTTP error! Status: ${response.status}`)
     }
 
-    const data = response.data
+    const data = await response.json()
 
     if (!data || !data.puzzle) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "Invalid response format" })
-      }
+      throw new Error("Invalid response format")
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ puzzle: data.puzzle })
-    }
+    return data.puzzle
   } catch (error) {
     console.error("Error fetching or processing data:", error.message)
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    }
+    return undefined
   }
 }
 
