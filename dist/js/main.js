@@ -37,31 +37,34 @@ window.onresize = () => {
 
 async function fetchGridString() {
   try {
-    const response = await fetch("/.netlify/functions/fetch-grid-string", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        difficulty: "hard",
-        solution: true,
-        array: false
-      })
-    })
+    const response = await fetch("/.netlify/functions/fetch-grid-string")
+    // const response = await fetch("/.netlify/functions/fetch-grid-string", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify({
+    //     difficulty: "hard",
+    //     solution: true,
+    //     array: false
+    //   })
+    // })
 
     // if (!response.ok) {
     //   throw new Error(`HTTP error! Status: ${response.status}`)
     // }
+    console.log("main response: ", response)
 
-    const data = await response.json()
+    const data = await response.text()
+    console.log("main data: ", data)
 
     // if (!data || !data.puzzle) {
     //   throw new Error("Invalid response format")
     // }
 
-    const gridString = JSON.stringify(data)
-    console.log(gridString)
-    return gridString
+    const fetchedString = JSON.stringify(data)
+    console.log("gridString: ", fetchedString)
+    return fetchedString
   } catch (error) {
     console.error("Error fetching or processing data:", error.message)
     return undefined

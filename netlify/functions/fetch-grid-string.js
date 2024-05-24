@@ -1,7 +1,8 @@
 import fetch from "node-fetch"
 
-export async function handler(event, context) {
+export default async function handler(event, context) {
   const sudoku_api_url = "https://youdosudoku.com/api/"
+  console.log("body: ", JSON.parse(event.body))
 
   try {
     const response = await fetch(sudoku_api_url, {
@@ -19,6 +20,8 @@ export async function handler(event, context) {
       })
     })
 
+    console.log("response1: ", response)
+
     if (!response.ok) {
       return {
         statusCode: response.status,
@@ -27,6 +30,7 @@ export async function handler(event, context) {
     }
 
     const data = await response.json()
+    console.log("data: ", data)
 
     if (!data || !data.puzzle) {
       return {
