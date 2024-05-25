@@ -5,6 +5,7 @@ export async function handler(event, context) {
   if (event.httpMethod !== "POST") {
     throw new Error("NOT A POST REQUEST")
   }
+  console.log("TEST: ", JSON.stringify(JSON.parse(event.body)))
 
   try {
     const requestBody = JSON.parse(event.body)
@@ -22,20 +23,14 @@ export async function handler(event, context) {
     console.log("Response Headers:", response.headers)
 
     if (!response.ok) {
-      return {
-        statusCode: 598,
-        body: JSON.stringify({ error: `HTTP error! Status: ${response.status}` })
-      }
+      throw new Error(`PROXY RESPONSE NOT OKAY: ${response.status}`)
     }
 
     const data = await response.json()
     console.log("data: ", data)
 
     if (!data || !data.puzzle) {
-      return {
-        statusCode: 599,
-        body: JSON.stringify({ error: "Invalid response format" })
-      }
+      throw new Error(`NO PUZZLE DATA: ${response.status}`)
     }
 
     return {
