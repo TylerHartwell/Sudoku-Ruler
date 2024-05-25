@@ -37,37 +37,32 @@ window.onresize = () => {
 
 async function fetchGridString() {
   try {
-    const response = await fetch("/.netlify/functions/fetch-grid-string")
-    // const response = await fetch("/.netlify/functions/fetch-grid-string", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify({
-    //     difficulty: "hard",
-    //     solution: true,
-    //     array: false
-    //   })
-    // })
+    // const response = await fetch("/.netlify/functions/fetch-grid-string")
+    const response = await fetch("/.netlify/functions/fetch-grid-string", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        difficulty: "hard",
+        solution: false,
+        array: false
+      })
+    })
 
-    // if (!response.ok) {
-    //   throw new Error(`HTTP error! Status: ${response.status}`)
-    // }
-    console.log("main response: ", response)
+    console.log("MAIN RESPONSE: ", response)
 
-    const data = await response.text()
-    console.log("main data: ", data)
+    if (!response.ok) {
+      throw new Error("MAIN RESPONSE NOT OKAY")
+    }
 
-    // if (!data || !data.puzzle) {
-    //   throw new Error("Invalid response format")
-    // }
+    const data = await response.json()
+    console.log("MAIN DATA: ", data)
 
-    const fetchedString = JSON.stringify(data)
-    console.log("gridString: ", fetchedString)
-    return fetchedString
+    return data
   } catch (error) {
-    console.error("Error fetching or processing data:", error.message)
-    return undefined
+    console.error("ERROR CATCH MAIN: ", error.message)
+    return "10000000000000000000000000000000000000000000000000000000000000000000000000000000"
   }
 }
 

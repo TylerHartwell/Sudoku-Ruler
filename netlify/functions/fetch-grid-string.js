@@ -1,30 +1,29 @@
 import fetch from "node-fetch"
 
-export default async function handler(event, context) {
-  const sudoku_api_url = "https://youdosudoku.com/api/"
-  console.log("body: ", JSON.parse(event.body))
+export async function handler(event, context) {
+  console.log("EVENT: ", event.path, event.httpMethod, event.body)
+  if (event.httpMethod !== "POST") {
+    throw new Error("NOT A POST REQUEST")
+  }
 
   try {
+    const requestBody = JSON.parse(event.body)
+    const sudoku_api_url = "https://youdosudoku.com/api/"
+
+    // const response = await fetch(sudoku_api_url)
     const response = await fetch(sudoku_api_url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
-        // "Access-Control-Allow-Origin": "*",
-        // "Access-Control-Allow-Headers": "Content-Type",
-        // "Access-Control-Allow-Methods": "GET, POST"
       },
-      body: JSON.stringify({
-        difficulty: "hard",
-        solution: true,
-        array: false
-      })
+      body: JSON.stringify(requestBody)
     })
-
-    console.log("response1: ", response)
+    console.log("Response Status:", response.status)
+    console.log("Response Headers:", response.headers)
 
     if (!response.ok) {
       return {
-        statusCode: response.status,
+        statusCode: 598,
         body: JSON.stringify({ error: `HTTP error! Status: ${response.status}` })
       }
     }
@@ -34,7 +33,7 @@ export default async function handler(event, context) {
 
     if (!data || !data.puzzle) {
       return {
-        statusCode: 500,
+        statusCode: 599,
         body: JSON.stringify({ error: "Invalid response format" })
       }
     }
@@ -44,7 +43,7 @@ export default async function handler(event, context) {
       body: JSON.stringify(data.puzzle)
     }
   } catch (error) {
-    console.error("Error fetching or processing data:", error.message)
+    console.error("ERROR CATCH PROXY: ", error.message)
     return {
       statusCode: 500,
       body: JSON.stringify({ error: error.message })
