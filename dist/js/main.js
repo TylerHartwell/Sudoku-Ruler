@@ -37,18 +37,18 @@ window.onresize = () => {
 
 async function fetchGridString() {
   try {
-    // const response = await fetch("/.netlify/functions/fetch-grid-string")
-    const response = await fetch("/.netlify/functions/fetch-grid-string", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        difficulty: "hard",
-        solution: false,
-        array: false
-      })
-    })
+    const response = await fetch("/.netlify/functions/fetch-grid-string")
+    // const response = await fetch("/.netlify/functions/fetch-grid-string", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify({
+    //     difficulty: "hard",
+    //     solution: false,
+    //     array: false
+    //   })
+    // })
 
     console.log("MAIN RESPONSE: ", response)
 
