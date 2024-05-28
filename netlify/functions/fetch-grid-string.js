@@ -1,5 +1,3 @@
-import fetch from "node-fetch"
-
 export async function handler(event, context) {
   try {
     const sudoku_api_url = "https://youdosudoku.com/api/"
