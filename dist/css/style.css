@@ -1,6 +1,6 @@
 body {
   border: none;
-  background-color: darkgray;
+  background-color: rgb(168, 168, 168);
   font-size: 16px;
   font-family: sans-serif;
   min-height: 100vh;
@@ -176,6 +176,7 @@ body {
   width: 100%;
   height: 100%;
   /* padding-bottom: 0.1em; */
+  transition: text-shadow 0.2s ease;
 }
 
 .candidate {
@@ -224,7 +225,11 @@ body {
   font-weight: bold;
 }
 
-.highlight.entry,
+.highlight.entry {
+  text-shadow: -1px -1px 0 currentColor, 1px -1px 0 currentColor,
+    -1px 1px 0 currentColor, 1px 1px 0 currentColor;
+}
+
 .highlight.pad-number {
   font-weight: bold;
 }
