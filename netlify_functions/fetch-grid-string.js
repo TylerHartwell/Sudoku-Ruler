@@ -1,18 +1,26 @@
+import fetch from "node-fetch"
+
 export async function handler(event, context) {
+  // if (event.httpMethod !== "POST") {
+  //   return {
+  //     statusCode: 405,
+  //     body: "Method Not Allowed"
+  //   }
+  // }
+
+  const sudoku_api_url = "https://youdosudoku.com/api/"
+
   try {
-    const sudoku_api_url = "https://youdosudoku.com/api/"
+    console.log("Received event: ", event)
 
     const response = await fetch(sudoku_api_url)
     // const response = await fetch(sudoku_api_url, {
     //   method: "POST",
     //   headers: {
+    //     // "Accept": "application/json",
     //     "Content-Type": "application/json"
     //   },
-    //   body: JSON.stringify({
-    //     difficulty: "hard",
-    //     solution: false,
-    //     array: false
-    //   })
+    //   body: JSON.parse(event.body)
     // })
 
     if (!response.ok) {
@@ -28,7 +36,11 @@ export async function handler(event, context) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(data.puzzle)
+      body: JSON.stringify(data.puzzle),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type"
+      }
     }
   } catch (error) {
     console.error("ERROR CATCH PROXY: ", error.message)

@@ -14,7 +14,6 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "esbuild": "^0.21.4",
     "netlify-cli": "^17.23.8"
   }
 }
