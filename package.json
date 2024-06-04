@@ -5,7 +5,9 @@
   "main": "script.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "netlify deploy",
+    "dev": "netlify dev"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +16,6 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "netlify-cli": "^17.23.8"
+    "netlify-cli": "^17.25.0"
   }
 }

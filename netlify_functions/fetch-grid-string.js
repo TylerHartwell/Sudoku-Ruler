@@ -10,6 +10,22 @@ export async function handler(event, context) {
 
   const sudoku_api_url = "https://youdosudoku.com/api/"
 
+  // const myHeaders = new Headers()
+  // myHeaders.append("Content-Type", "application/json")
+
+  // const raw = JSON.stringify({
+  //   difficulty: "hard",
+  //   solution: false,
+  //   array: false
+  // })
+
+  // const requestOptions = {
+  //   method: "POST",
+  //   headers: myHeaders,
+  //   body: raw,
+  //   redirect: "follow"
+  // }
+
   try {
     console.log("Received event: ", event)
 
@@ -23,12 +39,17 @@ export async function handler(event, context) {
     //   body: JSON.parse(event.body)
     // })
 
+    // const response = await fetch("https://youdosudoku.com/api/", requestOptions)
+
     if (!response.ok) {
       throw new Error(`PROXY RESPONSE NOT OKAY: ${response.status}`)
     }
 
-    const data = await response.json()
+    console.log("RESPONSE: ", response)
+
+    let data = await response.text()
     console.log("DATA: ", data)
+    data = JSON.parse(data)
 
     if (!data || !data.puzzle) {
       throw new Error(`NO PUZZLE DATA: ${response.status}`)
@@ -46,7 +67,11 @@ export async function handler(event, context) {
     console.error("ERROR CATCH PROXY: ", error.message)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ error: error.message }),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type"
+      }
     }
   }
 }

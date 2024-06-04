@@ -50,6 +50,24 @@ async function fetchGridString() {
     //   })
     // })
 
+    // const myHeaders = new Headers()
+    // myHeaders.append("Content-Type", "application/json")
+
+    // const raw = JSON.stringify({
+    //   difficulty: "hard",
+    //   solution: false,
+    //   array: false
+    // })
+
+    // const requestOptions = {
+    //   method: "POST",
+    //   headers: myHeaders,
+    //   body: raw,
+    //   redirect: "follow"
+    // }
+
+    // const response = await fetch("/.netlify/functions/fetch-grid-string", requestOptions)
+
     console.log("MAIN RESPONSE: ", response)
 
     if (!response.ok) {
