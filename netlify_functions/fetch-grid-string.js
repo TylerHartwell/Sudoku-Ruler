@@ -64,10 +64,10 @@ export async function handler(event, context) {
       }
     }
   } catch (error) {
-    console.error("ERROR CATCH PROXY: ", error.message)
+    console.error("ERROR CATCH PROXY: ", error)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
+      body: JSON.stringify({ error }),
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type"
