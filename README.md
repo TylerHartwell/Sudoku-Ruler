@@ -1,5 +1,8 @@
+# Project Deprecated 🚨
+This project has been replaced by [Sudoku](https://github.com/TylerHartwell/sudoku).  
+Please visit the new repository for the latest updates and improvements.
 
-# [SUDOKU RULER](https://sudoku-ruler.netlify.app/)
+# [SUDOKU RULER](https://sudoku.tylerhartwell.com/)
 
 This is NOT your average sudoku solver! 
 
@@ -11,4 +14,4 @@ This application aims not to simply output the solution to a sudoku, but instead
 
 There are many more rules and features to be added in the future but the current state of the application now satisfactorily solves the minimum threshold of problems and lack of certain functionality I was having with all other solvers.
 
-https://sudoku-ruler.netlify.app/
+https://sudoku.tylerhartwell.com/
